@@ -17,7 +17,8 @@
   - [Plan Phase](#plan-phase)
   - [Implement Phase](#implement-phase)
   - [QA Phase](#qa-phase)
-  - [Repeat](#repeat)
+  - [QA-Driven Planning Phase](#qa-driven-planning-phase)
+  - [Fix Implementation Phase](#fix-implementation-phase)
 - [Available Agents](#available-agents)
 - [Custom Tools](#custom-tools)
 - [Commands](#commands)
@@ -164,9 +165,25 @@ After thorough QA analysis, the **QA-Planner** subagent converts QA reports into
 
 This workflow ensures QA findings are systematically addressed with the same rigor as feature development.
 
-### Repeat
+### QA-Driven Planning Phase
 
-Start a new cycle for the next feature, improvement, or refactor. Each cycle builds upon previous work, enabling continuous evolution of your software project.
+After QA analysis identifies issues, the workflow returns to the planning phase:
+- The **QA-Planner** subagent converts the QA report into an implementation-ready plan
+- Creates phased action items in `thoughts/shared/plans/YYYY-MM-DD-QA-[Target].md`
+- Prioritizes issues by severity and impact
+- Defines verification steps for each fix
+
+**Key principle**: QA findings must be planned before implementation, maintaining the same structured approach as feature development.
+
+### Fix Implementation Phase
+
+The **Implementor** agent executes the QA-driven plan:
+- Works from the QA-converted plan (same process as feature implementation)
+- Implements fixes one phase at a time with verification
+- Runs automated tests after each phase
+- Returns to QA phase for verification after all fixes are complete
+
+**Complete workflow cycle**: Research → Plan → Implement → QA → Plan (QA findings) → Implement (fixes) → QA (verify) → [New feature cycle]
 
 ### Primary Agents
 
