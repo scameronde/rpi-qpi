@@ -1,5 +1,8 @@
 # Python QA Agent Variants Implementation Plan
 
+> **Status**: ✅ COMPLETED (2025-12-20)  
+> **Note**: The original `python-qa-auditor.md` agent has been removed and replaced by `python-qa-quick.md` and `python-qa-thorough.md` as primary agents.
+
 ## Inputs
 - Research report(s) used: `thoughts/shared/research/2025-12-20-OpenCode-Framework-and-RPIQR-Project.md`
 - User request summary: Create two variants of the python-qa-auditor agent:

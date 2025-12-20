@@ -35,7 +35,7 @@ The framework enforces separation of concerns, evidence-based decision making, a
 
 ## Features
 
-- **13 Specialized Agents** - Purpose-built agents for each phase of development
+- **12 Specialized Agents** - Purpose-built agents for each phase of development
 - **Evidence-Based Research** - Automated research with citation and verification requirements
 - **Structured Planning** - Detailed implementation blueprints with verification checkpoints
 - **Phase-Gated Implementation** - Incremental development with automated testing
@@ -97,7 +97,6 @@ rpiqr/
 │   ├── codebase-analyzer.md    # Logic analysis specialist (subagent)
 │   ├── codebase-pattern-finder.md  # Pattern scanner (subagent)
 │   ├── web-search-researcher.md    # External research (subagent)
-│   ├── python-qa-auditor.md    # Python QA specialist (subagent)
 │   ├── thoughts-analyzer.md    # Document analyzer (subagent)
 │   └── thoughts-locator.md     # Document locator (subagent)
 ├── tool/                       # Custom tools
@@ -208,7 +207,6 @@ Primary agents in the RPIQPI workflow:
 | `codebase-analyzer` | Subagent | - | Code logic & execution tracing |
 | `codebase-pattern-finder` | Subagent | - | Pattern & idiom identification |
 | `web-search-researcher` | Subagent | - | External library & API research |
-| `python-qa-auditor` | Subagent | - | Python linting, typing, security |
 | `thoughts-analyzer` | Subagent | - | Historical decision extraction |
 | `thoughts-locator` | Subagent | - | Documentation & ticket locator |
 

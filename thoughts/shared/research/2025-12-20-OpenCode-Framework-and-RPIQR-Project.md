@@ -42,7 +42,7 @@ coverage:
   - `/command/resume-implementation.md` (lines 1-11)
 
 **Scope Limitations:**
-- Did not inspect: `codebase-analyzer.md`, `codebase-pattern-finder.md`, `python-qa-auditor.md`, `thoughts-analyzer.md`, `thoughts-locator.md` (existence confirmed in file list but content not read)
+- Did not inspect: `codebase-analyzer.md`, `codebase-pattern-finder.md`, `python-qa-auditor.md` [now removed - replaced by python-qa-quick.md and python-qa-thorough.md], `thoughts-analyzer.md`, `thoughts-locator.md` (existence confirmed in file list but content not read)
 - Did not verify: MCP server configurations beyond JSON structure
 - Did not test: Actual execution of tools or commands
 
