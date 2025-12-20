@@ -34,7 +34,7 @@ The framework enforces separation of concerns, evidence-based decision making, a
 
 ## Features
 
-- **10 Specialized Agents** - Purpose-built agents for each phase of development
+- **12 Specialized Agents** - Purpose-built agents for each phase of development
 - **Evidence-Based Research** - Automated research with citation and verification requirements
 - **Structured Planning** - Detailed implementation blueprints with verification checkpoints
 - **Phase-Gated Implementation** - Incremental development with automated testing
@@ -103,7 +103,8 @@ rpiqr/
 ├── thoughts/                   # Generated artifacts
 │   └── shared/
 │       ├── research/           # Research reports (YYYY-MM-DD-Topic.md)
-│       └── plans/              # Implementation plans (YYYY-MM-DD-Ticket.md)
+│       ├── plans/              # Implementation plans (YYYY-MM-DD-Ticket.md)
+│       └── qa/                 # QA analysis reports (YYYY-MM-DD-Target.md)
 ├── opencode.json               # OpenCode configuration
 ├── AGENTS.md                   # Agent coding guidelines
 └── README.md                   # This file
@@ -146,15 +147,24 @@ The **Implementor** agent executes the plan:
 
 ### QA Phase
 
-QA agents review the implementation:
-- **Quick QA**: Fast review with actionable feedback
-- **Thorough QA**: Deep analysis with detailed report and improvement plan
+QA agents review the implementation as **primary agents** that can be invoked directly:
+- **Quick QA** (`@python-qa-quick`): Fast automated checks (ruff, pyright, bandit) with actionable task list. Use for rapid feedback during development.
+- **Thorough QA** (`@python-qa-thorough`): Comprehensive analysis including automated tools + manual quality checks; generates detailed plan in `thoughts/shared/qa/`. Use for pre-release reviews or architectural assessments.
 
 QA agents identify bugs, quality issues, and deviations from requirements. Feedback loops back to the implementor for iterative refinement.
 
 ### Repeat
 
 Start a new cycle for the next feature, improvement, or refactor. Each cycle builds upon previous work, enabling continuous evolution of your software project.
+
+### Primary Agents
+
+Primary agents in the RPIQR workflow:
+1. **Researcher** (@researcher) - Maps codebase and creates factual foundation
+2. **Planner** (@planner) - Architects technical solutions and generates blueprints
+3. **Implementor** (@implementor) - Executes plans and builds code
+4. **QA Quick** (@python-qa-quick) - Rapid quality checks for fast feedback
+5. **QA Thorough** (@python-qa-thorough) - Comprehensive quality analysis and improvement planning
 
 ## Available Agents
 
@@ -163,6 +173,8 @@ Start a new cycle for the next feature, improvement, or refactor. Each cycle bui
 | `researcher` | Primary | 0.1 | Codebase mapping & research orchestration |
 | `planner` | Primary | 0.1 | Implementation architecture & blueprints |
 | `implementor` | Primary | 0.2 | Plan execution & code building |
+| `python-qa-quick` | Primary | 0.1 | Quick Python QA (ruff, pyright, bandit) |
+| `python-qa-thorough` | Primary | 0.1 | Thorough Python QA with plan generation |
 | `codebase-locator` | Subagent | - | File system topology specialist |
 | `codebase-analyzer` | Subagent | - | Code logic & execution tracing |
 | `codebase-pattern-finder` | Subagent | - | Pattern & idiom identification |
