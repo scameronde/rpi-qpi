@@ -9,7 +9,7 @@
 - `tool/*.ts` - Custom tools using `@opencode-ai/plugin` package
 - `command/*.md` - Reusable command templates
 - `thoughts/shared/research/` - Research reports (YYYY-MM-DD-[Topic].md)
-- `thoughts/shared/plans/` - Implementation plans (YYYY-MM-DD-[Ticket].md)
+- `thoughts/shared/plans/` - Implementation plans (YYYY-MM-DD-[Ticket].md or YYYY-MM-DD-QA-[Target].md)
 - `thoughts/shared/qa/` - QA analysis reports (YYYY-MM-DD-[Target].md)
 
 ## Code Style & Conventions
@@ -24,3 +24,4 @@
 - **Evidence-Based Documentation**: All claims in research reports require file path + line range + code excerpt
 - **Primary Agents**: Researcher, Planner, Implementor, Python-QA-Quick, Python-QA-Thorough all use `mode: primary` and can be invoked directly by users
 - **QA Reports**: Use YYYY-MM-DD-[Target-Description].md format in `thoughts/shared/qa/`; target can be module name, feature name, or file path slug
+- **QA Workflow**: Python-QA agents write to `thoughts/shared/qa/` → QA-Planner converts to `thoughts/shared/plans/YYYY-MM-DD-QA-[Target].md` → Implementor executes fixes

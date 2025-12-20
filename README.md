@@ -34,11 +34,12 @@ The framework enforces separation of concerns, evidence-based decision making, a
 
 ## Features
 
-- **12 Specialized Agents** - Purpose-built agents for each phase of development
+- **13 Specialized Agents** - Purpose-built agents for each phase of development
 - **Evidence-Based Research** - Automated research with citation and verification requirements
 - **Structured Planning** - Detailed implementation blueprints with verification checkpoints
 - **Phase-Gated Implementation** - Incremental development with automated testing
-- **Multi-Level QA** - Quick and thorough code review options
+- **Multi-Level QA** - Quick and thorough code review options with automated plan conversion
+- **QA-to-Implementation Bridge** - Seamless conversion of QA findings into actionable plans
 - **Pausable Workflows** - Save and resume implementation sessions
 - **Custom Tools** - SearXNG web search integration
 - **MCP Integration** - Context7 for library docs, Sequential Thinking for reasoning
@@ -88,6 +89,9 @@ rpiqr/
 │   ├── researcher.md           # Research orchestrator (primary)
 │   ├── planner.md              # Implementation architect (primary)
 │   ├── implementor.md          # Code builder (primary)
+│   ├── qa-planner.md           # QA-to-plan converter (subagent)
+│   ├── python-qa-quick.md      # Quick Python QA (primary)
+│   ├── python-qa-thorough.md   # Thorough Python QA (primary)
 │   ├── codebase-locator.md     # File topology specialist (subagent)
 │   ├── codebase-analyzer.md    # Logic analysis specialist (subagent)
 │   ├── codebase-pattern-finder.md  # Pattern scanner (subagent)
@@ -103,7 +107,7 @@ rpiqr/
 ├── thoughts/                   # Generated artifacts
 │   └── shared/
 │       ├── research/           # Research reports (YYYY-MM-DD-Topic.md)
-│       ├── plans/              # Implementation plans (YYYY-MM-DD-Ticket.md)
+│       ├── plans/              # Implementation plans (YYYY-MM-DD-Ticket.md or YYYY-MM-DD-QA-Target.md)
 │       └── qa/                 # QA analysis reports (YYYY-MM-DD-Target.md)
 ├── opencode.json               # OpenCode configuration
 ├── AGENTS.md                   # Agent coding guidelines
@@ -149,9 +153,16 @@ The **Implementor** agent executes the plan:
 
 QA agents review the implementation as **primary agents** that can be invoked directly:
 - **Quick QA** (`@python-qa-quick`): Fast automated checks (ruff, pyright, bandit) with actionable task list. Use for rapid feedback during development.
-- **Thorough QA** (`@python-qa-thorough`): Comprehensive analysis including automated tools + manual quality checks; generates detailed plan in `thoughts/shared/qa/`. Use for pre-release reviews or architectural assessments.
+- **Thorough QA** (`@python-qa-thorough`): Comprehensive analysis including automated tools + manual quality checks; generates detailed report in `thoughts/shared/qa/`. Use for pre-release reviews or architectural assessments.
 
-QA agents identify bugs, quality issues, and deviations from requirements. Feedback loops back to the implementor for iterative refinement.
+**QA-to-Implementation Bridge**:
+After thorough QA analysis, the **QA-Planner** subagent converts QA reports into implementation-ready plans:
+1. Reads QA report from `thoughts/shared/qa/YYYY-MM-DD-[Target].md`
+2. Translates findings into phased implementation plan
+3. Writes to `thoughts/shared/plans/YYYY-MM-DD-QA-[Target].md`
+4. Implementor executes the fixes phase-by-phase
+
+This workflow ensures QA findings are systematically addressed with the same rigor as feature development.
 
 ### Repeat
 
@@ -174,7 +185,8 @@ Primary agents in the RPIQR workflow:
 | `planner` | Primary | 0.1 | Implementation architecture & blueprints |
 | `implementor` | Primary | 0.2 | Plan execution & code building |
 | `python-qa-quick` | Primary | 0.1 | Quick Python QA (ruff, pyright, bandit) |
-| `python-qa-thorough` | Primary | 0.1 | Thorough Python QA with plan generation |
+| `python-qa-thorough` | Primary | 0.1 | Thorough Python QA with report generation |
+| `qa-planner` | Subagent | 0.1 | QA report to implementation plan converter |
 | `codebase-locator` | Subagent | - | File system topology specialist |
 | `codebase-analyzer` | Subagent | - | Code logic & execution tracing |
 | `codebase-pattern-finder` | Subagent | - | Pattern & idiom identification |
