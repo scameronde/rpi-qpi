@@ -1,4 +1,4 @@
-# RPIQR - Research, Plan, Implement, QA, Repeat
+# RPIQPI - Research, Plan, Implement, QA, Plan, Implement
 
 > A systematic software development workflow framework for OpenCode
 
@@ -28,9 +28,9 @@
 
 ## Overview
 
-RPIQR is an OpenCode project that implements a systematic, phase-based approach to software development with AI agents. It models professional software engineering workflows through specialized agents that handle research, planning, implementation, quality assurance, and iteration.
+RPIQPI is an OpenCode project that implements a systematic, phase-based approach to software development with AI agents. It models professional software engineering workflows through specialized agents that handle research, planning, implementation, quality assurance, and iterative refinement.
 
-The framework enforces separation of concerns, evidence-based decision making, and iterative refinement—ensuring high-quality, maintainable code through a structured development process.
+The framework enforces separation of concerns, evidence-based decision making, and explicit workflow phases—ensuring high-quality, maintainable code through a structured development process. The name reflects the complete workflow cycle: **Research** (gather facts) → **Plan** (architect solution) → **Implement** (build features) → **QA** (analyze quality) → **Plan** (convert QA findings) → **Implement** (execute fixes), which then repeats for continuous improvement.
 
 ## Features
 
@@ -74,7 +74,7 @@ The framework enforces separation of concerns, evidence-based decision making, a
    /init
    ```
 
-5. **Copy RPIQR agents to your project** (optional)
+5. **Copy RPIQPI agents to your project** (optional)
    ```bash
    cp -r /path/to/rpiqr/agent ~/.config/opencode/agent/
    cp -r /path/to/rpiqr/tool ~/.config/opencode/tool/
@@ -170,7 +170,7 @@ Start a new cycle for the next feature, improvement, or refactor. Each cycle bui
 
 ### Primary Agents
 
-Primary agents in the RPIQR workflow:
+Primary agents in the RPIQPI workflow:
 1. **Researcher** (@researcher) - Maps codebase and creates factual foundation
 2. **Planner** (@planner) - Architects technical solutions and generates blueprints
 3. **Implementor** (@implementor) - Executes plans and builds code

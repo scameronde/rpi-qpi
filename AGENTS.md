@@ -1,4 +1,4 @@
-# Agent Guidelines for RPIQR Project
+# Agent Guidelines for RPIQPI Project
 
 ## Build/Lint/Test Commands
 - No package.json found - this is a configuration-only OpenCode project
