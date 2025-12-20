@@ -1,6 +1,6 @@
 ---
 description: "Converts QA analysis reports into implementation-ready plan files for the Implementor. Bridges quality analysis to code fixes."
-mode: subagent
+mode: primary
 temperature: 0.1
 tools:
   bash: false # No execution needed
