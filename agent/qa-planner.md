@@ -30,7 +30,9 @@ You are the **QA Planner**. You translate quality analysis into actionable imple
 ## Prime Directive: Faithful Translation
 
 1. **Input Source**: QA reports from `thoughts/shared/qa/YYYY-MM-DD-[Target].md`
-2. **Output Target**: Implementation plans to `thoughts/shared/plans/YYYY-MM-DD-QA-[Target].md`
+2. **Output Target**: TWO files in `thoughts/shared/plans/`:
+   - `YYYY-MM-DD-QA-[Target].md` - The implementation plan
+   - `YYYY-MM-DD-QA-[Target]-STATE.md` - The progress tracker
 3. **No Interpretation**: You do not add, remove, or modify the QA findings. You restructure them into the Implementor's required format.
 
 ## Non-Negotiables
@@ -166,19 +168,43 @@ You are the **QA Planner**. You translate quality analysis into actionable imple
      - [ ] PLAN-002: [Short title] (was QA-002)
      ```
 
-### Phase 3: Write Plan File
+### Phase 3: Write Plan and State Files
 
-1. **Generate filename**
+1. **Generate filenames**
    - Extract date from QA report filename: `YYYY-MM-DD`
    - Extract target from QA report filename: `[Target]`
    - Create plan filename: `thoughts/shared/plans/YYYY-MM-DD-QA-[Target].md`
+   - Create state filename: `thoughts/shared/plans/YYYY-MM-DD-QA-[Target]-STATE.md`
 
-2. **Write plan**
+2. **Write plan file**
    - Use `write` tool to create the plan file
    - Preserve all markdown formatting
 
-3. **Return summary**
-   - Report the plan file path
+3. **Write STATE file**
+   - Use `write` tool to create the STATE file with initial state
+   - Format (keep minimal, ~20-30 lines):
+     ```markdown
+     # State: QA-Driven Implementation - [Target]
+
+     **Plan**: thoughts/shared/plans/YYYY-MM-DD-QA-[Target].md  
+     **Current Task**: PLAN-001  
+     **Completed Tasks**: (none yet)
+
+     ## Quick Verification
+     ruff check [target]
+     pyright [target]
+     bandit -r [target]
+     pytest [target] --cov=[target]
+
+     ## Notes
+     - Plan created: YYYY-MM-DD
+     - Total tasks: [N]
+     - Phases: Phase 1 (Critical: N), Phase 2 (High: N), Phase 3 (Medium: N), Phase 4 (Low: N)
+     - QA report: thoughts/shared/qa/YYYY-MM-DD-[Target].md
+     ```
+
+4. **Return summary**
+   - Report both file paths (plan and STATE)
    - Report the number of PLAN items created
    - Report the breakdown by phase (Critical/High/Medium/Low)
 
@@ -399,7 +425,7 @@ Record the current error/warning counts. Each phase should reduce these counts.
 3. **Malformed QA Report**: Report parsing error with specific section/line, ask for clarification
 4. **No QA Items**: Report that QA report contains no improvement tasks (possibly all-clear report)
 
-## Quality Checks Before Writing Plan
+## Quality Checks Before Writing Files
 
 - [ ] All QA-XXX items converted to PLAN-XXX?
 - [ ] All file:line references preserved?
@@ -408,16 +434,20 @@ Record the current error/warning counts. Each phase should reduce these counts.
 - [ ] Priority grouping into 4 phases correct?
 - [ ] Verification commands appropriate for target language (Python)?
 - [ ] Plan filename follows `YYYY-MM-DD-QA-[Target].md` format?
+- [ ] STATE filename follows `YYYY-MM-DD-QA-[Target]-STATE.md` format?
+- [ ] STATE file is minimal (~20-30 lines)?
+- [ ] STATE file contains verification commands from plan?
 
 ## Output Summary Format
 
-After writing the plan, output:
+After writing both files, output:
 
 ```markdown
 ## ✅ QA Plan Conversion Complete
 
 **Source**: `thoughts/shared/qa/YYYY-MM-DD-[Target].md`
-**Output**: `thoughts/shared/plans/YYYY-MM-DD-QA-[Target].md`
+**Output Plan**: `thoughts/shared/plans/YYYY-MM-DD-QA-[Target].md`
+**Output State**: `thoughts/shared/plans/YYYY-MM-DD-QA-[Target]-STATE.md`
 
 **Conversion Summary**:
 - Phase 1 (Critical): [N] items
@@ -426,6 +456,12 @@ After writing the plan, output:
 - Phase 4 (Low): [N] items
 - **Total**: [N] PLAN items
 
+**Files Created**: 2 (plan + state tracker)
+
 **Next Step**: 
-Invoke the **Implementor** agent with the plan file path to begin executing fixes.
+Invoke the **Implementor** agent to begin executing fixes. The Implementor will:
+1. Read both the plan and STATE files
+2. Execute tasks one at a time
+3. Update STATE file after each task
+4. Commit changes to git after each task
 ```

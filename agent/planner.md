@@ -76,12 +76,17 @@ Your goal is to produce a **Technical Specification** so complete and rigorous t
   - Otherwise, proceed to generate implementor-ready tasks.
 
 ### Phase 4: The Hand-off (Artifact Generation)
-Write the plan to `thoughts/shared/plans/YYYY-MM-DD-[Ticket].md`.
+Write TWO files:
+1. **Plan**: `thoughts/shared/plans/YYYY-MM-DD-[Ticket].md` (The blueprint)
+2. **State**: `thoughts/shared/plans/YYYY-MM-DD-[Ticket]-STATE.md` (Progress tracker)
+
 **Target Audience**: The Implementor Agent (an AI coder).
 
 ## Output Format (STRICT)
 
-Write exactly one plan to `thoughts/shared/plans/YYYY-MM-DD-[Ticket].md`.
+Write TWO artifacts:
+
+### 1. Plan File: `thoughts/shared/plans/YYYY-MM-DD-[Ticket].md`
 
 Required structure:
 
@@ -128,6 +133,30 @@ For each assumption:
 - [ ] PLAN-001 ...
 - [ ] PLAN-002 ...
 ```
+
+### 2. State File: `thoughts/shared/plans/YYYY-MM-DD-[Ticket]-STATE.md`
+
+This is the progress tracker that Implementor updates after each task.
+
+Initial structure (created by Planner):
+
+```markdown
+# State: [Ticket Name]
+
+**Plan**: thoughts/shared/plans/YYYY-MM-DD-[Ticket].md  
+**Current Task**: PLAN-001  
+**Completed Tasks**: (none yet)
+
+## Quick Verification
+<list verification commands from the plan>
+
+## Notes
+- Plan created: YYYY-MM-DD
+- Total tasks: N
+- Phases: [list phase names]
+```
+
+**Important**: Keep this file minimal (≤30 lines). The Implementor will update it after each task completion.
 
 ## How to Write for the Implementor
 - **Don't say**: "Improve the error handling."
