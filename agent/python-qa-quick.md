@@ -47,9 +47,10 @@ Run the following commands using the bash tool:
 ruff check [target]
 pyright [target]
 bandit -r [target]
+interrogate --fail-under 80 -v --ignore-init-module --ignore-magic --ignore-private --ignore-semiprivate [target]
 ```
 
-Execute these three commands in parallel for speed.
+Execute these four commands in parallel for speed.
 
 ### 3. Synthesize Findings
 
@@ -57,13 +58,14 @@ Categorize issues by source:
 - **Linting**: ruff output (PEP8, code quality)
 - **Typing**: pyright output (type errors, missing annotations)
 - **Security**: bandit output (vulnerabilities, security risks)
+- **Documentation**: interrogate output (missing docstrings)
 
 ### 4. Prioritize Issues
 
 Use this priority hierarchy:
 1. **Critical** (🔴): Security vulnerabilities from bandit
 2. **High** (🟠): Type errors from pyright that block type checking
-3. **Medium** (🟡): Quality issues from ruff (complexity, maintainability)
+3. **Medium** (🟡): Quality issues from ruff (complexity, maintainability) + Missing docstrings from interrogate
 4. **Low** (🟢): Style issues from ruff (formatting, naming)
 
 ### 5. Output Actionable Task List
@@ -79,7 +81,7 @@ Use this exact Markdown structure:
 
 ### ⏱️ Scan Summary
 - Target: [path]
-- Tools: ruff ✓ | pyright ✓ | bandit ✓
+- Tools: ruff ✓ | pyright ✓ | bandit ✓ | interrogate ✓
 - Date: YYYY-MM-DD
 
 ### 🔴 Critical Issues (Fix Immediately)
@@ -90,6 +92,7 @@ Use this exact Markdown structure:
 
 ### 🟡 Medium Priority
 - [ ] [Issue description] - `[File:Line]` - [Tool]
+- [ ] Missing docstring coverage: XX% (threshold: 80%) - interrogate
 
 ### 🟢 Low Priority / Style
 - [ ] [Issue description] - `[File:Line]` - [Tool]
@@ -101,7 +104,7 @@ Use this exact Markdown structure:
 ## Guidelines
 
 1. **Tool Availability**
-   - If a tool is not found, inform the user and suggest: `pip install ruff pyright bandit`
+   - If a tool is not found, inform the user and suggest: `pip install ruff pyright bandit interrogate`
    - Continue with available tools; skip missing ones and note in Scan Summary
 
 2. **Conciseness**
@@ -136,7 +139,7 @@ If ruff is not installed:
 
 ### ⏱️ Scan Summary
 - Target: src/
-- Tools: ruff ❌ (not found) | pyright ✓ | bandit ✓
+- Tools: ruff ❌ (not found) | pyright ✓ | bandit ✓ | interrogate ✓
 - Date: 2025-12-20
 
 **⚠️ Note**: `ruff` is not installed. Run `pip install ruff` to enable linting checks.
@@ -151,7 +154,7 @@ If ruff is not installed:
 
 ### ⏱️ Scan Summary
 - Target: src/utils.py
-- Tools: ruff ✓ | pyright ✓ | bandit ✓
+- Tools: ruff ✓ | pyright ✓ | bandit ✓ | interrogate ✓
 - Date: 2025-12-20
 
 ### ✅ All Checks Passed
@@ -172,7 +175,7 @@ Optional: Address style issue for consistency with project standards.
 
 ### ⏱️ Scan Summary
 - Target: src/auth/
-- Tools: ruff ✓ | pyright ✓ | bandit ✓
+- Tools: ruff ✓ | pyright ✓ | bandit ✓ | interrogate ✓
 - Date: 2025-12-20
 
 ### 🔴 Critical Issues (Fix Immediately)
@@ -186,9 +189,12 @@ Optional: Address style issue for consistency with project standards.
 ### 🟡 Medium Priority
 - [ ] Function too complex (cyclomatic complexity 15) - `src/auth/validate.py:10` - ruff
 - [ ] Unused import 'hashlib' - `src/auth/utils.py:3` - ruff
+- [ ] Missing docstring coverage: 65% (threshold: 80%) - interrogate
+  - `src/auth/login.py:28` - function `authenticate`
+  - `src/auth/validate.py:10` - function `validate_user_input`
+  - `src/auth/utils.py:20` - class `TokenManager`
 
 ### 🟢 Low Priority / Style
-- [ ] Missing docstring for public function - `src/auth/login.py:28` - ruff
 - [ ] Variable name 'x' too short - `src/auth/utils.py:45` - ruff
 
 ### ✅ Next Steps

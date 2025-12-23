@@ -41,11 +41,12 @@ Your output is for the Implementor Agent (an AI coder) and senior developers who
 
 ### Phase 2: Automated Tool Execution
 
-1. Execute ruff, pyright, bandit in parallel using bash tool:
+1. Execute ruff, pyright, bandit, interrogate in parallel using bash tool:
    ```bash
    ruff check [target]
    pyright [target]
    bandit -r [target]
+   interrogate --fail-under 80 -vv --omit-covered-files --ignore-init-module --ignore-magic --ignore-private --ignore-semiprivate [target]
    ```
 2. Capture and categorize automated findings
 3. If tool not found, note in report and skip that tool
@@ -61,8 +62,9 @@ Read each target Python file using the `read` tool and assess:
 1. **Function/method length**: Flag functions >50 lines
    - **Evidence required**: File path, line range, excerpt showing function definition and length
    
-2. **Docstring coverage**: Check public APIs (classes, functions without `_` prefix)
+2. **Docstring coverage**: Cross-reference interrogate output with manual inspection
    - **Evidence required**: File:line for missing docstrings with function signature excerpt
+   - **Note**: interrogate provides automated detection; manually verify quality/completeness of existing docstrings
    
 3. **Variable naming clarity**: Identify single-letter vars outside loops, ambiguous names
    - **Evidence required**: File:line with variable usage excerpt
@@ -124,7 +126,7 @@ Write to `thoughts/shared/qa/YYYY-MM-DD-[Target].md` using this exact template:
 - Date: YYYY-MM-DD
 - Target: [path]
 - Auditor: python-qa-thorough
-- Tools: ruff, pyright, bandit, manual analysis
+- Tools: ruff, pyright, bandit, interrogate, manual analysis
 
 ## Executive Summary
 - **Overall Status**: [Pass/Conditional Pass/Fail]
@@ -133,6 +135,14 @@ Write to `thoughts/shared/qa/YYYY-MM-DD-[Target].md` using this exact template:
 - **Improvement Opportunities**: [count]
 
 ## Automated Tool Findings
+
+### 📚 Documentation Coverage (Interrogate)
+- **Overall Coverage**: XX%
+- **Threshold**: 80%
+- **Status**: [PASSED/FAILED]
+
+#### Missing Docstrings
+[List of files/functions/classes missing docstrings with file:line references]
 
 ### 🛡️ Security (Bandit)
 [Categorized issues with file:line references]
@@ -146,6 +156,8 @@ Write to `thoughts/shared/qa/YYYY-MM-DD-[Target].md` using this exact template:
 ## Manual Quality Analysis
 
 ### 📖 Readability Issues
+
+**Note**: interrogate reports automated docstring coverage. This section focuses on docstring **quality** (clarity, completeness, accuracy) for existing docstrings.
 
 For each issue:
 - **Issue:** [Description]
@@ -190,6 +202,7 @@ For each issue:
 [etc.]
 
 ## References
+- Interrogate output: [coverage percentage and summary]
 - Ruff output: [summary]
 - Pyright output: [summary]
 - Bandit output: [summary]
@@ -236,7 +249,7 @@ If a tool is not found:
 1. Note in "Scan Metadata" section
 2. Skip that tool's findings section
 3. Continue with available tools
-4. Suggest installation in summary: `pip install [tool]`
+4. Suggest installation in summary: `pip install ruff pyright bandit interrogate`
 
 ### Skepticism First
 
@@ -326,7 +339,7 @@ Do not assume file structure, naming conventions, or code patterns without readi
 ```
 1. Identify Target (user input or delegate to codebase-locator)
    ↓
-2. Run Automated Tools (ruff, pyright, bandit in parallel)
+2. Run Automated Tools (ruff, pyright, bandit, interrogate in parallel)
    ↓
 3. Read Source Files (use read tool for manual analysis)
    ↓
