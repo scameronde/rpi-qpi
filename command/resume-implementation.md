@@ -54,17 +54,20 @@ Ready to begin PLAN-XXX.
 
 ## Step 5: Begin Work
 
-Proceed with the current task following the standard Implementor protocol:
-- Read the task instructions from the plan
-- Execute the task
-- Verify the changes
+Proceed with the current task following the Implementation-Controller protocol:
+- Extract the current task (PLAN-XXX) from the plan
+- Create task payload with task details
+- Invoke Task-Executor subagent to implement the changes
+- Verify the changes with verification commands
 - Update STATE file
 - Commit with proper message format
 - Stop and wait for user input (PROCEED/CONTINUE)
 
 ## Important Notes
 
-- **Context Efficiency**: You only need STATE + full plan (~200-500 lines total)
+- **Two-Agent Architecture**: You (Controller) orchestrate; Task-Executor implements code
+- **Context Efficiency**: You load STATE + full plan (~200-500 lines); Executor loads only task payload (~50 lines)
 - **Git as Fallback**: Only check git history if STATE file is unclear
 - **Trust the STATE**: The STATE file is the single source of truth for progress
 - **Full Plan Context**: Always read the complete plan to understand dependencies between tasks
+- **Retry Logic**: If Task-Executor fails, retry up to 2 times with additional context
