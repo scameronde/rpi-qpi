@@ -8,6 +8,9 @@
 - `agent/*.md` - Agent definitions (YAML frontmatter + Markdown system prompt)
 - `tool/*.ts` - Custom tools using `@opencode-ai/plugin` package
 - `command/*.md` - Reusable command templates
+- `thoughts/shared/missions/` - Mission statements (YYYY-MM-DD-[Project-Name].md) - vision and value for greenfield work
+- `thoughts/shared/specs/` - Specifications (YYYY-MM-DD-[Project-Name].md) - abstract architecture from missions
+- `thoughts/shared/epics/` - Epic decompositions (YYYY-MM-DD-[Epic-Name].md) - story-based breakdowns from specs
 - `thoughts/shared/research/` - Research reports (YYYY-MM-DD-[Topic].md)
 - `thoughts/shared/plans/` - Implementation plans (YYYY-MM-DD-[Ticket].md or YYYY-MM-DD-QA-[Target].md)
   - Each plan has a companion STATE file (YYYY-MM-DD-[Ticket]-STATE.md) for progress tracking
@@ -23,9 +26,98 @@
 - **Temperature**: Research/Planning agents use 0.1; Implementation uses 0.2
 - **Tool Permissions**: Use granular boolean flags per tool; add explanatory comments when disabling (e.g., `# use Sub-Agent 'X' instead`)
 - **Evidence-Based Documentation**: All claims in research reports require file path + line range + code excerpt
-- **Primary Agents**: Researcher, Planner, Implementor, Python-QA-Quick, Python-QA-Thorough all use `mode: primary` and can be invoked directly by users
+- **Primary Agents**: Mission-Architect, Specifier, Epic-Planner, Researcher, Planner, Implementor, Python-QA-Quick, Python-QA-Thorough all use `mode: primary` and can be invoked directly by users
 - **QA Reports**: Use YYYY-MM-DD-[Target-Description].md format in `thoughts/shared/qa/`; target can be module name, feature name, or file path slug
 - **QA Workflow**: Python-QA agents write to `thoughts/shared/qa/` → QA-Planner converts to `thoughts/shared/plans/YYYY-MM-DD-QA-[Target].md` → Implementor executes fixes
+
+## Greenfield Workflow (Mission-Architect → Specifier → Epic-Planner → Researcher/Planner)
+
+For **completely new projects** or **completely new features** in existing applications:
+
+### 1. Mission Statement Creation (Mission-Architect)
+- **Input**: User's vision and ideas (conversational brainstorming)
+- **Agent**: Mission-Architect (Primary Agent)
+- **Process**: 
+  - User describes their vision
+  - Agent asks clarifying questions (why, who, what, when)
+  - Agent participates in brainstorming
+  - Agent challenges assumptions and helps refine scope
+- **Output**: `thoughts/shared/missions/YYYY-MM-DD-[Project-Name].md`
+- **Focus**: WHY and WHAT (not HOW)
+- **Content**: 
+  - Vision statement (problem, value, audience)
+  - Essential capabilities (3-7 must-have features)
+  - Explicit non-goals (scope boundaries)
+  - Success criteria (observable outcomes)
+  - Assumptions and constraints
+
+### 2. Specification Creation (Specifier)
+- **Input**: Mission statement from `thoughts/shared/missions/`
+- **Agent**: Specifier (Primary Agent)
+- **Process**:
+  - Read and validate mission statement
+  - Define abstract architecture (components, interactions)
+  - Create conceptual data models (entities, relationships)
+  - Define external interfaces (user-facing, APIs, integrations)
+  - Extract non-functional requirements
+- **Output**: `thoughts/shared/specs/YYYY-MM-DD-[Project-Name].md`
+- **Focus**: WHAT the system does and HOW it's structured (abstract level)
+- **Content**:
+  - System overview and boundaries
+  - Architecture diagrams (Mermaid)
+  - Abstract data models (no schemas/types)
+  - API contracts (no specific technologies)
+  - Non-functional requirements
+  - Acceptance criteria per capability
+- **Constraints**: 
+  - NO technology stack decisions (no React, PostgreSQL, AWS, etc.)
+  - Abstract components only ("Data Layer", not "PostgreSQL database")
+  - Mermaid diagrams encouraged for clarity
+
+### 3. Epic Decomposition (Epic-Planner)
+- **Input**: Specification from `thoughts/shared/specs/`
+- **Agent**: Epic-Planner (Primary Agent)
+- **Process**:
+  - Read and validate specification
+  - Decompose into functional epics (story-based, not task-based)
+  - Define user stories (3-7 per epic)
+  - Formulate research questions for Researcher
+  - Define acceptance criteria for Planner
+  - Identify dependencies between epics
+- **Output**: Multiple files in `thoughts/shared/epics/YYYY-MM-DD-[Epic-Name].md`
+- **Focus**: User-facing capabilities and system components (not implementation tasks)
+- **Content**: Each epic includes:
+  - User stories (As a... I want to... So that...)
+  - Research questions (for Researcher agent)
+  - Acceptance criteria (for Planner agent)
+  - Dependencies (prerequisite/concurrent/dependent epics)
+  - Data model requirements
+  - External interface requirements
+  - Verification plan
+- **Granularity**: Right-sized for 1-3 research reports + 1-5 implementation plans
+  - Good: "User Authentication System" (login, registration, password reset)
+  - Bad (too big): "The Entire Application"
+  - Bad (too small): "Add email validation function"
+
+### 4. Implementation (Researcher → Planner → Implementor)
+- **Input**: Epic(s) from `thoughts/shared/epics/`
+- **Flow**: User can now use existing workflow for each epic:
+  - **Researcher**: Answers research questions from epic → `thoughts/shared/research/`
+  - **Planner**: Creates implementation plan using epic's acceptance criteria → `thoughts/shared/plans/`
+  - **Implementor**: Executes plan → code changes
+- **User Control**: User decides which epics to implement and in what order (respecting dependencies)
+
+### Key Benefits
+
+- **Clear Vision Before Code**: Mission → Spec → Epics ensures shared understanding before implementation
+- **Technology-Agnostic Planning**: Specifier defines "what" without prescribing "how" (Planner chooses based on codebase)
+- **Traceable Requirements**: Epic → Spec → Mission lineage ensures every story traces to original value
+- **Flexible Execution**: User can implement all epics or cherry-pick based on priority
+- **Separation of Concerns**: 
+  - Mission-Architect = vision and value (no tech)
+  - Specifier = architecture and design (abstract)
+  - Epic-Planner = decomposition and stories (functional)
+  - Researcher/Planner = codebase integration and tasks (concrete)
 
 ## Implementation Workflow (Planner → Implementation-Controller → Task-Executor)
 
