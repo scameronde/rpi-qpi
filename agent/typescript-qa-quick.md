@@ -1,6 +1,6 @@
 ---
 description: "Quick TypeScript QA check using tsc, eslint, and knip. Outputs actionable tasks immediately without writing plan files."
-mode: primary
+mode: all
 temperature: 0.1
 tools:
   bash: true

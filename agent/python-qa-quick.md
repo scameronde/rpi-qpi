@@ -1,6 +1,6 @@
 ---
 description: "Quick Python QA check using ruff, pyright, and bandit. Outputs actionable tasks immediately without writing plan files."
-mode: primary
+mode: all
 temperature: 0.1
 tools:
   bash: true

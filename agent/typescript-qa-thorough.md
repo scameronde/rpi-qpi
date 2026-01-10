@@ -1,6 +1,6 @@
 ---
 description: "Thorough TypeScript QA analysis combining automated tools (tsc, eslint, knip) with manual quality checks. Writes comprehensive plan file to thoughts/shared/qa/."
-mode: primary
+mode: all
 temperature: 0.1
 tools:
   bash: true
