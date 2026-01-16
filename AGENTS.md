@@ -7,7 +7,9 @@
 ## Project Structure
 - `agent/*.md` - Agent definitions (YAML frontmatter + Markdown system prompt)
 - `tool/*.ts` - Custom tools using `@opencode-ai/plugin` package
-- `command/*.md` - Reusable command templates
+- `skills/[skill-name]/` - Reusable knowledge modules with domain-specific expertise
+  - `SKILL.md` - Skill definition with metadata and documentation
+  - `references/` - Reference documentation files
 - `thoughts/shared/missions/` - Mission statements (YYYY-MM-DD-[Project-Name].md) - vision and value for greenfield work
 - `thoughts/shared/specs/` - Specifications (YYYY-MM-DD-[Project-Name].md) - abstract architecture from missions
 - `thoughts/shared/epics/` - Epic decompositions (YYYY-MM-DD-[Epic-Name].md) - story-based breakdowns from specs
@@ -26,9 +28,10 @@
 - **Temperature**: Research/Planning agents use 0.1; Implementation uses 0.2
 - **Tool Permissions**: Use granular boolean flags per tool; add explanatory comments when disabling (e.g., `# use Sub-Agent 'X' instead`)
 - **Evidence-Based Documentation**: All claims in research reports require file path + line range + code excerpt
-- **Primary Agents**: Mission-Architect, Specifier, Epic-Planner, Researcher, Planner, Implementor, Python-QA-Quick, Python-QA-Thorough all use `mode: primary` and can be invoked directly by users
+- **Primary Agents**: Mission-Architect, Specifier, Epic-Planner, Researcher, Planner, Implementation-Controller, Python-QA-Quick, Python-QA-Thorough, TypeScript-QA-Quick, TypeScript-QA-Thorough all use `mode: primary` and can be invoked directly by users
 - **QA Reports**: Use YYYY-MM-DD-[Target-Description].md format in `thoughts/shared/qa/`; target can be module name, feature name, or file path slug
-- **QA Workflow**: Python-QA agents write to `thoughts/shared/qa/` → QA-Planner converts to `thoughts/shared/plans/YYYY-MM-DD-QA-[Target].md` → Implementor executes fixes
+- **QA Workflow**: QA agents write to `thoughts/shared/qa/` → QA-Planner converts to `thoughts/shared/plans/YYYY-MM-DD-QA-[Target].md` → Implementation-Controller executes fixes
+- **Skills**: Domain-specific knowledge modules in `skills/[skill-name]/` with `SKILL.md` definition and `references/` documentation; use kebab-case for skill names
 
 ## Greenfield Workflow (Mission-Architect → Specifier → Epic-Planner → Researcher/Planner)
 
