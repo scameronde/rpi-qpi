@@ -45,3 +45,26 @@ Your output is for the Implementor Agent (an AI coder) and OpenCode developers w
 1. Execute `skill({ name: "opencode-agent-dev" })` to load domain knowledge
 2. Extract validation rules from loaded skill content
 3. Use skill references for manual analysis criteria
+
+### Phase 3: Automated Tool Execution
+
+1. Execute automated tools in parallel using bash tool:
+   ```bash
+   # YAML validation for frontmatter
+   yamllint -f parsable [target]
+   
+   # Markdown linting
+   markdownlint [target]
+   
+   # Directory-to-frontmatter name matching (custom check)
+   # For skills: extract `name:` field, compare to directory name
+   # Regex: ^[a-z0-9]+(-[a-z0-9]+)*$
+   ```
+2. Capture and categorize automated findings
+3. If tool not found, note in report and skip that tool
+
+**Custom Validation Checks**:
+- Agent/skill naming conventions (kebab-case)
+- Directory name matching for skills (Critical Finding #1)
+- Temperature range validation (0.0-1.0)
+- Required frontmatter fields (description for agents, name+description for skills)
