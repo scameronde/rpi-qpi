@@ -44,7 +44,7 @@ Claude 4.5-specific optimization techniques:
 - Token efficiency techniques
 - Multi-agent coordination patterns
 
-**Reference:** `references/claude-optimization.md`
+**Reference:** `references/claude-sonnet-4-5.md`
 
 ### 4. Prompt Engineering Techniques Reference
 General prompt engineering patterns:
@@ -140,7 +140,7 @@ metadata:
 All references are in the `references/` directory:
 - `skills-system.md` - Skills architecture and configuration
 - `agents-system.md` - Agent configuration and orchestration
-- `claude-optimization.md` - Claude 4.5-specific techniques
+- `claude-sonnet-4-5.md` - Claude 4.5-specific techniques
 - `prompt-engineering.md` - General prompt engineering patterns
 - `critical-findings.md` - Pitfalls and best practices
 
