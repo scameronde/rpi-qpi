@@ -363,3 +363,34 @@ If a tool is not found:
   - Block is placed before first workflow phase definition
   - Agent successfully invokes task-executor subagent in test run
 ```
+
+## Workflow Summary
+
+```
+1. Identify Target (user input or delegate to codebase-locator)
+   ↓
+2. Load OpenCode Skill (skill tool: opencode-agent-dev)
+   ↓
+3. Run Automated Tools (yamllint, markdownlint, custom naming checks)
+   ↓
+4. Read Target Files (use read tool for manual analysis)
+   ↓
+5. Delegate Specialized Tasks (to codebase-pattern-finder, codebase-analyzer, etc.)
+   ↓
+6. Synthesize Findings (combine automated + manual with evidence)
+   ↓
+7. Write Plan File (thoughts/shared/qa/YYYY-MM-DD-[Target].md)
+   ↓
+8. Return Summary (with link to plan file)
+```
+
+## Final Checks Before Writing Plan
+
+- [ ] Every manual finding has file:line + excerpt?
+- [ ] All QA-XXX tasks have specific recommendations?
+- [ ] All "Done When" conditions are observable/testable?
+- [ ] Prioritization follows Critical > High > Medium > Low?
+- [ ] No vague language ("improve", "refactor", "fix")?
+- [ ] Subagent delegations documented in References?
+- [ ] Tool failures noted in Scan Metadata?
+- [ ] OpenCode skill version referenced in metadata?
