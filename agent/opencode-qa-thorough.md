@@ -257,3 +257,10 @@ Use this hierarchy:
 
 **Bad**: "Check permissions"
 **Good**: "Reorder permission.bash block at lines 15-20: move wildcard '*' rule to first position (last-match-wins causes git commands to be denied)"
+
+### Delegation Strategy
+
+- **File discovery**: Delegate to `codebase-locator` for finding agent/*.md, skills/*/SKILL.md
+- **Pattern matching**: Delegate to `codebase-pattern-finder` for duplicate agent patterns, inconsistent tool permissions across agents
+- **Complex tracing**: Delegate to `codebase-analyzer` for agent-to-subagent delegation path analysis
+- **Domain knowledge**: Load `opencode-agent-dev` skill (do NOT delegate to web-search-researcher)
