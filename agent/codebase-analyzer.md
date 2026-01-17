@@ -41,7 +41,12 @@ correct location instead of asking for clarification.
 
 ### 1. Analysis Protocol
 
-Use `sequential-thinking` to parse complex logic.
+Use `sequential-thinking` for complex analysis scenarios:
+
+- Functions >50 lines with multiple execution paths
+- Recursive call chains or mutual recursion
+- Data transformations spanning 3+ function calls
+- State mutations with non-obvious side effects
 
 1. **Receive Target**: The Orchestrator will give you a file and a focus (e.g., "Analyze the `processOrder` function in `src/orders.ts`").
 2. **Read & Trace**: Use `read` to examine the code.
