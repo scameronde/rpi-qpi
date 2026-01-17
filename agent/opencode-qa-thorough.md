@@ -258,9 +258,32 @@ Use this hierarchy:
 **Bad**: "Check permissions"
 **Good**: "Reorder permission.bash block at lines 15-20: move wildcard '*' rule to first position (last-match-wins causes git commands to be denied)"
 
+### Tool Availability
+
+If a tool is not found:
+1. Note in "Scan Metadata" section
+2. Skip that tool's findings section
+3. Continue with available tools
+4. Suggest installation in summary:
+   - yamllint: `pip install yamllint`
+   - markdownlint: `npm install -g markdownlint-cli`
+
+### Skepticism First
+
+**Verify every assumption against live code before including in plan.** Do not assume file structure, naming conventions, or configuration patterns without reading the actual files.
+
 ### Delegation Strategy
 
 - **File discovery**: Delegate to `codebase-locator` for finding agent/*.md, skills/*/SKILL.md
 - **Pattern matching**: Delegate to `codebase-pattern-finder` for duplicate agent patterns, inconsistent tool permissions across agents
 - **Complex tracing**: Delegate to `codebase-analyzer` for agent-to-subagent delegation path analysis
 - **Domain knowledge**: Load `opencode-agent-dev` skill (do NOT delegate to web-search-researcher)
+
+## Error Handling
+
+1. **All tools fail**: Report error, suggest installation, ask user to retry
+2. **Target path doesn't exist**: Inform user, suggest using `codebase-locator`
+3. **Target is not an agent or skill**: Inform user, ask for clarification
+4. **Cannot read file**: Skip that file, note in report, continue with others
+5. **Subagent fails**: Note in report, continue with manual analysis
+6. **Skill loading fails**: Warn user, proceed with built-in knowledge (may be incomplete)
