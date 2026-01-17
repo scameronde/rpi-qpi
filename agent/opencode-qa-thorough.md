@@ -129,3 +129,102 @@ Your output is for the Implementor Agent (an AI coder) and OpenCode developers w
    - For agents: Use agent filename (e.g., `2026-01-17-Planner-Agent.md`)
    - For skills: Use skill name (e.g., `2026-01-17-OpenCode-Skill.md`)
 3. Return summary with link to plan file
+
+## Plan File Structure
+
+Write to `thoughts/shared/qa/YYYY-MM-DD-[Target].md` using this exact template:
+
+````markdown
+```markdown
+# OpenCode QA Analysis: [Target]
+
+## Scan Metadata
+- Date: YYYY-MM-DD
+- Target: [path]
+- Auditor: opencode-qa-thorough
+- Tools: yamllint, markdownlint, manual analysis, opencode-agent-dev skill
+
+## Executive Summary
+- **Overall Status**: [Pass/Conditional Pass/Fail]
+- **Critical Issues**: [count]
+- **High Priority**: [count]
+- **Improvement Opportunities**: [count]
+
+## Automated Tool Findings
+
+### 📋 YAML Validation (yamllint)
+- **Status**: [PASSED/FAILED]
+- **Errors**: [count]
+
+#### Issues
+[List of YAML syntax/schema errors with file:line references]
+
+### 📝 Markdown Linting (markdownlint)
+- **Status**: [PASSED/FAILED]
+- **Warnings**: [count]
+
+#### Issues
+[List of Markdown formatting issues with file:line references]
+
+### 🏷️ Naming Conventions
+- **Status**: [PASSED/FAILED]
+- **Violations**: [count]
+
+#### Issues
+[List of naming convention violations (kebab-case, directory matching)]
+
+## Manual Quality Analysis
+
+### 📖 Agent/Skill Clarity Issues
+
+For each issue:
+- **Issue:** [Description]
+- **Evidence:** `path/to/file.md:line-line`
+- **Excerpt:** 
+  ```yaml or markdown
+  [3-6 lines of code]
+  ```
+
+### 🔧 Configuration Correctness Issues
+[Evidence-based findings with file:line:excerpt]
+
+### 🎯 Functional Validation Issues
+[Evidence-based findings with file:line:excerpt]
+
+## Improvement Plan (For Implementor)
+
+### QA-001: [Issue Title]
+- **Priority**: Critical/High/Medium/Low
+- **Category**: Configuration/Clarity/Validation
+- **File(s)**: `path/to/file.md:line-line`
+- **Issue**: [Detailed description]
+- **Evidence**: 
+  ```yaml or markdown
+  [Excerpt from file or tool output]
+  ```
+- **Recommendation**: [Specific action to take - NO VAGUE INSTRUCTIONS]
+- **Done When**: [Observable condition]
+
+[Repeat for each issue]
+
+## Acceptance Criteria
+- [ ] All critical configuration errors resolved
+- [ ] All YAML validation errors fixed
+- [ ] Directory names match frontmatter name fields (skills)
+- [ ] Tool permissions align with agent responsibilities
+- [ ] Temperature settings appropriate for task types
+- [ ] [Additional criteria based on findings]
+
+## Implementor Checklist
+- [ ] QA-001: [Short title]
+- [ ] QA-002: [Short title]
+[etc.]
+
+## References
+- yamllint output: [summary]
+- markdownlint output: [summary]
+- OpenCode skill: opencode-agent-dev (version X.X)
+- Files analyzed: [list]
+- Subagents used: [list with tasks delegated]
+```
+````
