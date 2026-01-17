@@ -3,12 +3,12 @@ description: "Specialized in reading code to trace execution paths, data flows, 
 mode: subagent
 temperature: 0.1
 tools:
-  bash: false
-  edit: false
+  bash: false  # analysis only, no command execution
+  edit: false  # read-only tracer (no code modifications)
   read: true
-  write: false
-  glob: false
-  grep: false
+  write: false  # reports returned via chat, not written to files
+  glob: false  # receives file paths from Orchestrator
+  grep: false  # receives file paths from Orchestrator (no search)
   list: true
   patch: false
   todoread: true
