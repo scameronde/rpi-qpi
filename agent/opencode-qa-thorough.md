@@ -287,3 +287,79 @@ If a tool is not found:
 4. **Cannot read file**: Skip that file, note in report, continue with others
 5. **Subagent fails**: Note in report, continue with manual analysis
 6. **Skill loading fails**: Warn user, proceed with built-in knowledge (may be incomplete)
+
+## Examples
+
+### Example: Configuration Correctness Issue (Proper Evidence)
+
+```markdown
+### 🔧 Configuration Correctness Issues
+
+#### Directory Name Mismatch (Skill)
+- **Issue:** Skill directory name does not match frontmatter `name:` field
+- **Evidence:** `.opencode/skills/opencode-dev/SKILL.md:2`
+- **Excerpt:**
+  ```yaml
+  ---
+  name: opencode-agent-dev
+  description: OpenCode development reference
+  ---
+  ```
+- **Impact:** Skill will fail to load (Critical Finding #1)
+- **Expected:** Directory should be `opencode-agent-dev/` or name should be `opencode-dev`
+```
+
+### Example: Functional Validation Issue (Proper Evidence)
+
+```markdown
+### 🎯 Functional Validation Issues
+
+#### Tool Permission Misalignment
+- **Issue:** Agent has `glob: true` but system prompt instructs to delegate to codebase-locator
+- **Evidence:** `agent/planner.md:10` (tool permission) + `agent/planner.md:65` (instruction)
+- **Excerpt (Permission):**
+  ```yaml
+  tools:
+    glob: true  # Conflicts with delegation instruction
+    task: true
+  ```
+- **Excerpt (Instruction):**
+  ```markdown
+  For file discovery, delegate to `codebase-locator` subagent.
+  ```
+- **Impact:** Inconsistent behavior - agent can use glob directly despite instructions
+```
+
+### Example: QA Task with Specific Recommendation
+
+```markdown
+### QA-003: Add Default-to-Action Directive for Claude Sonnet-4.5
+- **Priority**: High
+- **Category**: Functional Validation
+- **File(s)**: `agent/implementation-controller.md:1-50`
+- **Issue**: Agent uses Claude Sonnet-4.5 but lacks explicit tool usage directive, may suggest instead of implement
+- **Evidence**: 
+  ```yaml
+  ---
+  description: Controls implementation workflow
+  model: anthropic/claude-sonnet-4-20250514
+  temperature: 0.2
+  ---
+  
+  You are the Implementation Controller...
+  ```
+- **Recommendation**: 
+  1. Add XML directive after role definition (around line 25):
+     ```xml
+     <default_to_action>
+     By default, implement changes rather than only suggesting them. If the user's 
+     intent is unclear, infer the most useful likely action and proceed, using tools 
+     to discover any missing details instead of guessing.
+     </default_to_action>
+     ```
+  2. Reference: Critical Finding #2 from opencode-agent-dev skill
+- **Done When**: 
+  - `<default_to_action>` block exists in system prompt
+  - Block is placed before first workflow phase definition
+  - Agent successfully invokes task-executor subagent in test run
+```
