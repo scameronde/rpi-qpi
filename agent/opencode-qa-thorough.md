@@ -36,13 +36,13 @@ Your output is for the Implementor Agent (an AI coder) and OpenCode developers w
 
 ### Phase 1: Target Identification
 
-1. If user provides explicit path (e.g., `agent/planner.md` or `skills/opencode-agent-dev/`), use it
+1. If user provides explicit path (e.g., `agent/planner.md` or `skills/opencode/`), use it
 2. If no path provided, delegate to `codebase-locator` to find agent/*.md or skills/*/SKILL.md files
 3. If analyzing recent changes, use `git diff --name-only` to identify scope
 
 ### Phase 2: Load OpenCode Skill
 
-1. Execute `skill({ name: "opencode-agent-dev" })` to load domain knowledge
+1. Execute `skill({ name: "opencode" })` to load domain knowledge
 2. Extract validation rules from loaded skill content
 3. Use skill references for manual analysis criteria
 
@@ -142,7 +142,7 @@ Write to `thoughts/shared/qa/YYYY-MM-DD-[Target].md` using this exact template:
 - Date: YYYY-MM-DD
 - Target: [path]
 - Auditor: opencode-qa-thorough
-- Tools: yamllint, markdownlint, manual analysis, opencode-agent-dev skill
+- Tools: yamllint, markdownlint, manual analysis, opencode skill
 
 ## Executive Summary
 - **Overall Status**: [Pass/Conditional Pass/Fail]
@@ -223,7 +223,7 @@ For each issue:
 ## References
 - yamllint output: [summary]
 - markdownlint output: [summary]
-- OpenCode skill: opencode-agent-dev (version X.X)
+- OpenCode skill: opencode (version X.X)
 - Files analyzed: [list]
 - Subagents used: [list with tasks delegated]
 ```
@@ -277,7 +277,7 @@ If a tool is not found:
 - **File discovery**: Delegate to `codebase-locator` for finding agent/*.md, skills/*/SKILL.md
 - **Pattern matching**: Delegate to `codebase-pattern-finder` for duplicate agent patterns, inconsistent tool permissions across agents
 - **Complex tracing**: Delegate to `codebase-analyzer` for agent-to-subagent delegation path analysis
-- **Domain knowledge**: Load `opencode-agent-dev` skill (do NOT delegate to web-search-researcher)
+- **Domain knowledge**: Load `opencode` skill (do NOT delegate to web-search-researcher)
 
 ## Error Handling
 
@@ -301,12 +301,12 @@ If a tool is not found:
 - **Excerpt:**
   ```yaml
   ---
-  name: opencode-agent-dev
+  name: opencode
   description: OpenCode development reference
   ---
   ```
 - **Impact:** Skill will fail to load (Critical Finding #1)
-- **Expected:** Directory should be `opencode-agent-dev/` or name should be `opencode-dev`
+- **Expected:** Directory should be `opencode/` or name should be `opencode-dev`
 ```
 
 ### Example: Functional Validation Issue (Proper Evidence)
@@ -357,7 +357,7 @@ If a tool is not found:
      to discover any missing details instead of guessing.
      </default_to_action>
      ```
-  2. Reference: Critical Finding #2 from opencode-agent-dev skill
+  2. Reference: Critical Finding #2 from opencode skill
 - **Done When**: 
   - `<default_to_action>` block exists in system prompt
   - Block is placed before first workflow phase definition
@@ -369,7 +369,7 @@ If a tool is not found:
 ```
 1. Identify Target (user input or delegate to codebase-locator)
    ↓
-2. Load OpenCode Skill (skill tool: opencode-agent-dev)
+2. Load OpenCode Skill (skill tool: opencode)
    ↓
 3. Run Automated Tools (yamllint, markdownlint, custom naming checks)
    ↓
