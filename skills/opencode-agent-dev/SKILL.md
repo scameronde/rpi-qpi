@@ -91,6 +91,12 @@ Question: How do I optimize prompts for Claude Sonnet-4.5?
 
 skills_opencode_agent_dev
 Question: What are the required fields in SKILL.md metadata?
+
+skills_opencode_agent_dev
+Question: How do I create a new skill for OpenCode?
+
+skills_opencode_agent_dev
+Question: How do I reduce context usage for long-horizon tasks?
 ```
 
 ## Quick Reference
