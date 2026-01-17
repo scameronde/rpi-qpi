@@ -144,3 +144,58 @@ All references are in the `references/` directory:
 - **thoughts/shared/**: Mission statements, specifications, epics, research, and plans
 - **agent/*.md**: Agent definitions in the project
 - **tool/*.ts**: Custom tool implementations
+
+## Known Limitations and Open Questions
+
+This section documents research limitations and unverified claims identified during skill development. These represent gaps in official documentation or areas requiring empirical validation.
+
+### Temperature Parameter for Claude Sonnet-4.5
+
+**Status**: ⚠️ **Not Found in Official Documentation**
+
+**Attempted**:
+- Searched official Anthropic documentation
+- Searched Claude API reference
+- Searched community resources
+
+**Finding**: No specific temperature guidance found for Claude Sonnet-4.5. Anthropic emphasizes prompt engineering over sampling parameters.
+
+**Recommended Approach**:
+- Use default (not specified) for most tasks
+- Test empirically: `temperature=0` for deterministic coding, `0.7-1.0` for creative tasks
+- Contact Anthropic support for official recommendations
+
+**Evidence Missing**: Specific temperature value recommendations from official sources
+
+### Evaluation Frameworks for Prompt Optimization
+
+**Status**: ⚠️ **Limited Public Information**
+
+**Attempted**:
+- Searched for LLM evaluation frameworks
+- Searched for prompt testing methodologies
+- SearxNG returned no results
+
+**Finding**: Most evaluation tooling is proprietary/closed-source. Academic focus is on techniques, not measurement.
+
+**Known Tools** (mentioned but not verified):
+- **Evals** (OpenAI internal framework, partially open-sourced)
+- **BrainTrust** (mentioned in searches, no detailed docs)
+- **LangSmith** (LangChain ecosystem)
+- **Promptfoo** (open-source, mentioned but not fetched)
+
+**Evidence Missing**: Comprehensive evaluation framework documentation, best practices for measuring prompt effectiveness
+
+### Skill Base Directory Context Delivery
+
+**Status**: ⚠️ **Plugin-Specific Feature**
+
+**Attempted**:
+- Verified official OpenCode documentation (no mention)
+- Found in third-party `opencode-skills` plugin documentation
+
+**Finding**: "Base directory for this skill: {path}" message injection is a **plugin-specific feature**, not guaranteed in native OpenCode implementation.
+
+**Source**: `https://deepwiki.com/malhashemi/opencode-skills/2.2-creating-your-first-skill` (third-party plugin)
+
+**Evidence Missing**: Confirmation from official OpenCode docs on how skill base directory is communicated to agents
