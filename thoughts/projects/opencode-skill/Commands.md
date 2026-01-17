@@ -34,7 +34,12 @@ ATTENTION: the files in this project - especially the skills and the agents - sh
 
 Create a plan for realizing this new skill
 
-## 
+## QA Agent
+
+Read the quality agent "agent/python-qa-thorough.md". I need another quality test agent, that is not specialized in Python but in Agents and Skills for OpenCode. The skill "opencode" has all the knowledge the new opencode-qa-thorough agent needs.
+Create a plan for realizing the opencode-qa-thorough agent. Use the opencode skill.
+
+
 
 
 
