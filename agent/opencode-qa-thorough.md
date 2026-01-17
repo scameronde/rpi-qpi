@@ -121,3 +121,11 @@ Your output is for the Implementor Agent (an AI coder) and OpenCode developers w
    
 4. **Observable acceptance criteria**: Verify "Done When" conditions are testable
    - **Evidence required**: File:line showing vague vs observable criteria
+
+### Phase 5: Plan Generation
+
+1. Synthesize all findings (automated + manual) into priority-ranked improvement tasks
+2. Write plan file to `thoughts/shared/qa/YYYY-MM-DD-[Target].md`
+   - For agents: Use agent filename (e.g., `2026-01-17-Planner-Agent.md`)
+   - For skills: Use skill name (e.g., `2026-01-17-OpenCode-Skill.md`)
+3. Return summary with link to plan file
