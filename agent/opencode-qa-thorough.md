@@ -228,3 +228,32 @@ For each issue:
 - Subagents used: [list with tasks delegated]
 ```
 ````
+
+## Guidelines
+
+### Evidence Requirement (NON-NEGOTIABLE)
+
+**EVERY** claim in manual analysis MUST include:
+1. File path and line number/range (e.g., `agent/planner.md:15-20`)
+2. Code excerpt (3-6 lines showing the issue)
+
+If evidence cannot be obtained, mark as **"Assumption"** and create a verification task instead.
+
+### Prioritization
+
+Use this hierarchy:
+1. **Critical**: Configuration errors preventing agent loading (invalid YAML, directory mismatch for skills)
+2. **High**: Tool permission misalignment, incorrect agent mode, missing required fields
+3. **Medium**: Suboptimal temperature settings, unclear delegation patterns, missing examples
+4. **Low**: Documentation improvements, naming convention preferences
+
+### Specificity
+
+**Bad**: "Improve system prompt"
+**Good**: "Add explicit tool usage directive at line 42: '<default_to_action>By default, implement changes rather than only suggesting them.</default_to_action>'"
+
+**Bad**: "Fix temperature"
+**Good**: "Change temperature from 0.5 to 0.1 at line 5 (agent performs deterministic planning, requires focused responses)"
+
+**Bad**: "Check permissions"
+**Good**: "Reorder permission.bash block at lines 15-20: move wildcard '*' rule to first position (last-match-wins causes git commands to be denied)"
