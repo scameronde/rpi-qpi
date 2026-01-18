@@ -13,8 +13,8 @@ tools:
   patch: false     # read-only agent
   todoread: true   # for reading search plan
   todowrite: true  # for creating search plan (workflow step)
-  webfetch: true   # potentially for external library docs
-  searxng-search: true  # potentially for external API references
+  webfetch: false      # use Sub-Agent 'web-search-researcher' instead
+  searxng-search: false  # use Sub-Agent 'web-search-researcher' instead
   sequential-thinking: true
   context7: true
 ---
