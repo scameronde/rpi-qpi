@@ -39,6 +39,57 @@ Your output is for developers who need fast feedback on code quality issues.
 - If no path provided, delegate to `codebase-locator` to find Python files
 - If analyzing recent changes, use `git diff --name-only` to identify modified Python files
 
+## Delegating to codebase-locator for Test Files
+
+When finding test files for coverage analysis, use `tests_only` scope to receive only test file paths:
+
+### Delegation Pattern
+
+```
+task({
+  subagent_type: "codebase-locator",
+  description: "Find Python test files",
+  prompt: "Find test files for src/auth/login.py. Search scope: tests_only"
+})
+```
+
+### Benefits
+
+- **Token savings**: ~76% reduction vs comprehensive output
+- **Faster response**: Only relevant section returned
+- **Clear intent**: Explicitly requests test coordinates
+
+### Expected Response Format
+
+The locator will return YAML frontmatter + thinking + answer with only Testing Coordinates section:
+
+```markdown
+---
+message_id: locator-2026-01-18-001
+search_scope: tests_only
+files_found: 2
+---
+
+<thinking>
+[Search strategy]
+</thinking>
+
+<answer>
+## Coordinates: Python Test Files
+
+### Testing Coordinates
+- `tests/unit/test_auth.py`
+- `tests/integration/test_login.py`
+</answer>
+```
+
+### Parsing the Response
+
+1. Extract frontmatter to verify `search_scope: tests_only` was applied
+2. Check `files_found` count to know how many test files exist
+3. Parse `<answer>` section for test file paths
+4. Ignore `<thinking>` section (can be stripped for token optimization)
+
 ### 2. Execute Analysis Tools (in parallel)
 
 Run the following commands using the bash tool:

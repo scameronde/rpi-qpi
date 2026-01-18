@@ -170,6 +170,57 @@ task({
 
 **Token savings**: Using `execution_only` depth returns ~250 tokens instead of ~800 tokens (saves ~70% compared to full comprehensive analysis).
 
+## Delegating to codebase-locator for Test Files
+
+When finding test files for coverage analysis, use `tests_only` scope to receive only test file paths:
+
+### Delegation Pattern
+
+```
+task({
+  subagent_type: "codebase-locator",
+  description: "Find TypeScript test files",
+  prompt: "Find test files for src/auth/login.ts. Search scope: tests_only"
+})
+```
+
+### Benefits
+
+- **Token savings**: ~76% reduction vs comprehensive output
+- **Faster response**: Only relevant section returned
+- **Clear intent**: Explicitly requests test coordinates
+
+### Expected Response Format
+
+The locator will return YAML frontmatter + thinking + answer with only Testing Coordinates section:
+
+```markdown
+---
+message_id: locator-2026-01-18-001
+search_scope: tests_only
+files_found: 2
+---
+
+<thinking>
+[Search strategy]
+</thinking>
+
+<answer>
+## Coordinates: TypeScript Test Files
+
+### Testing Coordinates
+- `tests/unit/auth.test.ts`
+- `tests/integration/login.spec.ts`
+</answer>
+```
+
+### Parsing the Response
+
+1. Extract frontmatter to verify `search_scope: tests_only` was applied
+2. Check `files_found` count to know how many test files exist
+3. Parse `<answer>` section for test file paths
+4. Ignore `<thinking>` section (can be stripped for token optimization)
+
 ### Phase 5: Plan Generation
 
 1. Synthesize all findings (automated + manual) into priority-ranked improvement tasks

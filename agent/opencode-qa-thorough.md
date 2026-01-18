@@ -40,6 +40,45 @@ Your output is for the Implementor Agent (an AI coder) and OpenCode developers w
 2. If no path provided, delegate to `codebase-locator` to find agent/*.md or skills/*/SKILL.md files
 3. If analyzing recent changes, use `git diff --name-only` to identify scope
 
+## Delegating to codebase-locator for Agent/Skill Files
+
+When finding agent or skill definition files, use `paths_only` scope:
+
+### Delegation Pattern
+
+```
+task({
+  subagent_type: "codebase-locator",
+  description: "Find OpenCode agent definitions",
+  prompt: "Find agent/*.md files. Search scope: paths_only"
+})
+```
+
+### Benefits
+
+- **Token savings**: ~70% reduction vs comprehensive output
+- **Targeted results**: Only Primary Implementation section (agent/skill files)
+- **No unnecessary sections**: Skips config, tests, directory structure
+
+### Expected Response
+
+```markdown
+---
+search_scope: paths_only
+files_found: 15
+---
+
+<answer>
+## Coordinates: Agent Definitions
+
+### Primary Implementation
+- `agent/researcher.md`
+- `agent/planner.md`
+- `agent/python-qa-thorough.md`
+[...]
+</answer>
+```
+
 ### Phase 2: Load OpenCode Skill
 
 1. Execute `skill({ name: "opencode" })` to load domain knowledge

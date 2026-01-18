@@ -57,6 +57,76 @@ Your goal is to produce a **Factual Foundation** so the Planner can design solut
 - If a sub-agent does not provide those three, you must request a more specific result or mark as Unverified.
 - Use `bash` only if absolutely required to locate files AND only after asking permission.
 
+## Delegating to codebase-locator
+
+When delegating file discovery to map codebase structure, use `comprehensive` scope:
+
+### Delegation Pattern
+
+```
+task({
+  subagent_type: "codebase-locator",
+  description: "Map authentication system structure",
+  prompt: "Find all files related to authentication system. Search scope: comprehensive. Correlation: research-auth-2026-01-18"
+})
+```
+
+### Benefits of Comprehensive Scope
+
+- **Complete topology**: All 4 sections (implementation, config, tests, directory structure)
+- **Entry point detection**: Role metadata identifies primary vs secondary files
+- **Configuration awareness**: Related config files discovered
+- **Test coverage insight**: Test files included for coverage analysis
+
+### Expected Response Format
+
+The locator returns YAML frontmatter + thinking + answer with all sections:
+
+```markdown
+---
+message_id: locator-2026-01-18-001
+correlation_id: research-auth-2026-01-18
+search_scope: comprehensive
+files_found: 7
+---
+
+<thinking>
+Search strategy for authentication system:
+- Used glob pattern: src/**/*auth*.ts
+- Found 12 matches, filtered to 2 primary files
+- Identified entry point via read (AuthService.ts has 5 exports)
+- Found config in config/auth.yaml
+- Found 3 test files
+</thinking>
+
+<answer>
+## Coordinates: Authentication System
+
+### Primary Implementation
+- `src/features/auth/AuthService.ts` [entry-point, exports: 5]
+- `src/features/auth/AuthController.ts` [secondary, exports: 3]
+
+### Related Configuration
+- `config/auth.yaml` [config]
+
+### Testing Coordinates
+- `tests/integration/auth.spec.ts`
+
+### Directory Structure
+`src/features/auth/` contains:
+- 5 TypeScript files
+- 1 Sub-directory (`strategies/`)
+</answer>
+```
+
+### Parsing the Response for Research Report
+
+1. **Frontmatter**: Use correlation_id to track which research task this responds to
+2. **Thinking**: Include in research notes if search strategy is relevant to findings
+3. **Answer**: Extract all 4 sections for complete coverage map
+4. **Role metadata**: Use [entry-point] tags to identify files for deeper analysis with codebase-analyzer
+5. **Files count**: Use files_found to validate completeness
+
 ## Delegating to codebase-analyzer
 
 The **codebase-analyzer** sub-agent provides deep technical analysis of code components. When delegating to this sub-agent, you must specify:
