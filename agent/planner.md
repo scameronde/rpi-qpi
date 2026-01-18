@@ -237,6 +237,30 @@ const user = await UserService.find(input.userId);
 
 This eliminates the need to re-read files for evidence collection after receiving the analysis.
 
+## Delegating to codebase-pattern-finder for Convention Research
+
+Before planning new code, research established conventions to ensure consistency:
+
+Example:
+```
+task({
+  subagent_type: "codebase-pattern-finder",
+  description: "Find transaction patterns",
+  prompt: "Find all database transaction patterns to identify established convention. Analysis correlation: planning-transaction-impl"
+})
+```
+
+Expected response:
+- **YAML frontmatter**: Search metadata for validation
+- **<thinking>**: Search strategy (inspect if unsure about completeness)
+- **<answer>**: 
+  - Multiple variations with code examples
+  - **Distribution Notes**: Use this to identify the dominant pattern
+    - Example: "Variation 1 is used in 80% of src/" = follow Variation 1 for consistency
+    - Example: "Variation 2 is limited to src/legacy" = avoid Variation 2 for new code
+
+Use the quantified frequency metrics (e.g., "Dominant (10/12 files, 83%)") to make data-driven decisions about which pattern to follow.
+
 ## Execution Protocol
 
 ### Phase 1: Context & Ingestion (MANDATORY)

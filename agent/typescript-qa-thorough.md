@@ -221,6 +221,29 @@ files_found: 2
 3. Parse `<answer>` section for test file paths
 4. Ignore `<thinking>` section (can be stripped for token optimization)
 
+## Delegating to codebase-pattern-finder for Code Duplication
+
+When searching for duplicate code patterns (required evidence per line 81):
+
+Example:
+```
+task({
+  subagent_type: "codebase-pattern-finder",
+  description: "Find duplicate hooks",
+  prompt: "Find duplicate React hook patterns across src/hooks/. Analysis correlation: qa-duplication-check"
+})
+```
+
+Expected response:
+- **YAML frontmatter**: 
+  - `variations_total` indicates how many duplicates found
+  - `files_matched` shows scope of duplication
+- **<answer>**: 
+  - Each variation includes file:line location and code excerpt (matches required evidence format from line 81)
+  - Multiple variations = code duplication detected
+
+Use the Location and Frequency fields to create duplication findings with proper evidence.
+
 ### Phase 5: Plan Generation
 
 1. Synthesize all findings (automated + manual) into priority-ranked improvement tasks

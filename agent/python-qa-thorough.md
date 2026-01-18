@@ -74,7 +74,7 @@ Read each target Python file using the `read` tool and assess:
 
 #### b. Maintainability Checks
 
-1. **Code duplication**: Delegate to `codebase-pattern-finder` for similarity search
+1. **Code duplication**: Delegate to `codebase-pattern-finder` for similarity search (see delegation section below)
    - **Evidence required**: File:line pairs with duplicate code excerpts
    
 2. **Magic numbers**: Numeric literals outside constants/enums
@@ -179,6 +179,29 @@ task({
 - Return points and error handling
 
 **Token savings**: Using `execution_only` depth returns ~250 tokens instead of ~800 tokens (saves ~70% compared to full comprehensive analysis).
+
+## Delegating to codebase-pattern-finder for Code Duplication
+
+When searching for duplicate code patterns (required evidence per line 77):
+
+Example:
+```
+task({
+  subagent_type: "codebase-pattern-finder",
+  description: "Find duplicate validation logic",
+  prompt: "Find duplicate validation logic patterns across src/validators/. Analysis correlation: qa-duplication-check"
+})
+```
+
+Expected response:
+- **YAML frontmatter**: 
+  - `variations_total` indicates how many duplicates found
+  - `files_matched` shows scope of duplication
+- **<answer>**: 
+  - Each variation includes file:line location and code excerpt (matches required evidence format from line 77)
+  - Multiple variations = code duplication detected
+
+Use the Location and Frequency fields to create duplication findings with proper evidence.
 
 ### Phase 5: Plan Generation
 

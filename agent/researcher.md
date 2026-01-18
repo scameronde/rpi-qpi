@@ -159,6 +159,35 @@ The codebase-analyzer will return a structured analysis containing:
 
 **Important:** The codebase-analyzer provides excerpts directly in its response. You do NOT need to re-read files to obtain excerpts—extract them from the sub-agent's analysis and include them in your research report with proper attribution (file:line-line).
 
+## Delegating to codebase-pattern-finder
+
+When delegating pattern search, provide:
+1. Specific pattern or concept name (e.g., "pagination", "error handling")
+2. Optional scope hint (e.g., "in React components", "in src/api/")
+3. Correlation ID for tracking multi-step workflows
+
+Example:
+```
+task({
+  subagent_type: "codebase-pattern-finder",
+  description: "Find pagination patterns",
+  prompt: "Find all pagination implementation patterns in React components. Analysis correlation: research-ui-patterns-2026-01-18"
+})
+```
+
+Expected response format:
+- **YAML frontmatter**: correlation_id, search metadata (patterns_found, variations_total, files_matched, files_scanned, search_keywords)
+  - Use metadata to validate search completeness (e.g., "Only 5 files_scanned - seems incomplete")
+- **<thinking> section**: Search strategy, grep commands, match counts
+  - Inspect if results seem incomplete or unexpected
+  - Example: "Why didn't it find pattern X in directory Y?"
+- **<answer> section**: 
+  - Pattern heading
+  - N variations (each with location, frequency, code snippet, context)
+  - Distribution Notes (standard vs legacy usage statistics)
+
+When passing findings to downstream agents, strip `<thinking>` section to reduce tokens.
+
 ## Execution Protocol
 
 ### Phase 1: Context & Mapping

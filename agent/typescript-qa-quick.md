@@ -90,6 +90,10 @@ files_found: 2
 3. Parse `<answer>` section for test file paths
 4. Ignore `<thinking>` section (can be stripped for token optimization)
 
+## Pattern Search
+
+Use `codebase-pattern-finder` subagent for pattern search (grep is disabled). See typescript-qa-thorough agent for detailed delegation examples. Typical use: finding duplicate code patterns with file:line evidence.
+
 ### 2. Execute Analysis Tools (in parallel)
 
 Run the following commands using the bash tool:

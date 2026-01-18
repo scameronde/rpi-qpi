@@ -314,9 +314,26 @@ If a tool is not found:
 ### Delegation Strategy
 
 - **File discovery**: Delegate to `codebase-locator` for finding agent/*.md, skills/*/SKILL.md
-- **Pattern matching**: Delegate to `codebase-pattern-finder` for duplicate agent patterns, inconsistent tool permissions across agents
 - **Complex tracing**: Delegate to `codebase-analyzer` for agent-to-subagent delegation path analysis
 - **Domain knowledge**: Load `opencode` skill (do NOT delegate to web-search-researcher)
+
+## Delegating to codebase-pattern-finder for Pattern Consistency Analysis
+
+When analyzing pattern consistency across agents (per line 278):
+
+Example:
+```
+task({
+  subagent_type: "codebase-pattern-finder",
+  description: "Find tool permission patterns",
+  prompt: "Find tool permission patterns across agent/*.md files to identify inconsistencies. Analysis correlation: qa-agent-consistency"
+})
+```
+
+Expected response:
+- Multiple variations = inconsistent approaches detected
+- Distribution Notes shows which pattern is standard vs outlier
+- Use frequency metrics to determine if inconsistency is intentional (e.g., "Rare (1/15 agents, 7%)") or widespread
 
 #### Delegation with execution_only Depth (Token Optimization)
 
