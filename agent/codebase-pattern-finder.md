@@ -71,14 +71,63 @@ grep -r "it('should.*validate" src/
 
 ## Output Format
 
-When returning findings to the Orchestrator, use this structure:
+When returning findings to the Orchestrator, use this structure with YAML frontmatter containing search metadata:
+
+### Required Metadata Fields
+
+Include these fields in YAML frontmatter at the start of your response:
+
+- **`message_id`**: Auto-generated identifier in format `pattern-YYYY-MM-DD-NNN` (e.g., `pattern-2026-01-18-001`)
+- **`correlation_id`**: Correlation ID passed from caller, or `"none"` if not provided
+- **`timestamp`**: Current time in ISO 8601 format (e.g., `2026-01-18T12:00:00Z`)
+- **`message_type`**: Always set to `"PATTERN_RESPONSE"`
+- **`finder_version`**: Version of this agent, currently `"1.1"`
+- **`query_topic`**: Short topic extracted from user query (e.g., `"pagination"`, `"authentication"`)
+- **`patterns_found`**: Count of distinct pattern concepts discovered (integer)
+- **`variations_total`**: Count of implementation variations across all patterns (integer)
+- **`files_matched`**: Count of files containing matching code (integer)
+- **`files_scanned`**: Count of total files searched (integer)
+- **`search_keywords`**: Array of search terms/patterns used (e.g., `["usePagination", "Paginator", "page="]`)
+
+### Template
 
 ```markdown
+---
+message_id: pattern-2026-01-18-001
+correlation_id: research-task-pagination
+timestamp: 2026-01-18T12:00:00Z
+message_type: PATTERN_RESPONSE
+finder_version: "1.1"
+query_topic: pagination
+patterns_found: 1
+variations_total: 2
+files_matched: 12
+files_scanned: 45
+search_keywords: ["usePagination", "Paginator", "page="]
+---
+
+<thinking>
+Search strategy for [topic]:
+- Planning phase: Identified keywords [list]
+- Scope: [directories], [file patterns]
+- Executed grep: `[command]`
+  - Found N matches across M files
+- Identified X distinct implementation patterns:
+  - Variation 1: [description] - Y files
+  - Variation 2: [description] - Z files
+- Read sample files to extract snippets:
+  - [file paths]
+- Found test file: [path] (if applicable)
+</thinking>
+
+<answer>
 ## Pattern: [Topic]
+
+**Note**: Frequency format is `N/M files (X%)` where N=files with this variation, M=total files with pattern, X=percentage. Optional semantic labels: Dominant (>70%), Common (30-70%), Rare (<30%).
 
 ### Variation 1: [Name/Context]
 **Location**: `src/path/to/file.ts:45-67`
-**Frequency**: [High/Low] (e.g., "Found in 12 files")
+**Frequency**: Dominant (10/12 files, 83%)
 
 ```typescript
 // Copy of the actual code
@@ -102,6 +151,7 @@ export class ExampleService {
 ### Distribution Notes
 - **Standard**: Variation 1 is used in 80% of `src/features`.
 - **Legacy**: Variation 2 is limited to `src/legacy`.
+</answer>
 ```
 
 ## Important Rules
