@@ -209,3 +209,63 @@ The implementation system uses a **two-agent architecture** to minimize LLM cont
 - **Git as Evidence**: Each task = one commit, git history becomes audit trail
 - **Single Source of Truth**: STATE file tracks progress, plan remains unchanged
 - **Scalability**: Future parallel task execution possible
+
+## Codebase-Analyzer Output Format and Depth Levels
+
+The codebase-analyzer subagent supports three analysis depth levels to optimize token usage:
+
+### Depth Levels
+
+1. **execution_only** (~250 tokens, 70% savings)
+   - Use case: QA agents needing testability analysis
+   - Sections: Execution Flow only (with code excerpts)
+
+2. **focused** (~350 tokens, 56% savings)
+   - Use case: Planner agents needing implementation context
+   - Sections: Execution Flow + Dependencies
+
+3. **comprehensive** (~950 tokens, complete analysis)
+   - Use case: Researcher agents needing full analysis
+   - Sections: All 4 (Execution Flow, Data Model, Dependencies, Edge Cases)
+
+### Output Structure
+
+All responses include:
+- YAML frontmatter (message_id, timestamp, target info, depth used)
+- `<thinking>` section (reasoning process)
+- `<answer>` section (structured findings with code excerpts)
+
+### Specifying Depth
+
+Include `Analysis depth: [level]` in the task prompt:
+
+```
+task({
+  subagent_type: "codebase-analyzer",
+  prompt: "Analyze processOrder in src/orders.ts. Analysis depth: focused."
+})
+```
+
+If not specified, defaults to `comprehensive`.
+
+### Token Efficiency
+
+Based on research (thoughts/shared/research/2026-01-18-Codebase-Analyzer-Agent-Communication.md):
+- QA workflows: -35% to -45% token usage
+- Planner workflows: -31% to -41% token usage
+- Researcher workflows: +13% tokens but eliminates duplicate file reads
+
+### Code Excerpts
+
+All execution steps include 1-6 line code excerpts in the exact format required by Researcher and Planner agents:
+
+```markdown
+* **Step 1**: Validates input (Line 12)
+  * **Excerpt:**
+    ```typescript
+    const result = schema.validate(input);
+    if (!result.success) throw new ValidationError();
+    ```
+```
+
+This eliminates the need for consumer agents to re-read files to extract excerpts.
