@@ -3,18 +3,18 @@ description: "Scans the codebase to identify usage patterns, idioms, and impleme
 mode: subagent
 temperature: 0.1
 tools:
-  bash: true
-  edit: false
-  read: true
-  write: false
-  glob: true
-  grep: true
+  bash: true       # for grep/find commands
+  edit: false      # read-only agent (no code modifications)
+  read: true       # CRITICAL for extracting code excerpts
+  write: false     # results returned via chat, not written to files
+  glob: true       # for file type discovery
+  grep: true       # for keyword search
   list: true
-  patch: false
-  todoread: true
-  todowrite: true
-  webfetch: true
-  searxng-search: true
+  patch: false     # read-only agent
+  todoread: true   # for reading search plan
+  todowrite: true  # for creating search plan (workflow step)
+  webfetch: true   # potentially for external library docs
+  searxng-search: true  # potentially for external API references
   sequential-thinking: true
   context7: true
 ---
