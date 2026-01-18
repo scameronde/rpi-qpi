@@ -1,5 +1,5 @@
 ---
-name: opencode-agent-dev
+name: opencode
 description: Comprehensive reference for OpenCode Skills and Agents systems, including Claude Sonnet-4.5 optimization techniques and prompt engineering best practices
 license: MIT
 allowed-tools:

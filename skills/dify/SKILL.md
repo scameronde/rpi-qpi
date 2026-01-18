@@ -1,5 +1,5 @@
 ---
-name: dify-reference
+name: dify
 description: Comprehensive technical reference for Dify bot development including node types, variable system, voice bot patterns, and architecture specifications
 license: MIT
 allowed-tools:
