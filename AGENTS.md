@@ -269,3 +269,96 @@ All execution steps include 1-6 line code excerpts in the exact format required 
 ```
 
 This eliminates the need for consumer agents to re-read files to extract excerpts.
+
+## Codebase-Locator Output Format and Scope Levels
+
+The codebase-locator subagent supports three scope levels to optimize token usage:
+
+### Scope Levels
+
+1. **tests_only** (~20 tokens, 76% savings)
+   - Use case: QA agents needing test file paths for coverage analysis
+   - Sections: Testing Coordinates only
+
+2. **paths_only** (~25 tokens, 70% savings)
+   - Use case: Targeted file discovery (agent/skill files, source files only)
+   - Sections: Primary Implementation only
+
+3. **comprehensive** (~83 tokens, complete topology)
+   - Use case: Researcher/Planner agents needing full system map
+   - Sections: All 4 (Primary Implementation, Related Configuration, Testing Coordinates, Directory Structure)
+
+### Output Structure
+
+All responses include:
+- YAML frontmatter (message_id, correlation_id, timestamp, search_scope, files_found, etc.)
+- `<thinking>` section (search strategy and reasoning)
+- `<answer>` section (structured findings with file paths)
+- Role metadata on file paths ([entry-point], [secondary], [config], [exports: N])
+
+### Specifying Scope
+
+Include `Search scope: [level]` in the task prompt:
+
+```
+task({
+  subagent_type: "codebase-locator",
+  description: "Find test files",
+  prompt: "Find test files for src/auth/login.py. Search scope: tests_only"
+})
+```
+
+If not specified, defaults to `comprehensive`.
+
+### Token Efficiency
+
+Based on research (thoughts/shared/research/2026-01-18-Codebase-Locator-Agent-Communication.md):
+- QA workflows: -76% token usage with tests_only scope
+- Targeted discovery: -70% token usage with paths_only scope
+- Researcher/Planner workflows: 0% change with comprehensive scope (but gains entry point detection and debugging)
+
+### Role Metadata
+
+File paths include role metadata to eliminate ambiguity:
+
+```markdown
+### Primary Implementation
+- `src/features/auth/AuthService.ts` [entry-point, exports: 5]
+- `src/features/auth/AuthController.ts` [secondary, exports: 3]
+
+### Related Configuration
+- `config/auth.yaml` [config]
+```
+
+This eliminates the need for follow-up queries to determine which file is the "main" entry point.
+
+### Complete Example (tests_only scope)
+
+```markdown
+---
+message_id: locator-2026-01-18-001
+correlation_id: qa-auth-coverage
+timestamp: 2026-01-18T14:30:00Z
+message_type: LOCATION_RESPONSE
+search_scope: tests_only
+locator_version: "1.1"
+query_topic: authentication test files
+files_found: 2
+directories_scanned: 1
+---
+
+<thinking>
+Search strategy for authentication test files:
+- Used glob pattern: tests/**/*auth*.spec.ts
+- Found 2 matches in tests/integration/
+- Scope: tests_only (returning Section 3 only)
+</thinking>
+
+<answer>
+## Coordinates: Authentication Tests
+
+### Testing Coordinates
+- `tests/integration/auth.spec.ts`
+- `tests/integration/auth-permissions.spec.ts`
+</answer>
+```
