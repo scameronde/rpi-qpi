@@ -85,7 +85,43 @@ Create clear text-based flows:
 
 Return your findings in this strict format:
 
+**First, generate a unique message_id using format `analysis-YYYY-MM-DD-NNN` where NNN is a sequential number starting from 001.**
+
+**Then, add YAML frontmatter with these metadata fields:**
+
+* `message_id`: The auto-generated identifier (format: analysis-YYYY-MM-DD-NNN)
+* `timestamp`: ISO 8601 timestamp of when analysis was completed
+* `message_type`: Fixed value "ANALYSIS_RESPONSE"
+* `analysis_depth`: The depth level used (execution_only/focused/comprehensive)
+* `target_file`: The file being analyzed
+* `target_component`: The function/class/component being analyzed
+
+**Then, document your reasoning process in a `<thinking>` section:**
+
+* **File Reading Strategy**: Which files you'll read and in what order
+* **Tracing Decisions**: How you'll follow function calls and imports
+* **Ambiguity Resolution**: Any unclear imports or paths and how you'll handle them
+* **Data Flow Mapping**: Your approach to tracking data transformations
+
+**Then, provide the analysis in an `<answer>` section:**
+
+For each execution step, include a 1-6 line code excerpt showing the actual implementation.
+
 ```markdown
+---
+message_id: analysis-YYYY-MM-DD-NNN
+timestamp: YYYY-MM-DDTHH:MM:SSZ
+message_type: ANALYSIS_RESPONSE
+analysis_depth: execution_only|focused|comprehensive
+target_file: path/to/analyzed/file.ts
+target_component: FunctionOrClassName
+---
+
+<thinking>
+[Document your analysis process here]
+</thinking>
+
+<answer>
 ## Logic Analysis: [Component Name]
 
 ### 1. Execution Flow
@@ -93,10 +129,28 @@ Return your findings in this strict format:
 **Entry Point**: `src/path/file.ts:LineNumber`
 
 * **Step 1**: Validates input using `schema.validate()` (Line 12).
+  **Excerpt:**
+  ```typescript
+  const result = schema.validate(input);
+  if (!result.success) throw new ValidationError();
+  ```
+
 * **Step 2**: Calls `UserService.find()` (Line 15).
     * *Trace*: `src/services/user.ts` -> functions returns Promise<User>.
+  **Excerpt:**
+  ```typescript
+  const user = await UserService.find(input.userId);
+  ```
+
 * **Step 3**: Transforms data (Line 20-25).
     * *Logic*: Maps `user.id` to `payload.owner_id`.
+  **Excerpt:**
+  ```typescript
+  const payload = {
+    owner_id: user.id,
+    amount: input.amount
+  };
+  ```
 
 ### 2. Data Model & State
 
@@ -113,6 +167,7 @@ Return your findings in this strict format:
 
 * Line 45: Returns `null` if user is inactive.
 * Line 55: `try/catch` block swallows API errors (Warning).
+</answer>
 ```
 
 ## Handling Missing Info
