@@ -1,8 +1,8 @@
 # State: Codebase-Analyzer Agent-to-Agent Communication Optimization
 
 **Plan**: thoughts/shared/plans/2026-01-18-Codebase-Analyzer-Communication-Optimization.md  
-**Current Task**: PLAN-006  
-**Completed Tasks**: PLAN-001, PLAN-002, PLAN-003, PLAN-004, PLAN-005
+**Current Task**: PLAN-011  
+**Completed Tasks**: PLAN-001, PLAN-002, PLAN-003, PLAN-004, PLAN-005, PLAN-006, PLAN-007, PLAN-008, PLAN-009, PLAN-010
 
 ## Quick Verification
 
@@ -37,7 +37,7 @@ grep "Section Inclusion Rules" agent/codebase-analyzer.md
 - Phases:
   - Phase 1: High-Impact Core Changes (PLAN-001 to PLAN-003) ✅ COMPLETE
   - Phase 2: Query-Specific Depth Support (PLAN-004 to PLAN-005) ✅ COMPLETE
-  - Phase 3: Consumer Agent Prompt Updates (PLAN-006 to PLAN-010)
+  - Phase 3: Consumer Agent Prompt Updates (PLAN-006 to PLAN-010) ✅ COMPLETE
   - Phase 4: Documentation and Verification (PLAN-011 to PLAN-012)
 - Research report: thoughts/shared/research/2026-01-18-Codebase-Analyzer-Agent-Communication.md
 - Token impact: -35% to -45% for QA workflows, -31% to -41% for Planner workflows
@@ -50,3 +50,10 @@ grep "Section Inclusion Rules" agent/codebase-analyzer.md
 ## Phase 2 Completion Summary
 - PLAN-004: Added "Analysis Depth Levels" section documenting execution_only, focused, comprehensive
 - PLAN-005: Made template sections conditional based on depth (Section Inclusion Rules + conditional markers in template)
+
+## Phase 3 Completion Summary
+- PLAN-006: Added delegation examples to researcher.md (comprehensive depth)
+- PLAN-007: Added delegation examples to planner.md (focused depth, ~350 tokens)
+- PLAN-008: Added delegation examples to python-qa-thorough.md (execution_only depth, ~70% savings)
+- PLAN-009: Added delegation examples to typescript-qa-thorough.md (execution_only depth, ~70% savings)
+- PLAN-010: Added delegation examples to opencode-qa-thorough.md (execution_only depth for agent/*.md analysis)

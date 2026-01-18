@@ -279,6 +279,66 @@ If a tool is not found:
 - **Complex tracing**: Delegate to `codebase-analyzer` for agent-to-subagent delegation path analysis
 - **Domain knowledge**: Load `opencode` skill (do NOT delegate to web-search-researcher)
 
+#### Delegation with execution_only Depth (Token Optimization)
+
+When analyzing agent logic or tool configurations without needing explanations, use `execution_only` depth to reduce context by ~70%:
+
+**Example: Analyzing Agent Tool Permissions**
+
+```typescript
+// Delegate to codebase-analyzer to extract tool permission patterns
+task({
+  name: "codebase-analyzer",
+  depth: "execution_only",  // Saves ~70% tokens - returns only extracted data
+  instruction: `Analyze agent/*.md files and extract tool permission configurations.
+  
+Return JSON array with structure:
+[
+  {
+    "agent": "planner.md",
+    "tools": {
+      "bash": true,
+      "glob": false,
+      "grep": false,
+      "context7": true
+    },
+    "delegationComments": ["use Sub-Agent 'codebase-locator' instead"]
+  }
+]
+
+Focus on tools section in YAML frontmatter.`
+})
+```
+
+**Expected Response Format** (execution_only returns data without explanatory prose):
+```json
+[
+  {
+    "agent": "planner.md",
+    "tools": {
+      "bash": true,
+      "glob": false,
+      "grep": false,
+      "context7": true
+    },
+    "delegationComments": ["use Sub-Agent 'codebase-locator' instead"]
+  },
+  {
+    "agent": "researcher.md",
+    "tools": {
+      "bash": true,
+      "context7": true,
+      "webfetch": false
+    },
+    "delegationComments": ["use Sub-Agent 'web-search-researcher' instead"]
+  }
+]
+```
+
+**Use Case**: During Phase 4 manual analysis, delegate tool permission extraction to avoid manually reading 10+ agent files. Use returned data to check for tool permission misalignment (Phase 4.c.1) and delegation pattern conflicts (Phase 4.c.2).
+
+**Token Savings**: ~70% reduction vs conversational depth - ideal for extracting structured data from agent/*.md or tool/*.ts files.
+
 ## Error Handling
 
 1. **All tools fail**: Report error, suggest installation, ask user to retry

@@ -107,7 +107,27 @@ Read each target Python file using the `read` tool and assess:
 ### Phase 4: External Best Practices (Optional)
 
 - If needed, delegate to `web-search-researcher` to verify current Python best practices
-- Use `codebase-analyzer` to trace complex execution paths for testability analysis
+
+#### Delegating to codebase-analyzer for Testability Tracing
+
+When analyzing complex execution paths for testability (e.g., identifying hard-to-test code, tracing dependencies for mocking), delegate to `codebase-analyzer` with `execution_only` depth:
+
+**Example delegation**:
+```markdown
+task({
+  agent: "codebase-analyzer",
+  task: "Trace execution path for testability analysis: src/utils/validator.py, validate_input function",
+  analysis_depth: "execution_only"
+})
+```
+
+**Expected response**: Only Section 1 (Execution Flow) with file:line references and code excerpts showing:
+- Function entry points and parameters
+- Control flow (if/else branches, loops)
+- Function calls to other modules/functions
+- Return points and error handling
+
+**Token savings**: Using `execution_only` depth returns ~250 tokens instead of ~800 tokens (saves ~70% compared to full comprehensive analysis).
 
 ### Phase 5: Plan Generation
 

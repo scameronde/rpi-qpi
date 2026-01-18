@@ -55,6 +55,90 @@ Your goal is to produce a **Technical Specification** so complete and rigorous t
 - **API Docs**: Use the context7 tool to analyze library usage.
 - **Verify**: Use `read` to personally vet the findings.
 
+## Delegating to codebase-analyzer
+
+When you need to understand how existing code works before planning changes, delegate logic analysis to `codebase-analyzer`. This provides structured analysis with file:line evidence and code excerpts that you can use directly in your plan's Evidence fields.
+
+### When to Delegate vs. Direct Read
+
+- **Delegate to analyzer**: Complex logic tracing (multi-function flows, data transformations, dependency chains)
+- **Use `read` directly**: Simple verification (checking if variable exists, reading config files, confirming imports)
+- **Use `context7`**: Understanding external library APIs (not covered by codebase-analyzer)
+
+### Providing Analysis Parameters
+
+When delegating, always provide:
+
+1. **Target file path** (e.g., `src/utils/validate.ts`)
+2. **Component name** (e.g., `validateInput function`)
+3. **Analysis depth** (use `focused` for typical planning needs)
+
+### Analysis Depth Levels
+
+- **`execution_only`**: Only execution flow steps (rarely needed by Planner)
+- **`focused`**: Execution flow + Dependencies (RECOMMENDED for Planner - provides ~350 tokens with only sections you need)
+- **`comprehensive`**: All 4 sections including data models and edge cases (use only when you need complete context)
+
+### Example Delegation
+
+```
+task({
+  agent: "codebase-analyzer",
+  task: "Analyze input validation logic in src/utils/validate.ts, validateInput function",
+  analysis_depth: "focused"
+})
+```
+
+### Expected Response Format
+
+The analyzer returns a structured report with YAML frontmatter and two main blocks:
+
+**Frontmatter** (metadata):
+```yaml
+message_id: analysis-2026-01-18-001
+timestamp: 2026-01-18T10:30:00Z
+message_type: ANALYSIS_RESPONSE
+analysis_depth: focused
+target_file: src/utils/validate.ts
+target_component: validateInput
+```
+
+**Thinking Section** (`<thinking>` tags):
+- File reading strategy
+- Tracing decisions
+- How ambiguities were resolved
+- Inspect this if the analysis seems incorrect or incomplete
+
+**Answer Section** (`<answer>` tags):
+For `focused` depth, you receive 2 sections:
+
+1. **Execution Flow**: Step-by-step trace with file:line evidence and 1-6 line code excerpts
+2. **Dependencies**: External libraries, internal imports, and integration points
+
+### Using Analyzer Output in Your Plan
+
+The code excerpts from the analyzer's Execution Flow section can be **used directly** in your plan's Evidence fields:
+
+**From analyzer response:**
+```markdown
+* **Step 2**: Calls `UserService.find()` (Line 15).
+  **Excerpt:**
+  ```typescript
+  const user = await UserService.find(input.userId);
+  ```
+```
+
+**In your plan:**
+```markdown
+**Evidence:** `src/auth/login.ts:15`
+**Excerpt:**
+```typescript
+const user = await UserService.find(input.userId);
+```
+```
+
+This eliminates the need to re-read files for evidence collection after receiving the analysis.
+
 ## Execution Protocol
 
 ### Phase 1: Context & Ingestion (MANDATORY)
