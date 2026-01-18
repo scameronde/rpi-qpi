@@ -1,8 +1,8 @@
 # State: Codebase-Analyzer Agent-to-Agent Communication Optimization
 
 **Plan**: thoughts/shared/plans/2026-01-18-Codebase-Analyzer-Communication-Optimization.md  
-**Current Task**: PLAN-004  
-**Completed Tasks**: PLAN-001, PLAN-002, PLAN-003
+**Current Task**: PLAN-006  
+**Completed Tasks**: PLAN-001, PLAN-002, PLAN-003, PLAN-004, PLAN-005
 
 ## Quick Verification
 
@@ -27,6 +27,8 @@ grep "message_id:" agent/codebase-analyzer.md
 
 # Verify depth level documentation
 grep "analysis_depth" agent/codebase-analyzer.md
+grep "Analysis Depth Levels" agent/codebase-analyzer.md
+grep "Section Inclusion Rules" agent/codebase-analyzer.md
 ```
 
 ## Notes
@@ -34,7 +36,7 @@ grep "analysis_depth" agent/codebase-analyzer.md
 - Total tasks: 12
 - Phases:
   - Phase 1: High-Impact Core Changes (PLAN-001 to PLAN-003) ✅ COMPLETE
-  - Phase 2: Query-Specific Depth Support (PLAN-004 to PLAN-005)
+  - Phase 2: Query-Specific Depth Support (PLAN-004 to PLAN-005) ✅ COMPLETE
   - Phase 3: Consumer Agent Prompt Updates (PLAN-006 to PLAN-010)
   - Phase 4: Documentation and Verification (PLAN-011 to PLAN-012)
 - Research report: thoughts/shared/research/2026-01-18-Codebase-Analyzer-Agent-Communication.md
@@ -44,3 +46,7 @@ grep "analysis_depth" agent/codebase-analyzer.md
 - PLAN-001: Added <thinking>/<answer> separation to output template
 - PLAN-002: Added code excerpts (1-6 lines) to Execution Flow steps
 - PLAN-003: Added YAML frontmatter with 6 metadata fields (message_id, timestamp, message_type, analysis_depth, target_file, target_component)
+
+## Phase 2 Completion Summary
+- PLAN-004: Added "Analysis Depth Levels" section documenting execution_only, focused, comprehensive
+- PLAN-005: Made template sections conditional based on depth (Section Inclusion Rules + conditional markers in template)

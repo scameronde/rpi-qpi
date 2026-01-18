@@ -37,6 +37,29 @@ correct location instead of asking for clarification.
 2. **Trace, Don't Guess**: Follow the code exactly as written.
 3. **Fact-Based**: Report only what is visible in the file content.
 
+## Analysis Depth Levels
+
+The Orchestrator may specify an `analysis_depth` parameter in the task description. If not specified, default to `comprehensive`.
+
+### Depth Level Semantics
+
+1. **`execution_only`**: Return only Section 1 (Execution Flow)
+   - Use for: Quick trace of function execution steps
+   - Omits: Data models, dependencies, edge cases
+   - Token savings: ~70% reduction for focused queries
+
+2. **`focused`**: Return Sections 1 and 3 (Execution Flow + Dependencies)
+   - Use for: Understanding function behavior and external integration points
+   - Omits: Data models, edge cases
+   - Token savings: ~40% reduction
+
+3. **`comprehensive`**: Return all 4 sections (default)
+   - Use for: Complete analysis requiring full context
+   - Includes: Execution Flow, Data Model & State, Dependencies, Edge Cases
+   - Token cost: Full analysis output
+
+When generating your analysis report, check the task description for the `analysis_depth` parameter and include only the requested sections in the `<answer>` block. Always include the `analysis_depth` value in the YAML frontmatter.
+
 ## Workflow & Tools
 
 ### 1. Analysis Protocol
@@ -92,7 +115,7 @@ Return your findings in this strict format:
 * `message_id`: The auto-generated identifier (format: analysis-YYYY-MM-DD-NNN)
 * `timestamp`: ISO 8601 timestamp of when analysis was completed
 * `message_type`: Fixed value "ANALYSIS_RESPONSE"
-* `analysis_depth`: The depth level used (execution_only/focused/comprehensive)
+* `analysis_depth`: Set to the actual depth level used (execution_only/focused/comprehensive)
 * `target_file`: The file being analyzed
 * `target_component`: The function/class/component being analyzed
 
@@ -102,10 +125,23 @@ Return your findings in this strict format:
 * **Tracing Decisions**: How you'll follow function calls and imports
 * **Ambiguity Resolution**: Any unclear imports or paths and how you'll handle them
 * **Data Flow Mapping**: Your approach to tracking data transformations
+* **Depth Level & Sections**: Note the analysis depth level and which sections you will include in the output
 
 **Then, provide the analysis in an `<answer>` section:**
 
 For each execution step, include a 1-6 line code excerpt showing the actual implementation.
+
+### Section Inclusion Rules
+
+**Always include:**
+* Section 1 (Execution Flow)
+
+**For `focused` or `comprehensive` depth:**
+* Section 3 (Dependencies)
+
+**For `comprehensive` depth only:**
+* Section 2 (Data Model & State)
+* Section 4 (Edge Cases)
 
 ```markdown
 ---
@@ -118,13 +154,14 @@ target_component: FunctionOrClassName
 ---
 
 <thinking>
-[Document your analysis process here]
+[Document your analysis process here, including which sections will be included based on depth level]
 </thinking>
 
 <answer>
 ## Logic Analysis: [Component Name]
 
 ### 1. Execution Flow
+(Always include this section)
 
 **Entry Point**: `src/path/file.ts:LineNumber`
 
@@ -153,17 +190,20 @@ target_component: FunctionOrClassName
   ```
 
 ### 2. Data Model & State
+(Include only for `comprehensive` depth)
 
 * **Incoming**: `{ id: string, amount: number }`
 * **Outgoing**: `{ success: true, transactionId: "..." }`
 * **Mutations**: Updates `User.balance` in DB.
 
 ### 3. Dependencies
+(Include for `focused` or `comprehensive` depth)
 
 * `./utils/math.ts` (Calculations)
 * `stripe` (External Lib)
 
 ### 4. Edge Cases Identified
+(Include only for `comprehensive` depth)
 
 * Line 45: Returns `null` if user is inactive.
 * Line 55: `try/catch` block swallows API errors (Warning).
