@@ -76,6 +76,27 @@ grep -r "describe(.*Auth" tests/
 grep -r "it('should.*validate" src/
 ```
 
+## Complete Workflow Example
+
+**Query**: "How is pagination implemented?"
+
+**Step 1: Plan** (using todowrite)
+- Keywords: `["pagination", "Paginator", "page=", "limit="]`
+- Scope: `src/`, `lib/`
+- Variations: Offset-based vs cursor-based
+
+**Step 2: Search**
+```bash
+grep -r "pagination" src/ --include="*.ts" -l  # Find files
+# Output: src/api/PaginationHelper.ts, src/db/QueryBuilder.ts
+```
+
+**Step 3: Extract** (using read)
+Read `src/api/PaginationHelper.ts` to get full context (imports, types, implementation)
+
+**Step 4: Report** (using output template)
+Return YAML frontmatter + <thinking> + <answer> with code excerpts
+
 ## Output Format
 
 When returning findings to the Orchestrator, use this structure with YAML frontmatter containing search metadata:
