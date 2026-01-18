@@ -362,3 +362,57 @@ Search strategy for authentication test files:
 - `tests/integration/auth-permissions.spec.ts`
 </answer>
 ```
+
+## Codebase-Pattern-Finder Output Format and Usage
+
+The codebase-pattern-finder subagent uses a three-part response structure:
+
+### Response Structure
+
+1. **YAML Frontmatter** (message envelope with search metadata):
+   - `message_id`, `correlation_id`, `timestamp`, `message_type`
+   - Search metadata: `patterns_found`, `variations_total`, `files_matched`, `files_scanned`, `search_keywords`
+   - Use for workflow correlation and search completeness validation
+
+2. **<thinking> Section** (search strategy and debugging):
+   - Documents keywords, grep commands, match counts, file reads
+   - Inspect when results seem incomplete or unexpected
+   - Strip when passing findings to downstream agents (token optimization)
+
+3. **<answer> Section** (pattern findings):
+   - Variable number of variations (scales with findings)
+   - Each variation: Location, Frequency (quantified), Code snippet with context
+   - Distribution Notes: Standard vs legacy usage statistics
+
+### Code Excerpts
+
+Pattern-finder output includes actual code excerpts with context (imports, class wrappers), not just descriptions. This eliminates the need for consumer agents to re-read files for evidence.
+
+### Frequency Metrics
+
+Frequency uses quantified format: `Dominant (10/12 files, 83%)` instead of vague "High/Low" labels. Use this for data-driven decisions about which pattern to follow.
+
+### When to Use Each Codebase Subagent
+
+- **codebase-locator**: Find file paths and entry points
+  - Use when: "Where is feature X implemented?"
+  - Output: File paths, directory structure
+  - Scope levels: tests_only, paths_only, comprehensive
+
+- **codebase-analyzer**: Trace execution flow and logic
+  - Use when: "How does function X work?"
+  - Output: Execution steps, data model, dependencies, edge cases
+  - Depth levels: execution_only, focused, comprehensive
+
+- **codebase-pattern-finder**: Discover implementation patterns and conventions
+  - Use when: "How is concept X implemented across the codebase?"
+  - Output: Code snippets showing all variations with usage statistics
+  - Variable output: Scales naturally with findings (no scope levels needed)
+
+### Token Efficiency
+
+Pattern-finder's variable template design eliminates the fixed verbosity problem:
+- 1 variation: ~250 tokens
+- 2-3 variations (typical): ~400-600 tokens
+- 5+ variations (complex): ~1000+ tokens
+- No wasted sections (unlike locator's 76% waste or analyzer's 60-70% waste for focused queries)
