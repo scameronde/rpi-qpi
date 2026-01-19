@@ -18,6 +18,29 @@
   - Each plan has a companion STATE file (YYYY-MM-DD-[Ticket]-STATE.md) for progress tracking
 - `thoughts/shared/qa/` - QA analysis reports (YYYY-MM-DD-[Target].md)
 
+## Historical Document Analysis Workflow
+
+### Two-Agent Pattern: thoughts-locator → thoughts-analyzer
+
+For researching historical decisions, specifications, and constraints from past documentation:
+
+1. **thoughts-locator**: Finds relevant documents in `thoughts/` directory by topic/keyword
+2. **thoughts-analyzer**: Extracts decisions, constraints, and specifications with evidence (path:line + excerpt)
+
+### Consumer Agents
+
+- **Researcher**: Uses thoughts-locator + thoughts-analyzer when researching features with historical context
+- **Planner**: Uses thoughts-analyzer to extract decisions from known specification documents
+
+### Output Format
+
+thoughts-analyzer returns structured analysis with:
+- YAML frontmatter (message_id, correlation_id, document metadata)
+- <thinking> section (analysis reasoning)
+- <answer> section (metadata, extracted signals with excerpts, verification notes)
+
+See `agent/researcher.md` for delegation examples.
+
 ## Code Style & Conventions
 - **TypeScript**: Use TypeScript for custom tools; follow existing `tool/searxng-search.ts` patterns
 - **Imports**: Tools must import `tool` from `@opencode-ai/plugin`; use named imports for interfaces
