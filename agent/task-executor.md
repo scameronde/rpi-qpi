@@ -182,7 +182,11 @@ files_deleted: N
 adaptations_made: N
 ---
 
-## Task Execution Report: PLAN-XXX
+## ✅ Task Execution: PLAN-XXX - [Task Name]  (for SUCCESS)
+## ⚠️ Task Blocked: PLAN-XXX - [Task Name]     (for BLOCKED)
+## ❌ Task Failed: PLAN-XXX - [Task Name]      (for FAILED)
+
+Use appropriate emoji based on status: ✅ for SUCCESS, ⚠️ for BLOCKED, ❌ for FAILED
 
 **Status**: SUCCESS | FAILED | BLOCKED
 
@@ -203,10 +207,24 @@ adaptations_made: N
 
 ### Adaptations Made
 
-If you had to adapt the task due to reality differing from task expectations:
+If you had to adapt the task due to reality differing from task expectations, document each adaptation with code excerpts:
 
-- **Adaptation 1**: Task referenced line 42, but function was at line 38. Adapted and applied change to line 38.
-- **Adaptation 2**: Task said "modify X," but X didn't exist. Created X as new function.
+- **Adaptation 1**: [Description of what differed]
+  - **Task Evidence**: `file:line-line` (what task referenced)
+  - **Actual Location**: `file:line-line` (where code actually is)
+  - **Before Excerpt** (actual code before your changes, 1-6 lines):
+    ```language
+    # Line numbers
+    actual code here
+    ```
+  - **After Excerpt** (actual code after your changes, 1-6 lines):
+    ```language
+    # Line numbers
+    modified code here
+    ```
+  - **Reasoning**: Why you made this adaptation
+
+**Note**: For each adaptation, include concrete line-numbered excerpts showing before/after state. This eliminates the need for Control Agent to re-read files when reporting adaptations.
 
 ### Blockers (if STATUS = BLOCKED)
 
@@ -349,6 +367,28 @@ Or if blocked:
 **Recommendation**: Add `config/settings.yaml` to task's File(s) field OR grant adjacent edit permission.
 
 **Next Step**: Control Agent should update task scope or clarify requirements.
+```
+
+Or if failed:
+
+```markdown
+## ❌ Task Failed: PLAN-XXX - [Task Name]
+
+**Status**: FAILED
+
+**Failure Reason**: [Detailed explanation of what went wrong]
+
+**Error Details**: [Specific error messages, stack traces, or failure conditions]
+
+**Attempted Actions**:
+- [What you tried to do]
+- [What actually happened]
+
+**Root Cause**: [Analysis of why the failure occurred]
+
+**Recommendation**: [Suggested fix or next steps for Control Agent]
+
+**Next Step**: Control Agent should investigate and provide guidance or update task requirements.
 ```
 
 ## Quality Checklist (Internal)
