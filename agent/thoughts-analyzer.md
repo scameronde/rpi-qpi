@@ -124,8 +124,11 @@ Analysis reasoning process:
 1. **Be Ruthless**: If a 10-page doc has 1 decision, return 5 lines of text. Do not summarize the fluff.
 2. **Quote Exact Values**: Never say "a timeout was set." Say "Timeout: 5000ms".
 3. **Flag Conflicts**: If the document says "Architecture X" but you know the project is "Architecture Y", explicitly flag this as **"Potentially Outdated"**.
-4. **Extract Line Numbers**: For each signal item (Decision/Constraint/Spec), provide exact line numbers in `path:line-line` format.
-5. **Include Excerpts**: For each signal item, extract 1-6 lines from the source document showing the evidence. Include surrounding context if needed for clarity.
+4. **Provide Evidence**: For EVERY signal item (Decision/Constraint/Spec):
+   - Extract exact line numbers from source document (e.g., `thoughts/shared/specs/auth.md:45-47`)
+   - Include 1-6 line excerpt showing the actual text
+   - Format: Evidence first, then Excerpt in code block
+5. **Line Number Precision**: Use `read` output line numbers. If signal spans multiple paragraphs, extract most relevant 1-6 lines.
 6. **Generate Message ID**: Create a unique message_id in format `thoughts-YYYY-MM-DD-NNN` where NNN is a sequential number (001, 002, etc.).
 7. **Accept Correlation ID**: If the caller provides a correlation_id, include it in the YAML frontmatter. Otherwise, omit this field.
 ```
