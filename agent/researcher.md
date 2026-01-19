@@ -183,7 +183,7 @@ When researching features with historical context (e.g., previous missions, spec
 task({
   subagent_type: "thoughts-locator",
   description: "Find historical documentation for authentication system",
-  prompt: "Find all mission statements, specs, epics, plans, and research reports related to authentication. Search scope: comprehensive. Correlation: research-auth-history-2026-01-18"
+  prompt: "Find all mission statements, specs, epics, plans, QA reports, and research related to authentication. Search scope: comprehensive. Correlation: research-auth-2026-01-19"
 })
 ```
 
@@ -191,10 +191,16 @@ task({
 
 ```markdown
 ---
-message_id: thoughts-locator-2026-01-18-001
-correlation_id: research-auth-history-2026-01-18
+message_id: thoughts-locator-2026-01-19-001
+correlation_id: research-auth-2026-01-19
+timestamp: 2026-01-19T14:30:00Z
+message_type: LOCATION_RESPONSE
 search_scope: comprehensive
-documents_found: 5
+locator_version: "1.1"
+query_topic: authentication documentation
+documents_found: 8
+directories_scanned: 6
+paths_sanitized: 0
 ---
 
 <thinking>
@@ -203,7 +209,10 @@ Search strategy for authentication documentation:
 - Searched thoughts/shared/specs/ for auth specifications
 - Searched thoughts/shared/epics/ for auth epics
 - Searched thoughts/shared/plans/ for auth implementation plans
-- Found 5 total documents
+- Searched thoughts/shared/qa/ for auth QA reports
+- Searched thoughts/shared/research/ for auth research reports
+- Found 8 total documents
+- Paths sanitized: 0 (all paths valid)
 </thinking>
 
 <answer>
@@ -221,8 +230,82 @@ Search strategy for authentication documentation:
 ### Implementation Plans
 - `thoughts/shared/plans/2025-12-15-AUTH-001.md`
 - `thoughts/shared/plans/2025-12-20-AUTH-002.md`
+
+### QA Reports
+- `thoughts/shared/qa/2025-12-25-Auth-Module.md`
+
+### Research Reports
+- `thoughts/shared/research/2025-11-30-JWT-Libraries.md`
+
+### STATE Files
+- `thoughts/shared/plans/2025-12-15-AUTH-001-STATE.md`
 </answer>
 ```
+
+### Scope Level Guidance for thoughts-locator
+
+Choose the appropriate scope level based on how many document types you need:
+
+**Use `paths_only` when you need only one document type:**
+- Example: "Find only specs related to authentication. Search scope: paths_only."
+- Returns: Only the Specifications section
+- Token efficiency: ~70% reduction vs comprehensive
+
+**Use `focused` when you need 2-3 document types:**
+- Example: "Find specs and implementation plans for authentication. Search scope: focused."
+- Returns: Specifications + Implementation Plans sections
+- Token efficiency: ~40% reduction vs comprehensive
+
+**Use `comprehensive` when exploring all historical context:**
+- Example: "Find all mission statements, specs, epics, plans, QA reports, and research related to authentication. Search scope: comprehensive."
+- Returns: All 8 categories (missions, specs, epics, plans, QA reports, research, STATE files, related docs)
+- Use case: Initial research phase, full system understanding
+
+**Example delegation with paths_only scope:**
+
+```
+task({
+  subagent_type: "thoughts-locator",
+  description: "Find authentication specifications only",
+  prompt: "Find specifications related to authentication. Search scope: paths_only. Correlation: research-auth-2026-01-19"
+})
+```
+
+**Example delegation with focused scope:**
+
+```
+task({
+  subagent_type: "thoughts-locator",
+  description: "Find authentication specs and plans",
+  prompt: "Find specifications and implementation plans for authentication. Search scope: focused. Correlation: research-auth-2026-01-19"
+})
+```
+
+### Validating thoughts-locator Responses
+
+When you receive a response from thoughts-locator, validate it before proceeding:
+
+1. **Use correlation_id to match responses in multi-delegation workflows**
+   - If you delegate to locator → analyzer → pattern-finder, use the same correlation ID across all delegations
+   - Format: `research-[topic]-YYYY-MM-DD` (e.g., `research-auth-2026-01-19`)
+
+2. **Use documents_found to validate search completeness**
+   - If documents_found is 0, the search may need refinement
+   - If documents_found is unexpectedly low, check <thinking> for search strategy
+
+3. **Use search_scope to verify the locator used correct filtering**
+   - Confirm the scope in the response matches what you requested
+   - If scope differs, the locator may have adapted based on available documents
+
+4. **Inspect <thinking> if results seem incomplete or unexpected**
+   - The thinking section shows which directories were searched
+   - Check for "filtered to X primary files" to understand filtering logic
+   - Look for "No matches found in [directory]" to identify coverage gaps
+
+5. **Check paths_sanitized to confirm path sanitization occurred**
+   - If paths_sanitized > 0, some invalid paths were removed
+   - Review the thinking section for details on which paths were sanitized and why
+   - Re-read the locator's answer to ensure remaining paths are sufficient
 
 ### Delegation Pattern for thoughts-analyzer
 
