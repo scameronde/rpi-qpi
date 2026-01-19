@@ -49,6 +49,7 @@ Your goal is to produce a **Factual Foundation** so the Planner can design solut
 **You rely on your team for exploration.**
 - **Find files/Context**: Delegate to `codebase-locator` / `codebase-pattern-finder`.
 - **Analyze Logic**: Delegate to `codebase-analyzer`.
+- **Historical Context**: Delegate to `thoughts-locator` / `thoughts-analyzer`.
 - **External Info**: Delegate to `web-search-researcher`.
 - **Verify**: Use `read` to personally verify findings before documenting them.
 
@@ -158,6 +159,178 @@ The codebase-analyzer will return a structured analysis containing:
 - Code excerpts with file paths and line ranges
 
 **Important:** The codebase-analyzer provides excerpts directly in its response. You do NOT need to re-read files to obtain excerpts—extract them from the sub-agent's analysis and include them in your research report with proper attribution (file:line-line).
+
+## Delegating to thoughts-locator and thoughts-analyzer
+
+### Two-Step Workflow for Historical Documentation
+
+When researching features with historical context (e.g., previous missions, specs, epics, implementation plans, QA reports), use the two-step workflow:
+
+1. **Step 1**: Use `thoughts-locator` to find relevant historical documents
+2. **Step 2**: Use `thoughts-analyzer` to extract structured insights from those documents
+
+**When to use this workflow:**
+
+- Researching features that have existing mission statements, specs, or epics
+- Understanding design decisions from previous implementation plans
+- Investigating issues covered in QA reports
+- Tracing the evolution of a feature across multiple planning documents
+- Finding related research reports on similar topics
+
+### Delegation Pattern for thoughts-locator
+
+```
+task({
+  subagent_type: "thoughts-locator",
+  description: "Find historical documentation for authentication system",
+  prompt: "Find all mission statements, specs, epics, plans, and research reports related to authentication. Search scope: comprehensive. Correlation: research-auth-history-2026-01-18"
+})
+```
+
+**Expected response format from thoughts-locator:**
+
+```markdown
+---
+message_id: thoughts-locator-2026-01-18-001
+correlation_id: research-auth-history-2026-01-18
+search_scope: comprehensive
+documents_found: 5
+---
+
+<thinking>
+Search strategy for authentication documentation:
+- Searched thoughts/shared/missions/ for auth-related missions
+- Searched thoughts/shared/specs/ for auth specifications
+- Searched thoughts/shared/epics/ for auth epics
+- Searched thoughts/shared/plans/ for auth implementation plans
+- Found 5 total documents
+</thinking>
+
+<answer>
+## Historical Documentation: Authentication
+
+### Mission Statements
+- `thoughts/shared/missions/2025-12-01-Auth-System.md`
+
+### Specifications
+- `thoughts/shared/specs/2025-12-05-Auth-System.md`
+
+### Epics
+- `thoughts/shared/epics/2025-12-10-User-Authentication.md`
+
+### Implementation Plans
+- `thoughts/shared/plans/2025-12-15-AUTH-001.md`
+- `thoughts/shared/plans/2025-12-20-AUTH-002.md`
+</answer>
+```
+
+### Delegation Pattern for thoughts-analyzer
+
+After receiving file paths from thoughts-locator, delegate to thoughts-analyzer for structured extraction:
+
+```
+task({
+  subagent_type: "thoughts-analyzer",
+  description: "Extract authentication requirements from spec",
+  prompt: "Analyze thoughts/shared/specs/2025-12-05-Auth-System.md. Extract: objectives, technical requirements, acceptance criteria, dependencies. Analysis depth: comprehensive. Correlation: research-auth-history-2026-01-18"
+})
+```
+
+**Expected response format from thoughts-analyzer:**
+
+```markdown
+---
+message_id: thoughts-analyzer-2026-01-18-001
+correlation_id: research-auth-history-2026-01-18
+timestamp: 2026-01-18T14:30:00Z
+message_type: ANALYSIS_RESPONSE
+analysis_depth: comprehensive
+document_analyzed: thoughts/shared/specs/2025-12-05-Auth-System.md
+sections_extracted: 4
+---
+
+<thinking>
+Analysis strategy for authentication spec:
+- Read full document (150 lines)
+- Identified 3 primary objectives
+- Extracted 8 technical requirements
+- Found 5 acceptance criteria
+- Discovered 2 external dependencies
+</thinking>
+
+<answer>
+## Analysis: Authentication System Specification
+
+### Objectives
+1. **Secure user authentication** - JWT-based token system
+   - **Evidence:** thoughts/shared/specs/2025-12-05-Auth-System.md:15-18
+   - **Excerpt:**
+     ```markdown
+     ## Primary Objective
+     
+     Implement JWT-based authentication to secure API endpoints
+     and maintain user sessions across distributed services.
+     ```
+
+2. **Multi-factor authentication support** - TOTP and SMS backup
+   - **Evidence:** thoughts/shared/specs/2025-12-05-Auth-System.md:42-45
+   - **Excerpt:**
+     ```markdown
+     ### MFA Requirement
+     
+     Support TOTP (RFC 6238) as primary MFA method with SMS
+     fallback for account recovery scenarios.
+     ```
+
+### Technical Requirements
+1. **Token Management** - Access tokens (15min) + refresh tokens (7 days)
+   - **Evidence:** thoughts/shared/specs/2025-12-05-Auth-System.md:67-70
+   - **Excerpt:**
+     ```markdown
+     Access tokens expire after 15 minutes. Refresh tokens
+     valid for 7 days. Token rotation on each refresh.
+     ```
+
+2. **Password Policy** - Minimum 12 characters, complexity rules
+   - **Evidence:** thoughts/shared/specs/2025-12-05-Auth-System.md:89-92
+
+### Acceptance Criteria
+- User can register with email/password
+- User can login and receive JWT token
+- MFA enrollment flow functional
+- Token refresh mechanism works
+- Password reset via email verified
+
+### Dependencies
+1. **External: Email Service** - For verification and password reset
+   - **Evidence:** thoughts/shared/specs/2025-12-05-Auth-System.md:120-122
+
+2. **External: SMS Gateway** - For MFA backup codes
+   - **Evidence:** thoughts/shared/specs/2025-12-05-Auth-System.md:124-126
+</answer>
+```
+
+### Using correlation_id for Multi-Step Workflows
+
+Use the same correlation ID across both delegations to track the complete workflow:
+
+```
+# Step 1: Locate documents
+Correlation: research-auth-history-2026-01-18
+
+# Step 2: Analyze each document
+Correlation: research-auth-history-2026-01-18
+```
+
+This allows you to trace which analysis responses correspond to which locator results when working on multiple research topics concurrently.
+
+### Parsing thoughts-analyzer Response for Research Report
+
+1. **Frontmatter**: Use correlation_id to match with locator results; check sections_extracted to validate completeness
+2. **Thinking**: Include in research notes if extraction strategy reveals document structure patterns
+3. **Answer**: Extract all sections (Objectives, Technical Requirements, Acceptance Criteria, Dependencies)
+4. **Evidence format**: thoughts-analyzer provides file:line-line references and excerpts—use directly in research report
+5. **Verification**: You do NOT need to re-read the thoughts documents; thoughts-analyzer provides excerpts directly
 
 ## Delegating to codebase-pattern-finder
 
