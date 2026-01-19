@@ -53,6 +53,7 @@ Your goal is to produce a **Technical Specification** so complete and rigorous t
 - **Find files/Context**: Delegate to `codebase-locator` or `codebase-analyzer`.
 - **External Docs**: Delegate to `web-search-researcher`.
 - **API Docs**: Use the context7 tool to analyze library usage.
+- **Historical Context**: Delegate to `thoughts-locator` / `thoughts-analyzer` (for documented systems).
 - **Verify**: Use `read` to personally vet the findings.
 
 ## Delegating to codebase-locator
@@ -260,6 +261,113 @@ Expected response:
     - Example: "Variation 2 is limited to src/legacy" = avoid Variation 2 for new code
 
 Use the quantified frequency metrics (e.g., "Dominant (10/12 files, 83%)") to make data-driven decisions about which pattern to follow.
+
+## Delegating to thoughts-analyzer for Historical Specifications
+
+When planning **extensions to existing systems** that have prior documentation (missions, specs, epics), use `thoughts-analyzer` to extract architectural context and design decisions. This is particularly valuable when building on top of documented features or ensuring consistency with original specifications.
+
+### When to Use thoughts-analyzer
+
+- **Extension planning**: Adding features to systems with existing mission/spec/epic documentation
+- **Consistency checking**: Ensuring new implementation aligns with documented architecture
+- **Design decision context**: Understanding the "why" behind existing component structures
+- **Acceptance criteria mapping**: Extracting original requirements to validate plan completeness
+
+**Note**: As a Planner, you typically receive **specific document paths** from the user or epic (e.g., "extend the authentication system documented in `thoughts/shared/specs/2026-01-15-Auth-System.md`"). This makes `thoughts-locator` less critical for you than for the Researcher agent—you usually know which document to read.
+
+### Delegation Pattern
+
+```
+task({
+  subagent_type: "thoughts-analyzer",
+  description: "Extract auth system architecture from specification",
+  prompt: "Analyze thoughts/shared/specs/2026-01-15-Auth-System.md. Focus on component architecture and data model. Analysis depth: focused. Correlation: plan-auth-extension-2026-01-18"
+})
+```
+
+### Expected Response Format
+
+The analyzer returns YAML frontmatter + thinking + answer with architectural excerpts:
+
+```markdown
+---
+message_id: thoughts-analysis-2026-01-18-001
+correlation_id: plan-auth-extension-2026-01-18
+analysis_depth: focused
+source_document: thoughts/shared/specs/2026-01-15-Auth-System.md
+document_type: specification
+---
+
+<thinking>
+Reading specification document...
+Identified 3 main components: AuthService, TokenManager, PermissionGuard
+Extracting architecture and data model sections
+</thinking>
+
+<answer>
+## Architecture Overview
+
+**Component Structure** (Lines 45-67):
+```
+Authentication System has 3 layers:
+1. AuthService - handles login/logout/session
+2. TokenManager - JWT creation and validation
+3. PermissionGuard - role-based access control
+```
+
+**Data Model** (Lines 89-102):
+```
+User entity:
+- id: UUID
+- email: string (unique)
+- roles: string[] (admin, user, guest)
+- session_token: string (nullable)
+```
+
+## Design Decisions
+
+**Why JWT tokens** (Lines 120-125):
+```
+"We chose JWT over session cookies to support stateless API 
+authentication for mobile clients. Token expiry is 24 hours 
+to balance security and UX."
+```
+</answer>
+```
+
+### Using thoughts-analyzer Output in Your Plan
+
+The excerpts provide **architectural context** that you can cite in your plan's Evidence fields:
+
+**From analyzer response:**
+```markdown
+**Component Structure** (Lines 45-67):
+```
+Authentication System has 3 layers:
+1. AuthService - handles login/logout/session
+2. TokenManager - JWT creation and validation
+```
+
+**In your plan:**
+```markdown
+**Evidence:** `thoughts/shared/specs/2026-01-15-Auth-System.md:45-67`
+**Architectural Context:**
+```
+Original spec defines 3 layers: AuthService, TokenManager, PermissionGuard.
+Our extension will add a 4th layer (AuditLogger) to maintain this separation.
+```
+```
+
+This ensures your implementation plan **aligns with documented architecture** and cites the source of design decisions.
+
+### Difference from Researcher Usage
+
+- **Researcher**: Needs `thoughts-locator` to discover which documents exist (exploration mode)
+- **Planner**: Typically knows the target document path from user/epic (targeted mode)
+- **Researcher**: Uses `comprehensive` depth for complete analysis
+- **Planner**: Uses `focused` depth to extract only architecture and dependencies
+
+For most planning tasks, you can **skip `thoughts-locator`** and go directly to `thoughts-analyzer` with the specific document path provided by the user or referenced in the epic.
 
 ## Execution Protocol
 
