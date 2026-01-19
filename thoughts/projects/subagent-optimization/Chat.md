@@ -12,11 +12,15 @@ Great. Now we know, that the codebase-analyzer is not meant to present it's outp
 
 ### newest
 
-Read "thoughts/shared/research/2026-01-18-Codebase-Analyzer-Agent-Communication.md" and then perform a similar analysis for the subagent "agent/codebase-locator.md". You can depend on the background research that has already been done. You don't have to do it twice.
+Read "thoughts/shared/research/2026-01-18-Codebase-Analyzer-Agent-Communication.md" and then perform a similar analysis for the subagent "agent/task-executor.md". You can depend on the background research that has already been done. You don't have to do it twice.
 
 ## Planner
 
 Read the research report "thoughts/shared/research/2026-01-18-Codebase-Analyzer-Agent-Communication.md" and create a plan to improve the situation.
+
+## Implementor
+
+Read the plan "thoughts/shared/plans/2026-01-18-Codebase-Locator-Communication-Optimization-STATE.md" and list the tasks.
 
 ## QA
 
