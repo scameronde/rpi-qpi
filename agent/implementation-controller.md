@@ -162,6 +162,200 @@ For each PLAN-XXX task (starting from Current Task in STATE file):
    - Extract adaptations (if any)
    - Extract blockers (if BLOCKED)
 
+### Parsing Task Executor Response Structure
+
+Task Executor returns a structured response with YAML frontmatter, `<thinking>` section, and `<answer>` section. Understanding how to parse this format is critical for workflow automation.
+
+#### Accessing YAML Frontmatter Fields
+
+The frontmatter contains machine-readable metadata for automation:
+
+```yaml
+---
+message_id: executor-2026-01-19-003
+correlation_id: plan-006-attempt-1
+timestamp: 2026-01-19T10:30:00Z
+message_type: EXECUTION_RESPONSE
+status: SUCCESS
+executor_version: "1.1"
+files_modified: 2
+files_created: 0
+files_deleted: 0
+adaptations_made: 1
+---
+```
+
+**Key field access patterns**:
+
+- **`frontmatter.status`**: Use this to determine workflow branching (SUCCESS/BLOCKED/FAILED)
+  - Do NOT parse status from text or section headings
+  - This field is guaranteed to be present and machine-readable
+  
+- **`frontmatter.files_modified`**, **`files_created`**, **`files_deleted`**: Use for git staging
+  - Quantified metrics for audit trail
+  - Sum these for total files changed
+  
+- **`frontmatter.adaptations_made`**: Indicates executor made autonomous decisions
+  - If > 0, inspect `<answer>` section's Adaptations subsection
+  - Use to assess whether plan needs updating
+  
+- **`frontmatter.correlation_id`**: Links response to task payload
+  - Format: `plan-XXX-attempt-N`
+  - Use for debugging retry chains
+
+**Example workflow branching**:
+
+```
+if frontmatter.status == "SUCCESS":
+    proceed to verification
+elif frontmatter.status == "BLOCKED":
+    analyze frontmatter.blocker_type and <answer> section Blockers
+    retry with updated payload if resolvable
+elif frontmatter.status == "FAILED":
+    analyze <answer> section Failure Details
+    retry with clarification if recoverable
+```
+
+#### Using Thinking Section for Debugging
+
+The `<thinking>` section documents executor's reasoning process:
+
+- **When to read**: 
+  - Task failed or blocked (understand root cause)
+  - Adaptation count > 2 (assess executor's decision quality)
+  - Verification failed (trace logic errors)
+  
+- **When to ignore**: 
+  - Status = SUCCESS and verification passed (no debugging needed)
+  - Token optimization (strip when passing findings to audit logs)
+  
+- **What it contains**:
+  - File reading strategy (which files inspected, in what order)
+  - Evidence validation (line number matches/mismatches)
+  - Adaptation reasoning ("Task said line 42, but function at line 38")
+  - Blocker discovery process
+
+**Example debugging usage**:
+
+```
+Verification failed with "undefined variable 'validateInput'"
+→ Read <thinking> section
+→ Find: "Task said import from 'utils', but actual module is 'validators'"
+→ Retry with corrected instruction: "Import from 'validators' module"
+```
+
+#### Extracting Answer Sections
+
+The `<answer>` section contains structured findings in Markdown format:
+
+**Standard subsections** (all responses):
+
+1. **Changes Made**
+   - Modified Files: List with brief descriptions
+   - Created Files: List with purpose statements
+   - Deleted Files: List (if any)
+   
+2. **Adaptations** (if `adaptations_made > 0`)
+   - Numbered list of autonomous decisions
+   - Each includes: what changed, why, and code excerpt
+   
+3. **Ready for Verification**
+   - Commands to run (from task's "Done When")
+   - Expected outcomes
+
+**Conditional subsections**:
+
+4. **Blockers** (if `status == "BLOCKED"`)
+   - Blocker description
+   - Recommendation for resolution
+   
+5. **Failure Details** (if `status == "FAILED"`)
+   - Root cause analysis
+   - Suggested remediation
+
+**Parsing example**:
+
+```markdown
+<answer>
+## Task Execution: PLAN-006
+
+### Changes Made
+
+**Modified Files**:
+- `agent/implementation-controller.md` - Added parsing guidance section
+
+**Created Files**: (none)
+
+### Adaptations
+
+1. **Line number adjustment**: Task evidence referenced line 163, but "Parse executor response" heading was at line 159. Applied insertion after actual line 163 (end of parse executor response subsection).
+
+2. **Section placement**: Inserted as subsection of "Step 2: Invoke Task Executor" rather than separate step, for better logical flow.
+
+### Ready for Verification
+
+- Manual inspection: New section appears after line 163 with all required subsections
+- Content completeness: All four subsections present with code examples
+</answer>
+```
+
+**Extraction workflow**:
+
+1. Read `### Changes Made` → extract file lists for git staging
+2. Read `### Adaptations` → assess plan accuracy (if adaptation count high, plan may need update)
+3. Read `### Ready for Verification` → extract commands to run
+4. If blocked: Read `### Blockers` → decide retry strategy
+5. If failed: Read `### Failure Details` → add context to retry payload
+
+#### Handling Adaptations with Excerpts
+
+When `adaptations_made > 0`, the executor includes code excerpts in the Adaptations section. **You do NOT need to re-read files** to verify these adaptations.
+
+**Adaptation format** (includes code excerpt):
+
+```markdown
+### Adaptations
+
+1. **Line number shift**: Task referenced line 42, but function was at line 38.
+   - **Excerpt before change:**
+     ```python
+     def validate(data):  # Line 38
+         return schema.check(data)
+     ```
+   - **Excerpt after change:**
+     ```python
+     def validate(data: dict) -> bool:  # Line 38
+         return schema.check(data)
+     ```
+```
+
+**Why excerpts eliminate file reads**:
+
+- Executor already read the file (necessary for implementation)
+- Excerpt shows actual code before/after change
+- You can verify adaptation was reasonable without re-reading entire file
+- Token efficiency: Excerpt is 2-6 lines vs full file (potentially hundreds of lines)
+
+**When to re-read files** (only these cases):
+
+1. Verification failed and you need to analyze error context
+2. Adaptation seems incorrect based on excerpt (rare)
+3. Need to verify adjacent code not shown in excerpt (e.g., imports)
+
+**Typical workflow** (no file re-reading needed):
+
+```
+1. Parse frontmatter: adaptations_made = 2
+2. Read <answer> → Adaptations section
+3. Review excerpts: 
+   - Adaptation 1: Line 42→38 (reasonable, ±4 lines)
+   - Adaptation 2: Added helper function (reasonable autonomy)
+4. Proceed to verification (no need to re-read files)
+5. If verification passes: Commit with note "Executor adapted lines 42→38"
+```
+
+**Token savings**: ~200-400 tokens per task by not re-reading files for adaptation verification.
+
 #### Step 3: Handle Executor Response
 
 **If STATUS = SUCCESS**:

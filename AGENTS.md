@@ -140,8 +140,9 @@ The implementation system uses a **two-agent architecture** to minimize LLM cont
    - Receives single task payload (~50 lines)
    - Reads target files (~200 lines)
    - Implements exactly one PLAN-XXX task
-   - Returns results to Controller
+   - Returns structured results with YAML frontmatter and thinking/answer separation
    - **Total context: ~250 lines** (vs ~730 lines in monolithic approach)
+   - **Token impact**: +10-13% for typical tasks, net improvement for adapted tasks due to eliminated duplicate reads
 
 ### Plan Creation (Planner)
 1. Planner creates TWO files:
@@ -172,9 +173,14 @@ The implementation system uses a **two-agent architecture** to minimize LLM cont
 3. **Task-Executor** implements the task:
    - Reads target files
    - Makes code changes
-   - Reports SUCCESS/BLOCKED/FAILED
+   - Returns structured response with:
+     - **YAML frontmatter**: message_id, task_id, status, files_modified, adaptations_made
+     - **<thinking> section**: Implementation reasoning and decision process
+     - **<answer> section**: Structured task report with changes, adaptations, and verification readiness
+   - Reports SUCCESS/BLOCKED/FAILED in YAML frontmatter status field
 
 4. **Controller** handles executor response:
+   - Parses YAML frontmatter for status
    - If SUCCESS: Proceed to verification
    - If BLOCKED/FAILED: Retry with additional context (max 2 retries)
 
