@@ -117,6 +117,17 @@ Use `todowrite` to track your research phases.
 - ✅ Reading full GitHub issue threads (to see if a solution was actually found).
 - ✅ Extracting exact API signatures from official docs.
 
+### Code Example Extraction Rules
+
+When extracting code examples:
+1. **Source URL**: Provide direct link to the page containing the code
+2. **Language**: Auto-detect from code syntax (JavaScript, Python, TypeScript, etc.)
+3. **Excerpt Length**: Extract 3-10 lines maximum (avoid copy/paste of entire docs)
+4. **Line Numbers**: Approximate line numbers from source document (e.g., "lines 42-48 from docs")
+5. **Exact Syntax**: Copy code exactly as it appears in webfetch result (no modifications)
+
+This matches the evidence format used by codebase-analyzer for consistency.
+
 ## Output Format
 
 Return your findings in this specific Markdown structure so the Orchestrator can parse it.
@@ -169,7 +180,17 @@ authority: [high | medium | low]
 [Explanation]
 
 **Verified Code Example**:
-[Code block]
+- **Source URL**: [Direct link to documentation page with code]
+- **Language**: [JavaScript, Python, TypeScript, etc.]
+- **Excerpt** (lines [X-Y] from docs):
+  ```[language]
+  // Copy exact syntax from webfetch result
+  // Limit to 3-10 lines maximum
+  const intent = await stripe.paymentIntents.create({
+    amount: 2000,
+    currency: 'usd',
+  });
+  ```
 
 ---
 
