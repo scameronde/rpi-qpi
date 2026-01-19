@@ -29,10 +29,23 @@ For researching historical decisions, specifications, and constraints from past 
 
 ### Consumer Agents
 
-- **Researcher**: Uses thoughts-locator + thoughts-analyzer when researching features with historical context
+- **Researcher**: Uses thoughts-locator (with scope parameter) + thoughts-analyzer when researching features with historical context
 - **Planner**: Uses thoughts-analyzer to extract decisions from known specification documents
 
-### Output Format
+### Output Formats
+
+#### thoughts-locator Output
+
+thoughts-locator returns structured document discovery with:
+- YAML frontmatter (message_id, correlation_id, timestamp, message_type, search_scope, locator_version, query_topic, documents_found, categories_searched, paths_sanitized)
+- <thinking> section (search strategy, commands used, match counts, sanitization actions)
+- <answer> section (categorized file paths by document type)
+
+Supports three scope levels: paths_only, focused, comprehensive (default)
+
+See `agent/researcher.md` for delegation examples and `agent/thoughts-locator.md` for complete template.
+
+#### thoughts-analyzer Output
 
 thoughts-analyzer returns structured analysis with:
 - YAML frontmatter (message_id, correlation_id, document metadata)

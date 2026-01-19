@@ -79,6 +79,8 @@ The `search_scope` parameter controls which sections of the output you receive. 
 **Rule**: NEVER report a path containing `/searchable/`. You must strip it.
 *   ❌ Bad: `thoughts/searchable/shared/research/api.md`
 *   ✅ Good: `thoughts/shared/research/api.md`
+*   **Validation**: In <thinking> section, document how many paths contained /searchable/ and sanitization actions taken
+*   **Envelope**: In YAML frontmatter, report paths_sanitized: N (count of sanitized paths)
 
 ## Map of the Archive
 *   `thoughts/shared/missions/` -> Mission statements (`YYYY-MM-DD-[Project].md`)
@@ -120,6 +122,7 @@ locator_version: "1.0"
 query_topic: [brief description]
 documents_found: [total count]
 categories_searched: [count]
+paths_sanitized: [count]
 ---
 
 <thinking>
@@ -166,6 +169,7 @@ categories_searched: [count]
 - **query_topic**: Short description extracted from task (e.g., "authentication research", "ticket ENG-123")
 - **documents_found**: Count of all document paths returned across all categories
 - **categories_searched**: Count of unique categories searched (e.g., Mission Statements, Specifications, Epics, Implementation Plans, QA Reports, Research Reports, Decisions, Personal Notes)
+- **paths_sanitized**: Count of file paths that required /searchable/ stripping (0 if none)
 
 ### Thinking Section Format
 
@@ -184,7 +188,7 @@ Example:
 Search strategy for authentication documentation:
 - Used grep: grep -r "auth" thoughts/ --exclude-dir=searchable -l
 - Found 9 matches across 6 directories (missions: 1, specs: 1, epics: 1, plans: 2, qa: 1, research: 2, decisions: 1)
-- Sanitized 3 paths containing /searchable/
+- Path sanitization: Stripped /searchable/ from 3 paths
 - Verified relevance with head -n 5 for 9 files
 - Total documents: 9 (after filtering)
 </thinking>
