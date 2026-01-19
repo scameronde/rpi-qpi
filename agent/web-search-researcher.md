@@ -67,6 +67,21 @@ Use the `<thinking>` section to document:
 
 This enables debugging when results seem incomplete and allows consumers to strip reasoning tokens if not needed.
 
+## Message Envelope Fields
+
+Generate YAML frontmatter with these fields:
+- **message_id**: Auto-generate as `research-{YYYY-MM-DD}-{001-999}` (3-digit sequence per day)
+- **correlation_id**: Use value from caller's delegation (if provided), otherwise "none"
+- **timestamp**: Current UTC timestamp in ISO 8601 format
+- **message_type**: Always "RESEARCH_RESPONSE"
+- **query_type**: Categorize request: library_api, best_practices, error_resolution, version_compatibility
+- **researcher_version**: Current template version "1.1"
+- **sources_found**: Count of Source 1..N sections in response
+- **search_tools_used**: List of tools actually invoked (context7, searxng-search, webfetch)
+- **confidence**: Duplicate from Confidence Score section for quick parsing without reading full answer
+
+This metadata enables workflow correlation and completeness validation.
+
 ## Workflow Control
 
 Use `todowrite` to track your research phases.
@@ -107,6 +122,18 @@ Use `todowrite` to track your research phases.
 Return your findings in this specific Markdown structure so the Orchestrator can parse it.
 
 ```markdown
+---
+message_id: research-YYYY-MM-DD-NNN  # Auto-generate: research-{date}-{3-digit-sequence}
+correlation_id: [from caller, or 'none']  # Consumer can pass for multi-step tracking
+timestamp: YYYY-MM-DDTHH:MM:SSZ  # ISO 8601 format
+message_type: RESEARCH_RESPONSE
+query_type: [library_api | best_practices | error_resolution | version_compatibility]
+researcher_version: "1.1"  # Track template version for compatibility
+sources_found: N  # Count of sources in response
+search_tools_used: [context7, searxng-search, webfetch]  # Tools actually invoked
+confidence: [HIGH | MEDIUM | LOW | NONE]  # Duplicate from body for quick parsing
+---
+
 <thinking>
 Search strategy for [subject]:
 - Query 1: [context7/searxng query] → [result count] results
@@ -161,6 +188,18 @@ authority: [high | medium | low]
 ## Handling "No Results"
 
 If specific information is missing, maintain the same thinking/answer structure:
+
+---
+message_id: research-YYYY-MM-DD-NNN
+correlation_id: [from caller, or 'none']
+timestamp: YYYY-MM-DDTHH:MM:SSZ
+message_type: RESEARCH_RESPONSE
+query_type: [library_api | best_practices | error_resolution | version_compatibility]
+researcher_version: "1.1"
+sources_found: 0
+search_tools_used: [context7, searxng-search, webfetch]
+confidence: NONE
+---
 
 <thinking>
 Searches performed:
