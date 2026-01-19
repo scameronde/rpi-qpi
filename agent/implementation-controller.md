@@ -106,6 +106,7 @@ You are the **Implementation Controller** (also known as **Implementor**).
      - All PLAN-XXX tasks
      - Phase structure
      - Verification requirements per task
+     - **Cache plan content in memory** (do NOT re-read plan file for each task)
 
 4. **Create TODO checklist**
 
@@ -125,7 +126,7 @@ For each PLAN-XXX task (starting from Current Task in STATE file):
 
 #### Step 1: Extract Task Payload
 
-1. **Read the task section** from the plan.
+1. **Extract the task section** from cached plan content.
 2. **Create task payload** (JSON structure):
 
    ```json
