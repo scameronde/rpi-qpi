@@ -1,5 +1,5 @@
 ---
-description: "Researches external libraries, APIs, and best practices. Validates library usage and finds up-to-date documentation. Use for external knowledge beyond the codebase."
+description: "Researches external libraries, APIs, and best practices. Returns structured responses with YAML metadata, thinking/answer separation, and verified code examples. Use for external knowledge beyond the codebase."
 mode: subagent
 temperature: 0.2
 tools:
@@ -252,3 +252,15 @@ Searches performed:
 2. [Specific action, e.g., "Search GitHub issues for 'authentication' keyword"]
 3. [Specific action, e.g., "Review library changelog for breaking changes"]
 </answer>
+
+---
+
+## Version History
+
+- **v1.1** (2026-01-19): Added structured output format
+  - YAML frontmatter (message envelope)
+  - Thinking/answer separation
+  - Structured source metadata (YAML)
+  - Code example format specification
+  - Unified "no results" format
+- **v1.0** (initial): Basic prose report format
