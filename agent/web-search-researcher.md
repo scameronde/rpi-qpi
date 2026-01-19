@@ -160,7 +160,35 @@ authority: [high | medium | low]
 
 ## Handling "No Results"
 
-If specific information is missing:
-1. Report exactly what you searched.
-2. State "Status: ⚠️ No Definitive Answer Found".
-3. Recommend next steps (e.g., "Check source code directly").
+If specific information is missing, maintain the same thinking/answer structure:
+
+<thinking>
+Searches performed:
+- Context7 query: "[query]" → [N] results ([status: relevant/irrelevant/outdated])
+- SearXNG query: "[query]" → [N] results ([status])
+- Webfetch attempt: [URL] → [HTTP status code or error]
+
+Conclusion: No definitive answer found for [specific aspect]. [Reasoning why searches failed]
+</thinking>
+
+<answer>
+# Web Research Report: [Subject]
+
+## Quick Answer
+⚠️ **No Definitive Answer Found**
+
+Searches performed:
+- Context7: "[query]" ([N] results, [status])
+- SearXNG: "[query]" ([N] results, [status])
+- Webfetch: [URL] ([error/404/etc.])
+
+[Brief explanation of why searches failed]
+
+## Confidence Score: NONE
+**Reasoning**: No authoritative sources found for [version/aspect]. [Details about what was tried]
+
+## Recommended Next Steps
+1. [Specific action, e.g., "Check source code directly at github.com/org/repo"]
+2. [Specific action, e.g., "Search GitHub issues for 'authentication' keyword"]
+3. [Specific action, e.g., "Review library changelog for breaking changes"]
+</answer>
