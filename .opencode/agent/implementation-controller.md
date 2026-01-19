@@ -6,11 +6,11 @@ tools:
   bash: true
   edit: true # For updating STATE file
   read: true
-  write: false # STATE updates via edit only
+  write: true # STATE updates via edit only
   glob: false # Task Executor handles file discovery
   grep: false # Task Executor handles code search
   list: true
-  patch: false
+  patch: true
   todoread: true
   todowrite: true
   webfetch: false
