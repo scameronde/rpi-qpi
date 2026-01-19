@@ -434,7 +434,7 @@ Pattern-finder output includes actual code excerpts with context (imports, class
 
 Frequency uses quantified format: `Dominant (10/12 files, 83%)` instead of vague "High/Low" labels. Use this for data-driven decisions about which pattern to follow.
 
-### When to Use Each Codebase Subagent
+### When to Use Each Research Subagent
 
 - **codebase-locator**: Find file paths and entry points
   - Use when: "Where is feature X implemented?"
@@ -451,6 +451,11 @@ Frequency uses quantified format: `Dominant (10/12 files, 83%)` instead of vague
   - Output: Code snippets showing all variations with usage statistics
   - Variable output: Scales naturally with findings (no scope levels needed)
 
+- **web-search-researcher**: Research external libraries and APIs
+  - Use when: "What's the current API syntax for library X?"
+  - Output: Verified documentation with code examples and version info
+  - Citation format: URL-based (not file:line)
+
 ### Token Efficiency
 
 Pattern-finder's variable template design eliminates the fixed verbosity problem:
@@ -458,3 +463,99 @@ Pattern-finder's variable template design eliminates the fixed verbosity problem
 - 2-3 variations (typical): ~400-600 tokens
 - 5+ variations (complex): ~1000+ tokens
 - No wasted sections (unlike locator's 76% waste or analyzer's 60-70% waste for focused queries)
+
+## Web-Search-Researcher Output Format and Usage
+
+The web-search-researcher subagent provides verified external knowledge (library APIs, best practices, error resolution) using a three-part structured response.
+
+### Response Structure
+
+All responses include:
+- **YAML frontmatter** (message envelope with correlation_id, sources_found, confidence, search_tools_used)
+- **`<thinking>` section** (search strategy, queries executed, verification steps - for debugging)
+- **`<answer>` section** (structured findings with 5 sections)
+
+### Output Sections
+
+1. **Quick Answer** (~50-100 tokens)
+   - Direct, actionable summary
+   - Use case: Fast reference without reading full report
+
+2. **Source 1..N** (variable count, ~150-300 tokens each)
+   - YAML metadata: url, type, date, version, authority
+   - Key Findings (prose explanation)
+   - Verified Code Example (with source URL, language, line numbers)
+
+3. **Confidence Score** (~20-30 tokens)
+   - HIGH | MEDIUM | LOW | NONE
+   - Reasoning (why this confidence level)
+
+4. **Version Compatibility** (~50-75 tokens)
+   - Version range
+   - Breaking changes notes
+
+5. **Warnings** (~50-100 tokens)
+   - Deprecations, experimental features, common pitfalls
+
+### Source Type Vocabulary
+
+- `official_docs`: Framework/library official documentation (authority: high)
+- `github_issue`: GitHub issues, PRs, discussions (authority: medium)
+- `stackoverflow`: Stack Overflow Q&A (authority: medium)
+- `blog`: Technical blogs and articles (authority: low)
+- `academic_paper`: Research papers, arXiv preprints (authority: high for theory)
+- `community_forum`: Reddit, Discord, forums (authority: low)
+
+### Citation Format
+
+When citing web research in reports/plans, use URL-based format:
+
+```markdown
+* **Evidence (Web Research):** https://docs.example.com/api/v3
+* **Date:** 2025-12 (verified current as of 2026-01-19)
+* **Type:** official_docs (authority: high)
+* **Excerpt:**
+  ```javascript
+  const example = apiCall();
+  ```
+```
+
+This differs from codebase citations (`path/to/file.ext:line-line`) but maintains same evidence structure (source + excerpt).
+
+### When to Use web-search-researcher
+
+- **Library APIs**: External library syntax, configuration, best practices
+- **Error Resolution**: Specific error messages and solutions
+- **Version Compatibility**: Breaking changes, migration guides
+- **Best Practices**: Current community recommendations
+
+### When to Use context7 Instead
+
+- **Well-supported libraries**: Faster RAG-based lookups for stable libraries
+- **Quick syntax checks**: Simple API reference lookups
+- **Trade-off**: context7 may have stale data for rapidly evolving libraries
+
+### Delegation Pattern
+
+```
+task({
+  subagent_type: "web-search-researcher",
+  description: "Research library API patterns",
+  prompt: "Research [library] [version] [specific aspect]. Focus on official documentation. Correlation: [workflow-id]"
+})
+```
+
+### Response Parsing
+
+1. **Quick validation**: Check YAML frontmatter `confidence` field
+2. **Debugging**: Inspect `<thinking>` if results seem incomplete
+3. **Extract findings**: Parse `<answer>` sections for citations
+4. **Handle "no results"**: Response maintains same structure with Quick Answer = "⚠️ **No Definitive Answer Found**"
+
+### Token Efficiency
+
+- Average response: ~600-900 tokens (2 sources)
+- Frontmatter overhead: +50 tokens (+6%)
+- Thinking overhead: +100 tokens (+13%)
+- **Trade-off**: +16% tokens for reliability and debugging capability
+- Consumers can strip `<thinking>` section if not needed (-13% net)
