@@ -58,6 +58,25 @@ If a document makes a bold technical claim that seems questionable (or potential
 Report back to the Orchestrator in this structured format:
 
 ```markdown
+---
+message_id: thoughts-YYYY-MM-DD-NNN
+correlation_id: [optional, provided by caller]
+timestamp: YYYY-MM-DDTHH:MM:SSZ
+message_type: ANALYSIS_RESPONSE
+source_document: path/to/document.md
+document_date: YYYY-MM-DD
+document_status: [Active/Deprecated/Unknown]
+reliability: [High/Medium/Low]
+---
+
+<thinking>
+Analysis reasoning process:
+- Document context and date evaluation
+- Signal vs noise filtering decisions
+- Verification strategy (if performed)
+</thinking>
+
+<answer>
 ## Analysis: [Filename]
 
 ### Metadata
@@ -67,12 +86,30 @@ Report back to the Orchestrator in this structured format:
 
 ### Extracted Signal
 - **Decision**: [The core decision made]
+  - **Evidence**: `path/to/document.md:line-line`
+  - **Excerpt**:
+    ```markdown
+    [1-6 lines from source document]
+    ```
+
 - **Constraint**: [Hard technical constraints, e.g., Node version, DB type]
+  - **Evidence**: `path/to/document.md:line-line`
+  - **Excerpt**:
+    ```markdown
+    [1-6 lines from source document]
+    ```
+
 - **Spec**: [Specific values, e.g., timeouts, ports, naming conventions]
+  - **Evidence**: `path/to/document.md:line-line`
+  - **Excerpt**:
+    ```markdown
+    [1-6 lines from source document]
+    ```
 
 ### Verification Notes (If performed)
 - Checked `[claim]` against `[code_path]`: [Matched/Mismatch]
 - *Warning*: Document appears to contradict code at `src/...`
+</answer>
 ```
 
 ## Guidelines
@@ -80,4 +117,8 @@ Report back to the Orchestrator in this structured format:
 1. **Be Ruthless**: If a 10-page doc has 1 decision, return 5 lines of text. Do not summarize the fluff.
 2. **Quote Exact Values**: Never say "a timeout was set." Say "Timeout: 5000ms".
 3. **Flag Conflicts**: If the document says "Architecture X" but you know the project is "Architecture Y", explicitly flag this as **"Potentially Outdated"**.
+4. **Extract Line Numbers**: For each signal item (Decision/Constraint/Spec), provide exact line numbers in `path:line-line` format.
+5. **Include Excerpts**: For each signal item, extract 1-6 lines from the source document showing the evidence. Include surrounding context if needed for clarity.
+6. **Generate Message ID**: Create a unique message_id in format `thoughts-YYYY-MM-DD-NNN` where NNN is a sequential number (001, 002, etc.).
+7. **Accept Correlation ID**: If the caller provides a correlation_id, include it in the YAML frontmatter. Otherwise, omit this field.
 ```
