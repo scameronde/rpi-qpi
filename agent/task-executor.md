@@ -334,61 +334,246 @@ Recommendation: Add src/types.ts to File(s) list or grant adjacent edit permissi
 
 Always end with this structured report:
 
+### Example: SUCCESS Status
+
 ```markdown
-## ✅ Task Execution: PLAN-XXX - [Task Name]
+<thinking>
+Task payload parsing:
+- Task ID: PLAN-042
+- Files: path/to/file1.ts, path/to/file2.ts
+- Instruction: Add type annotations to validation functions
+
+Evidence verification:
+- Checked path/to/file1.ts:120-135 - function is_valid exists
+- Line numbers match task evidence
+
+Strategy:
+- Add TypeScript type annotations to 3 functions
+- Update import statement to include type imports
+
+Execution:
+- Added type annotations to is_valid, validate_input, check_format
+- Updated imports from 'import { schema }' to 'import { schema, type ValidationResult }'
+- Re-read file to verify changes applied correctly
+
+Adaptations:
+- Minor line shift detected (+2 lines from task evidence)
+- Applied changes to actual locations (lines 122-137 instead of 120-135)
+</thinking>
+
+<answer>
+---
+message_id: executor-2026-01-19-001
+correlation_id: plan-2026-01-18-auth-hardening-task-042
+timestamp: 2026-01-19T10:30:00Z
+message_type: EXECUTION_RESPONSE
+task_id: PLAN-042
+status: SUCCESS
+executor_version: "1.1"
+files_modified: 2
+files_created: 0
+files_deleted: 0
+adaptations_made: 1
+---
+
+## ✅ Task Execution: PLAN-042 - Add Type Annotations to Validation Functions
 
 **Status**: SUCCESS
 
-**Changes Made**:
-- Modified: `path/to/file1.ts` (added type annotations to 3 functions)
-- Modified: `path/to/file2.ts` (updated import statement)
+### Changes Made
 
-**Adaptations**:
-- Line numbers in evidence shifted by 2 lines; applied changes to actual locations
+**Modified Files**:
+- `path/to/file1.ts` - Added type annotations to 3 functions (is_valid, validate_input, check_format)
+- `path/to/file2.ts` - Updated import statement to include ValidationResult type
 
-**Ready for Verification**:
+**Created Files**:
+- (none)
+
+**Deleted Files**:
+- (none)
+
+**Adjacent Edits**:
+- (none)
+
+### Adaptations Made
+
+- **Adaptation 1**: Line numbers shifted by 2 lines from task evidence
+  - **Task Evidence**: `path/to/file1.ts:120-135` (referenced in task)
+  - **Actual Location**: `path/to/file1.ts:122-137` (where functions actually are)
+  - **Before Excerpt** (lines 122-125):
+    ```typescript
+    // Line 122
+    function is_valid(input) {
+      const result = schema.validate(input);
+      return result.success;
+    }
+    ```
+  - **After Excerpt** (lines 122-125):
+    ```typescript
+    // Line 122
+    function is_valid(input: string): boolean {
+      const result: ValidationResult = schema.validate(input);
+      return result.success;
+    }
+    ```
+  - **Reasoning**: Code was added earlier in the file, shifting all line numbers down by 2. Applied type annotations to actual location.
+
+### Ready for Verification
+
+The following verification should be run (from task's "Done When"):
 - Run: `pyright path/to/file1.ts`
 - Expected: No errors for annotated functions
 
-**Next Step**: Control Agent should verify and commit.
+### Notes
+
+- All type annotations follow existing TypeScript conventions in the codebase
+- ValidationResult type imported from schema module
+</answer>
 ```
 
-Or if blocked:
+### Example: BLOCKED Status
 
 ```markdown
-## ⚠️ Task Blocked: PLAN-XXX - [Task Name]
+<thinking>
+Task payload parsing:
+- Task ID: PLAN-058
+- Files: src/foo.ts
+- Instruction: Add type annotation to function, store type in types.ts
+
+Evidence verification:
+- Checked src/foo.ts:42-50 - function exists as expected
+
+Strategy analysis:
+- Need to add type annotation to function in src/foo.ts
+- Type definition must be stored in src/types.ts (shared types module)
+
+Blocker detected:
+- src/types.ts is NOT listed in task's File(s) field
+- No "allowedAdjacentEdits" rule permits editing type definition files
+- Cannot complete task without editing src/types.ts
+
+Decision: BLOCK and report to Control Agent
+</thinking>
+
+<answer>
+---
+message_id: executor-2026-01-19-002
+correlation_id: plan-2026-01-18-type-safety-task-058
+timestamp: 2026-01-19T11:15:00Z
+message_type: EXECUTION_RESPONSE
+task_id: PLAN-058
+status: BLOCKED
+executor_version: "1.1"
+files_modified: 0
+files_created: 0
+files_deleted: 0
+adaptations_made: 0
+---
+
+## ⚠️ Task Blocked: PLAN-058 - Add Type Annotation to Processing Function
 
 **Status**: BLOCKED
 
-**Blocker**: Task requires editing `config/settings.yaml` but file is not in allowed list.
+### Blocker
 
-**Evidence**: Task instruction step 3 says "Update timeout value in config/settings.yaml"
+**Blocker**: Task requires editing `src/types.ts` but file is not in allowed files list.
 
-**Recommendation**: Add `config/settings.yaml` to task's File(s) field OR grant adjacent edit permission.
+**Evidence**: Task instruction step 2 says "Define ProcessingResult type in src/types.ts" but only `src/foo.ts` is listed in File(s) field.
 
-**Next Step**: Control Agent should update task scope or clarify requirements.
+**Recommendation**: Add `src/types.ts` to task's File(s) field OR add adjacent edit rule: "may create/update type definitions in src/types.ts"
+
+### Context
+
+The task cannot be completed without defining the type in the shared types module. Function annotation in src/foo.ts depends on type definition in src/types.ts.
+
+### Next Step
+
+Control Agent should update task scope to include src/types.ts or grant adjacent edit permission for type definition files.
+</answer>
 ```
 
-Or if failed:
+### Example: FAILED Status
 
 ```markdown
-## ❌ Task Failed: PLAN-XXX - [Task Name]
+<thinking>
+Task payload parsing:
+- Task ID: PLAN-073
+- Files: src/database/migrate.ts
+- Instruction: Add migration function using deprecated library API
+
+Evidence verification:
+- Checked src/database/migrate.ts - file exists
+- Checked import statements
+
+Strategy:
+- Implement runMigration function using db-migrate library
+- Use API from task specification
+
+Execution attempt:
+- Attempted to use context7 to verify db-migrate API
+- API lookup shows library version 3.x removed createMigration() method
+- Task specifies using createMigration() which no longer exists
+- Alternative API (runMigration()) has different signature requiring config object
+
+Failure analysis:
+- Task instruction references deprecated API that doesn't exist in current library version
+- Cannot implement task as specified without causing runtime errors
+- Need clarification on which API version to use
+</thinking>
+
+<answer>
+---
+message_id: executor-2026-01-19-003
+correlation_id: plan-2026-01-18-db-refactor-task-073
+timestamp: 2026-01-19T14:45:00Z
+message_type: EXECUTION_RESPONSE
+task_id: PLAN-073
+status: FAILED
+executor_version: "1.1"
+files_modified: 0
+files_created: 0
+files_deleted: 0
+adaptations_made: 0
+---
+
+## ❌ Task Failed: PLAN-073 - Add Database Migration Function
 
 **Status**: FAILED
 
-**Failure Reason**: [Detailed explanation of what went wrong]
+### Failure Reason
 
-**Error Details**: [Specific error messages, stack traces, or failure conditions]
+Task instruction references deprecated API that no longer exists in current library version.
+
+### Error Details
+
+**Library**: db-migrate v3.0.0 (from package.json)  
+**Deprecated API**: `createMigration(name, options)` (referenced in task instruction step 2)  
+**Current API**: `runMigration(config)` (requires different parameters)
 
 **Attempted Actions**:
-- [What you tried to do]
-- [What actually happened]
+1. Used context7 to look up db-migrate API documentation
+2. Found that createMigration() was removed in v3.0.0 (breaking change)
+3. Current library requires runMigration(config) with config object instead of name/options
 
-**Root Cause**: [Analysis of why the failure occurred]
+**What actually happened**:
+- API signature mismatch detected before implementation
+- Cannot implement task as written without runtime errors
 
-**Recommendation**: [Suggested fix or next steps for Control Agent]
+### Root Cause
 
-**Next Step**: Control Agent should investigate and provide guidance or update task requirements.
+Task was likely written against db-migrate v2.x documentation, but project uses v3.x which has breaking API changes. The migration path requires different parameters and approach.
+
+### Recommendation
+
+Control Agent should either:
+1. Update task instruction to use db-migrate v3.x API (runMigration with config object)
+2. Downgrade db-migrate to v2.x if createMigration API is required
+3. Provide updated task with correct API reference
+
+### Next Step
+
+Control Agent should investigate library version compatibility and provide updated task instruction with correct API usage.
+</answer>
 ```
 
 ## Quality Checklist (Internal)
