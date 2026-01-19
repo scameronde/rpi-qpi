@@ -40,14 +40,21 @@ Use `read` to ingest the document. Immediately identify:
 - **Status**: Draft vs. Final.
 - **Author**: Authority level (e.g., Lead Architect vs. Intern brainstorming).
 
-### 2. Signal Extraction (Sequential Thinking)
+### 2. Message Envelope
+Before analysis, prepare message metadata:
+- **Accept correlation_id**: If provided by Orchestrator, use it for workflow tracking
+- **Generate message_id**: Format `thoughts-YYYY-MM-DD-NNN` (increment NNN within same day)
+- **Capture timestamp**: ISO 8601 format (YYYY-MM-DDTHH:MM:SSZ)
+- **Document metadata**: Extract date, status from document during analysis
+
+### 3. Signal Extraction (Sequential Thinking)
 Use `sequential-thinking` to process the text.
 
 **Model for Distinction:**
 - **Signal (Keep)**: "We decided to use Redis." / "Max payload is 1MB." / "JWT is required."
 - **Noise (Discard)**: "What if we used Redis?" / "I think 1MB is enough." / "Discussing auth options."
 
-### 3. Verification (Optional)
+### 4. Verification (Optional)
 If a document makes a bold technical claim that seems questionable (or potentially outdated), use `bash` to verify it against the actual code.
 - *Example*: Document says "Rate limit is 100/min".
 - *Action*: `grep -r "100" src/middleware`
