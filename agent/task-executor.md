@@ -156,6 +156,32 @@ You receive a JSON payload with this structure:
 Output a structured report for the Control Agent:
 
 ```markdown
+<!-- Generate message_id from timestamp + sequence (executor-2026-01-18-001). Accept correlation_id from caller if provided. Include atomic counts for files and adaptations. -->
+
+<thinking>
+Document your reasoning process:
+1. Task payload parsing (taskId, files, instruction)
+2. Evidence verification (check file:line references match reality)
+3. Strategy planning (approach to implementing the task)
+4. Execution steps (what you actually did)
+5. Adaptation reasoning (why you deviated from task if applicable)
+</thinking>
+
+<answer>
+---
+message_id: executor-YYYY-MM-DD-NNN
+correlation_id: plan-YYYY-MM-DD-[ticket]-task-XXX
+timestamp: YYYY-MM-DDTHH:MM:SSZ
+message_type: EXECUTION_RESPONSE
+task_id: PLAN-XXX
+status: SUCCESS | BLOCKED | FAILED
+executor_version: "1.1"
+files_modified: N
+files_created: N
+files_deleted: N
+adaptations_made: N
+---
+
 ## Task Execution Report: PLAN-XXX
 
 **Status**: SUCCESS | FAILED | BLOCKED
@@ -195,6 +221,7 @@ The following verification should be run (from task's "Done When"):
 ### Notes
 
 - Any additional context or warnings for Control Agent
+</answer>
 ```
 
 ## Autonomy Guidelines
