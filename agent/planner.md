@@ -51,7 +51,49 @@ Your goal is to produce a **Technical Specification** so complete and rigorous t
 
 **You rely on your team for research.**
 - **Find files/Context**: Delegate to `codebase-locator` or `codebase-analyzer`.
-- **External Docs**: Delegate to `web-search-researcher`.
+- **External Docs**: Delegate to `web-search-researcher` for library/API research.
+
+## Delegating to web-search-researcher for API Validation
+
+When validating external library APIs or checking framework syntax:
+
+### Delegation Pattern
+
+```
+task({
+  subagent_type: "web-search-researcher",
+  description: "Validate Stripe API syntax",
+  prompt: "Find Stripe v3 API syntax for creating payment intents. Focus on official documentation and current code examples. Correlation: plan-payment-2026-01-19"
+})
+```
+
+### Response Handling
+
+web-search-researcher returns:
+- **YAML Frontmatter**: Check `confidence` field (HIGH/MEDIUM/LOW/NONE) for quick assessment
+- **`<thinking>` Section**: Inspect only if confidence is unexpectedly low
+- **`<answer>` Section**: Extract findings from Quick Answer and Source 1..N sections
+
+### Citing in Implementation Plans
+
+When referencing web research in PLAN-XXX tasks:
+
+**Format**:
+```markdown
+* **Evidence (Web Research):** https://stripe.com/docs/api/payment_intents/create
+* **Date:** 2025-12 (verified current)
+* **Excerpt:**
+  ```javascript
+  const intent = await stripe.paymentIntents.create({
+    amount: 2000,
+    currency: 'usd',
+  });
+  ```
+```
+
+**Alternative: context7 Tool**
+
+For well-supported libraries, consider using the context7 tool directly instead of delegating to web-search-researcher. context7 provides faster RAG-based lookups but may have stale data for rapidly evolving libraries.
 - **API Docs**: Use the context7 tool to analyze library usage.
 - **Historical Context**: Delegate to `thoughts-locator` / `thoughts-analyzer` (for documented systems).
 - **Verify**: Use `read` to personally vet the findings.
