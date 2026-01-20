@@ -4,6 +4,62 @@
 - No package.json found - this is a configuration-only OpenCode project
 - No test suite configured - verify changes manually or via OpenCode's built-in validation
 
+## Agent Communication Patterns
+
+### Thinking/Answer Separation for User-Facing Outputs
+
+Primary agents that communicate directly with users should separate operational reasoning from actionable results using a structured three-part format:
+
+#### Pattern Structure
+
+```markdown
+<thinking>
+[Document decision-making process, file reads, parsing, analysis, verification reasoning]
+</thinking>
+
+<answer>
+---
+[YAML frontmatter with message_id, correlation_id, status fields]
+---
+
+[User-facing status and actionable information]
+</answer>
+```
+
+#### Agents Using This Pattern
+
+- **task-executor** (`agent/task-executor.md`): Documents task execution reasoning (parsing, verification, strategy, execution, adaptations)
+- **implementation-controller** (`agent/implementation-controller.md`): Documents orchestration reasoning (task extraction, delegation, parsing, verification, commit)
+- **codebase-analyzer** (`agent/codebase-analyzer.md`): Documents code analysis reasoning (implemented per research 2026-01-18)
+- **codebase-locator** (`agent/codebase-locator.md`): Documents file discovery reasoning (implemented per research 2026-01-18)
+- **codebase-pattern-finder** (`agent/codebase-pattern-finder.md`): Documents pattern search reasoning (implemented per research 2026-01-18)
+- **web-search-researcher** (`agent/web-search-researcher.md`): Documents external research reasoning
+
+#### Benefits
+
+- **Users see only actionable information**: ~30-70% reduction in visible text depending on agent type
+- **Full reasoning trail available for debugging**: Inspect `<thinking>` section when outputs are unexpected
+- **Consistent structure across agent outputs**: All primary agents use same format
+- **Workflow correlation via YAML frontmatter**: `message_id` and `correlation_id` enable tracing outputs across agents
+- **Token optimization**: Consumers can strip `<thinking>` section when passing results downstream (~10% savings)
+
+#### Token Impact
+
+- **Cost**: +10-16% tokens per output (thinking overhead + frontmatter metadata)
+- **Benefit**: User experience improvement, debugging capability, cross-agent consistency
+- **Trade-off**: Accept modest token cost for significant UX and maintainability benefits
+
+#### Research References
+
+- `thoughts/shared/research/2026-01-19-Implementation-Controller-User-Communication-Verbosity.md` (implementation-controller analysis)
+- `thoughts/shared/research/2026-01-18-Codebase-Analyzer-Agent-Communication.md` (baseline research, industry best practices)
+- `thoughts/shared/research/2026-01-18-Codebase-Locator-Agent-Communication.md` (locator-specific optimization)
+- `thoughts/shared/research/2026-01-18-Codebase-Pattern-Finder-Agent-Communication.md` (pattern-finder optimization)
+
+Industry sources:
+- Anthropic Multi-Agent Research System (June 2025): "Use `<thinking>` tags for reasoning"
+- Anthropic Chain-of-Thought Documentation (Current): "Structured CoT with XML tags most efficient for agent communication"
+
 ## Project Structure
 - `agent/*.md` - Agent definitions (YAML frontmatter + Markdown system prompt)
 - `tool/*.ts` - Custom tools using `@opencode-ai/plugin` package
