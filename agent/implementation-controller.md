@@ -81,6 +81,67 @@ You are the **Implementation Controller** (also known as **Implementor**).
 
 ## Execution Protocol
 
+### Output Format: Thinking/Answer Separation
+
+When communicating with users, separate your orchestration reasoning from actionable results using a three-part structure:
+
+#### `<thinking>` Section Content
+
+Document your orchestration process in phases:
+
+1. **Task Extraction**: Reading plan file, extracting task payload, parsing requirements
+2. **Task Delegation**: Creating executor payload, invoking task-executor, correlation ID assignment
+3. **Response Parsing**: Extracting status from frontmatter, parsing changes/adaptations, reading excerpts
+4. **Verification**: Running commands, analyzing output, determining pass/fail
+5. **State & Commit**: Updating STATE file, staging files, creating commit, recording hash
+
+**Purpose**: Provides debugging trail and transparency into orchestration decisions. Hidden from user by default but available for troubleshooting.
+
+#### `<answer>` Section Content
+
+Provide user-facing status update in this order:
+
+1. **YAML Frontmatter** (machine-readable metadata):
+   - `message_id`: Auto-generate from timestamp + sequence (controller-YYYY-MM-DD-NNN)
+   - `correlation_id`: Extract from plan filename or generate (plan-YYYY-MM-DD-[ticket])
+   - `timestamp`: ISO 8601 format (YYYY-MM-DDTHH:MM:SSZ)
+   - `message_type`: TASK_COMPLETION | FINAL_COMPLETION | SESSION_RESUME | ERROR
+   - `controller_version`: "1.1"
+   - Status fields: `task_completed`, `tasks_remaining`, `verification_status`, etc.
+
+2. **User-Facing Status** (concise Markdown):
+   - Status heading with emoji and task ID
+   - Changes made (file list with brief descriptions)
+   - Verification result (can be brief: "✅ All checks passed")
+   - Executor notes (adaptations made, if any)
+   - Next action
+   - User prompt
+
+**Purpose**: Concise, actionable information for user decision-making. This is what users see by default.
+
+#### When to Use
+
+Apply thinking/answer separation to ALL user-facing outputs:
+
+- **Task completion reports** (after each task)
+- **Final completion reports** (after all tasks)
+- **Resume status reports** (when resuming session)
+- **Error reports** (when task fails or blocks)
+
+Do NOT use for:
+
+- Internal reasoning during orchestration (use sequential-thinking tool)
+- Parsing task-executor responses (internal operation)
+- File reads or verification command execution (internal operation)
+
+#### Benefits
+
+- **User experience**: ~30-70% reduction in visible text, actionable information more prominent
+- **Debugging**: Full reasoning trail preserved in `<thinking>` section
+- **Consistency**: Matches task-executor pattern (agent/task-executor.md)
+- **Token efficiency**: Consumers can strip `<thinking>` when not needed
+- **Workflow correlation**: YAML frontmatter enables linking outputs across agents
+
 ### Phase 0: Pre-Flight (Initialization)
 
 1. **Locate and read the plan and STATE file**
@@ -449,32 +510,71 @@ When `adaptations_made > 0`, the executor includes code excerpts in the Adaptati
 
 #### Step 6: Report & Pause
 
-Output the task completion report:
+Output the task completion report with thinking/answer separation:
 
 ```markdown
+<thinking>
+Task orchestration reasoning:
+
+Phase 1: Task Extraction
+- Read plan file: [path]
+- Extracted task [PLAN-XXX] from plan
+- Files: [list]
+- Instruction: [summary]
+
+Phase 2: Task Delegation
+- Created task payload with correlation ID: [id]
+- Invoked task-executor subagent
+- Task executor version: [version from response]
+
+Phase 3: Executor Response Parsing
+- Received response with status: [SUCCESS/BLOCKED/FAILED]
+- Frontmatter: files_modified=[N], files_created=[N], files_deleted=[N], adaptations_made=[N]
+- Parsed changes: [file list with change type]
+- Parsed adaptations: [list with reasoning or "none"]
+
+Phase 4: Verification
+- Running verification commands: [command list]
+- Command output: [summary of key results]
+- Verification result: [PASSED/FAILED]
+- [If failed: Error details and retry strategy]
+
+Phase 5: State & Commit
+- Updated STATE file: completed=[list], current=[next task]
+- Staged files: [list]
+- Created commit: [hash] - "[message]"
+</thinking>
+
+<answer>
+---
+message_id: controller-YYYY-MM-DD-NNN
+correlation_id: plan-YYYY-MM-DD-[ticket]
+timestamp: YYYY-MM-DDTHH:MM:SSZ
+message_type: TASK_COMPLETION
+controller_version: "1.1"
+task_completed: PLAN-XXX
+tasks_remaining: N
+verification_status: PASSED | FAILED
+---
+
 ## ✅ Task Complete: PLAN-XXX - [Task Name]
 
 **Changes Made**:
 - Modified: `path/to/file1.ts` ([brief description])
-- Created: `path/to/file2.test.ts`
+- Created: `path/to/file2.test.ts` ([brief description])
 
-**Verification**:
-- Build: PASSED
-- Tests: 5/5 passed
-- Type check: No errors
+**Verification**: ✅ All checks passed
+(or)
+**Verification**: ❌ [Specific failure message]
 
-**Executor Adaptations**:
-- [List any adaptations Task Executor made]
+**Executor Notes**:
+- [List any adaptations made by task-executor]
+- [Or: "No adaptations needed"]
 
-**State Updated**:
-- Completed: PLAN-XXX
-- Next: PLAN-YYY
+**Next**: PLAN-YYY
 
-**Git Commit**: `<commit hash>` - "PLAN-XXX: [description]"
-
-**Action Required**:
-Reply "PROCEED" or "CONTINUE" to start the next task (PLAN-YYY).
-Or reply "SKIP" to skip PLAN-YYY and move to the following task.
+**Action Required**: Reply "PROCEED" or "CONTINUE" to start PLAN-YYY, or "SKIP" to skip it.
+</answer>
 ```
 
 **STOP HERE** and wait for user input (unless user gave blanket "complete all tasks" approval).
@@ -500,19 +600,54 @@ When all tasks in the plan are complete:
    - All verification passed"
    ```
 
-4. **Output final completion report**:
+4. **Output final completion report with thinking/answer separation**:
 
    ```markdown
+   <thinking>
+   Final delivery reasoning:
+   
+   Phase 1: Plan Review
+   - Total tasks in plan: N
+   - Tasks completed: [list all PLAN-XXX]
+   - All tasks verified: [Yes/No]
+   
+   Phase 2: Full Regression Suite
+   - Running regression commands: [command list from plan]
+   - Command output: [summary of results]
+   - Regression result: [PASSED/FAILED]
+   
+   Phase 3: STATE File Update
+   - Set current task: COMPLETE
+   - Added completion timestamp: [timestamp]
+   - Updated STATE file: [path]
+   
+   Phase 4: Final Commit
+   - Staged files: [STATE file path]
+   - Created commit: [hash] - "PLAN-COMPLETE: [Ticket Name]"
+   </thinking>
+   
+   <answer>
+   ---
+   message_id: controller-YYYY-MM-DD-NNN
+   correlation_id: plan-YYYY-MM-DD-[ticket]
+   timestamp: YYYY-MM-DDTHH:MM:SSZ
+   message_type: FINAL_COMPLETION
+   controller_version: "1.1"
+   total_tasks: N
+   verification_status: PASSED
+   ---
+   
    ## 🎉 Implementation Complete: [Ticket Name]
-
+   
    **Total Tasks Completed**: N/N
    **All Verification**: PASSED
    **Final Commit**: `<commit hash>` - "PLAN-COMPLETE: [Ticket Name]"
-
+   
    **Summary**:
    [Brief 2-3 line summary of what was implemented]
-
+   
    The implementation is complete and ready for review.
+   </answer>
    ```
 
 ## Task Payload Construction (Critical)
@@ -630,17 +765,57 @@ When user runs `/resume-implementation` or you're resuming a paused implementati
    git log --oneline --grep="PLAN-" -10
    ```
 4. **Run verification commands** to confirm environment is clean.
-5. **Report status**:
+5. **Report status with thinking/answer separation**:
+
    ```markdown
+   <thinking>
+   Session resume reasoning:
+   
+   Phase 1: STATE File Analysis
+   - Read STATE file: [path]
+   - Current task: [PLAN-XXX]
+   - Completed tasks: [list]
+   - Tasks remaining: N
+   
+   Phase 2: Environment Verification
+   - Ran verification commands: [list from STATE file]
+   - Command results: [summary]
+   - Environment status: [CLEAN/ISSUES]
+   
+   Phase 3: Plan Context Load
+   - Read plan file: [path]
+   - Extracted task [PLAN-XXX] details
+   - Files: [list]
+   - Instruction: [summary]
+   
+   Phase 4: Resume Strategy
+   - Next action: Execute [PLAN-XXX]
+   - Correlation ID: [generated id]
+   </thinking>
+   
+   <answer>
+   ---
+   message_id: controller-YYYY-MM-DD-NNN
+   correlation_id: plan-YYYY-MM-DD-[ticket]
+   timestamp: YYYY-MM-DDTHH:MM:SSZ
+   message_type: SESSION_RESUME
+   controller_version: "1.1"
+   current_task: PLAN-XXX
+   completed_tasks: N
+   tasks_remaining: N
+   verification_status: PASSED
+   ---
+   
    ## 🔄 Session Resumed: [Ticket Name]
-
+   
    **Current Position**: PLAN-XXX - [Task Name]
-   **Completed Tasks**: PLAN-001, PLAN-002, ...
+   **Progress**: N/M tasks completed
    **Verification**: All checks passed ✅
-
+   
    **Next Action**: Execute PLAN-XXX
-
+   
    Ready to begin PLAN-XXX.
+   </answer>
    ```
 6. **Proceed with current task** following standard orchestration loop.
 
