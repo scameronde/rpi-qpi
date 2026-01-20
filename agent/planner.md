@@ -475,6 +475,13 @@ For each action:
 - **Interfaces / Pseudocode:** minimal
 - **Evidence:** `path:line-line` (why this file / why this approach)
 - **Done When:** concrete observable condition
+- **Complexity:** simple|complex (OPTIONAL - overrides heuristic if specified)
+
+**Complexity Override Usage:**
+- Use `simple` to force direct execution (use when heuristic might overestimate complexity)
+- Use `complex` to force delegation (use when task appears simple but has hidden complexity)
+- Omit field to let Implementation-Controller use automatic heuristic (recommended default)
+- Example use case: Single-file task in highly unstable file → mark as `complex` to use adaptation capability
 
 ## Verification Tasks (If Assumptions Exist)
 For each assumption:
