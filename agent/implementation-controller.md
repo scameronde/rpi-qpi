@@ -598,14 +598,25 @@ When `adaptations_made > 0`, the executor includes code excerpts in the Adaptati
    Use `edit` tool to modify `YYYY-MM-DD-[Ticket]-STATE.md`:
    
    - Add PLAN-XXX to "Completed Tasks" list
+   - Include complexity score and execution mode in format: `PLAN-XXX (score: N, mode: direct|delegated)`
    - Update "Current Task" to next PLAN-YYY
    - Optional: Add brief note about what was done (1 line max)
 
    Example edit:
    ```markdown
    **Current Task**: PLAN-006
-   **Completed Tasks**: PLAN-001, PLAN-002, PLAN-003, PLAN-004, PLAN-005
+   **Completed Tasks**: 
+   - PLAN-001 (score: 0, mode: direct)
+   - PLAN-002 (score: 2, mode: delegated)
+   - PLAN-003 (score: 0, mode: direct)
+   - PLAN-004 (score: 5, mode: delegated)
+   - PLAN-005 (score: 3, mode: delegated)
    ```
+   
+   **Purpose of Complexity Tracking:**
+   - Enables post-mortem analysis of heuristic accuracy
+   - Provides data for threshold tuning (identify misclassifications)
+   - Minimal overhead: one additional field per task
 
 2. **Commit changes to git**:
 
