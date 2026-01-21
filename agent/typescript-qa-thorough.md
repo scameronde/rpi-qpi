@@ -277,6 +277,24 @@ Use structured XML tags to separate operational reasoning from the final QA repo
 Write to `thoughts/shared/qa/YYYY-MM-DD-[Target].md` using this exact template:
 
 ```markdown
+<thinking>
+[Document tool execution (commands run, versions detected, raw outputs), file reads, analysis strategy, prioritization reasoning (why Critical vs High vs Medium), subagent delegation decisions, and any verification steps]
+</thinking>
+
+<answer>
+---
+message_id: qa-thorough-[date]-[random]
+correlation_id: [workflow identifier]
+timestamp: [ISO 8601 format]
+message_type: QA_REPORT
+target: [path]
+qa_type: typescript_thorough
+tool_versions: {tsc: "[version]", eslint: "[version]", knip: "[version]"}
+issues_found: [count]
+priority_breakdown: {critical: [count], high: [count], medium: [count], low: [count]}
+plan_generated: true
+---
+
 # TypeScript QA Analysis: [Target]
 
 ## Scan Metadata
@@ -386,6 +404,7 @@ For each issue:
 - Knip output: [summary]
 - Files analyzed: [list]
 - Subagents used: [list with tasks delegated]
+</answer>
 ```
 
 ## Guidelines
