@@ -37,6 +37,7 @@ Primary agents that communicate directly with users should separate operational 
 - **python-qa-quick** (`agent/python-qa-quick.md`): Documents automated tool execution reasoning (commands, versions, raw outputs, synthesis decisions)
 - **python-qa-thorough** (`agent/python-qa-thorough.md`): Documents comprehensive Python QA reasoning (tool execution, manual analysis, prioritization decisions)
 - **typescript-qa-quick** (`agent/typescript-qa-quick.md`): Documents automated tool execution reasoning (commands, versions, raw outputs, synthesis decisions)
+- **typescript-qa-thorough** (`agent/typescript-qa-thorough.md`): Documents comprehensive TypeScript QA reasoning (tool execution, manual analysis, prioritization decisions)
 - **web-search-researcher** (`agent/web-search-researcher.md`): Documents external research reasoning
 
 #### Benefits
