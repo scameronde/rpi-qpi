@@ -244,6 +244,28 @@ Expected response:
 
 Use the Location and Frequency fields to create duplication findings with proper evidence.
 
+### Phase 4.5: Separate Reasoning from User-Facing Output
+
+Use structured XML tags to separate operational reasoning from the final QA report:
+
+1. **`<thinking>` section**: Document your operational reasoning
+   - Tool execution details (commands, versions, raw outputs)
+   - File reads and parsing decisions
+   - Analysis strategy and approach
+   - Prioritization reasoning (why Critical vs High vs Medium)
+   - Subagent delegation decisions
+   - Any debugging or verification steps
+
+2. **`<answer>` section**: User-facing QA report only
+   - Synthesized findings with evidence
+   - Clear recommendations
+   - No tool execution logs or analysis process details
+
+**Benefits**:
+- **Cleaner user output**: Users see only actionable findings, not process details
+- **Debugging capability**: Full reasoning trail available in `<thinking>` for troubleshooting
+- **Token optimization**: Consumers can strip `<thinking>` section when not needed (~10% savings)
+
 ### Phase 5: Plan Generation
 
 1. Synthesize all findings (automated + manual) into priority-ranked improvement tasks
