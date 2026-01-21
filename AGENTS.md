@@ -35,6 +35,7 @@ Primary agents that communicate directly with users should separate operational 
 - **codebase-pattern-finder** (`agent/codebase-pattern-finder.md`): Documents pattern search reasoning (implemented per research 2026-01-18)
 - **opencode-qa-thorough** (`agent/opencode-qa-thorough.md`): Documents QA analysis reasoning (tool execution, file reads, prioritization decisions)
 - **python-qa-quick** (`agent/python-qa-quick.md`): Documents automated tool execution reasoning (commands, versions, raw outputs, synthesis decisions)
+- **python-qa-thorough** (`agent/python-qa-thorough.md`): Documents comprehensive Python QA reasoning (tool execution, manual analysis, prioritization decisions)
 - **web-search-researcher** (`agent/web-search-researcher.md`): Documents external research reasoning
 
 #### Benefits
@@ -54,6 +55,7 @@ Primary agents that communicate directly with users should separate operational 
 #### Research References
 
 - `thoughts/shared/research/2026-01-21-Python-QA-Quick-Agent-Communication.md` (python-qa-quick communication pattern analysis)
+- `thoughts/shared/research/2026-01-21-Python-QA-Thorough-Agent-Communication.md` (python-qa-thorough communication pattern analysis)
 - `thoughts/shared/research/2026-01-19-Implementation-Controller-User-Communication-Verbosity.md` (implementation-controller analysis)
 - `thoughts/shared/research/2026-01-18-Codebase-Analyzer-Agent-Communication.md` (baseline research, industry best practices)
 - `thoughts/shared/research/2026-01-18-Codebase-Locator-Agent-Communication.md` (locator-specific optimization)

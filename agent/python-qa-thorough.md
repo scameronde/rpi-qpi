@@ -203,17 +203,184 @@ Expected response:
 
 Use the Location and Frequency fields to create duplication findings with proper evidence.
 
+### Phase 4.5: Document Analysis Process (For <thinking> Section)
+
+Log the following information for user debugging and transparency:
+
+**1. Target Discovery**: How target was identified, files discovered (list with line counts), scope
+
+**2. Automated Tool Execution**: Tool versions, exact commands, outputs (status + summary), tool availability, verbosity guideline (see verbosity strategy below)
+
+**3. File Analysis**: Which files were read (paths + line ranges), analysis categories performed, issue counts per category
+
+**4. Delegation Log**: Subagent invocations (agent name, task description, scope/depth level), subagent responses (summary of findings), specific delegations to codebase-locator (tests_only), codebase-analyzer (execution_only), codebase-pattern-finder, web-search-researcher
+
+**5. Prioritization Reasoning**: Why each issue was categorized as Critical/High/Medium/Low, reference to prioritization hierarchy (lines 318-323)
+
+**6. Synthesis Decisions**: How findings were grouped into QA-XXX tasks, why specific recommendations were chosen, trade-offs considered
+
+#### Tool Output Verbosity Strategy
+
+When documenting automated tool execution in the <thinking> section:
+
+- **If tool produces ≤10 issues**: Include all in thinking summary
+- **If tool produces 11-50 issues**: Include first 10 + count ('... and 15 more similar issues')
+- **If tool produces >50 issues**: Include first 5 + category breakdown + count
+
+**Example** (pyright with 150 errors):
+```
+Pyright: 150 errors detected
+- First 5 errors:
+  1. src/auth.py:42 - Missing return type annotation
+  2. src/auth.py:58 - Argument type mismatch
+  3. src/db.py:12 - Unknown type 'Connection'
+  4. src/db.py:89 - Cannot assign None to str
+  5. src/utils.py:5 - Import 'typing' could not be resolved
+- Category breakdown:
+  - Missing type annotations: 89 errors
+  - Type mismatches: 37 errors
+  - Import errors: 24 errors
+```
+
 ### Phase 5: Plan Generation
 
-1. Synthesize all findings (automated + manual) into priority-ranked improvement tasks
-2. Write plan file to `thoughts/shared/qa/YYYY-MM-DD-[Target].md`
-3. Return summary with link to plan file
+1. Document analysis process from Phase 4.5 in <thinking> section
+2. Synthesize all findings (automated + manual) into priority-ranked improvement tasks in <answer> section
+3. Write plan file to `thoughts/shared/qa/YYYY-MM-DD-[Target].md` with three-part structure:
+   - YAML frontmatter (message envelope)
+   - <thinking> section (analysis process log from Phase 4.5)
+   - <answer> section (QA report using template below)
+4. Return summary with link to plan file
 
 ## Plan File Structure
 
 Write to `thoughts/shared/qa/YYYY-MM-DD-[Target].md` using this exact template:
 
 ```markdown
+<thinking>
+## Phase 1: Target Discovery
+
+**Target Identification Method**: [user-provided | codebase-locator | git diff]
+
+**Files Discovered**:
+- `path/to/file1.py` (XXX lines)
+- `path/to/file2.py` (XXX lines)
+
+**Scope**: [single file | module | package]
+
+## Phase 2: Automated Tool Execution
+
+**Tool Versions**:
+- ruff: X.X.X
+- pyright: X.X.X
+- bandit: X.X.X
+- interrogate: X.X.X
+
+**Commands Executed**:
+```bash
+ruff check [target]
+pyright [target]
+bandit -r [target]
+interrogate --fail-under 80 -vv --omit-covered-files --ignore-init-module --ignore-magic --ignore-private --ignore-semiprivate [target]
+```
+
+**Tool Outputs** (summarized per verbosity strategy):
+
+**Ruff**: [status + issue count + summary]
+[First 5-10 issues or category breakdown if >50 issues]
+
+**Pyright**: [status + error count + summary]
+[First 5-10 errors or category breakdown if >50 errors]
+
+**Bandit**: [status + security issue count + summary]
+[All issues if ≤10, else first 10 + count]
+
+**Interrogate**: [coverage percentage + files missing docstrings]
+[All missing docstrings if ≤10, else first 10 + count]
+
+**Tool Availability**: [All available | ruff missing | pyright missing | etc.]
+
+## Phase 3: File Analysis
+
+**Files Read** (with line ranges):
+- `path/to/file1.py:1-150`
+- `path/to/file2.py:1-87`
+
+**Analysis Categories Performed**:
+- Readability: [Function length, docstring quality, variable naming, complex conditionals]
+- Maintainability: [Code duplication, magic numbers, imports, module cohesion, hard-coded config]
+- Testability: [Missing tests, tight coupling, DI patterns, coverage gaps]
+
+**Issue Counts by Category**:
+- Readability: X issues
+- Maintainability: Y issues
+- Testability: Z issues
+
+## Phase 4: Delegation Log
+
+**Subagent Invocations**:
+
+1. **codebase-locator** (tests_only scope):
+   - Task: Find test files for [target]
+   - Response: [X test files found | No test files found]
+   - Files: [list]
+
+2. **codebase-pattern-finder**:
+   - Task: Find duplicate [pattern] across [scope]
+   - Response: [X variations found in Y files]
+   - Variations: [list with frequencies]
+
+3. **codebase-analyzer** (execution_only depth):
+   - Task: Trace execution path for [function/class]
+   - Response: [X execution steps identified]
+   - Key findings: [summary]
+
+4. **web-search-researcher**:
+   - Task: Research [topic]
+   - Response: [confidence level + sources]
+   - Key findings: [summary]
+
+## Phase 5: Prioritization and Synthesis
+
+**Prioritization Reasoning**:
+
+**Critical Issues** (Security vulnerabilities - bandit HIGH/MEDIUM):
+- [Issue description] → QA-XXX
+
+**High Priority Issues** (Type errors blocking type checking - pyright errors):
+- [Issue description] → QA-XXX
+
+**Medium Priority Issues** (Testability issues, maintainability risks):
+- [Issue description] → QA-XXX
+
+**Low Priority Issues** (Readability improvements, style consistency):
+- [Issue description] → QA-XXX
+
+**Synthesis Decisions**:
+- Grouped [related issues] into single QA-XXX task because [reason]
+- Chose [recommendation approach] over [alternative] due to [trade-off]
+- Deferred [issue] to separate task because [reason]
+</thinking>
+
+<answer>
+---
+message_id: qa-thorough-YYYY-MM-DD-NNN
+correlation_id: [workflow-id or user-request-id]
+timestamp: YYYY-MM-DDTHH:MM:SSZ
+message_type: QA_ANALYSIS_REPORT
+qa_agent: python-qa-thorough
+qa_agent_version: "1.0"
+target_path: [path/to/target]
+target_type: [file | module | package]
+overall_status: [Pass | Conditional Pass | Fail]
+critical_issues: [count]
+high_priority_issues: [count]
+medium_priority_issues: [count]
+low_priority_issues: [count]
+tools_used: [ruff, pyright, bandit, interrogate, manual]
+tools_unavailable: [list or "none"]
+---
+
 # Python QA Analysis: [Target]
 
 ## Scan Metadata
@@ -302,6 +469,7 @@ For each issue:
 - Bandit output: [summary]
 - Files analyzed: [list]
 - Subagents used: [list with tasks delegated]
+</answer>
 ```
 
 ## Guidelines
