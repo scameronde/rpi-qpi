@@ -161,12 +161,36 @@ files_found: 15
 4. **Observable acceptance criteria**: Verify "Done When" conditions are testable
    - **Evidence required**: File:line showing vague vs observable criteria
 
+### Phase 4.5: Document Analysis Process (For <thinking> Section)
+
+During your analysis, log the following information in your `<thinking>` section to create a transparent audit trail:
+
+1. **Target Discovery**: Document how the target was identified and what files were discovered
+   - Example: "User provided explicit path: agent/planner.md" or "Delegated to codebase-locator, received 15 agent/*.md files"
+
+2. **Tool Execution**: Record exact commands executed, tool outputs, and tool availability status
+   - Example: "Executed `yamllint -f parsable agent/planner.md` → 2 errors found" or "markdownlint not found, skipping markdown validation"
+
+3. **File Analysis**: List all files read with line ranges and which sections were analyzed
+   - Example: "Read agent/planner.md:1-50 (frontmatter + system prompt), analyzed tool permissions at lines 10-18"
+
+4. **Delegation Log**: Record all subagent invocations with task descriptions and response summaries
+   - Example: "Delegated to codebase-pattern-finder for tool permission patterns → found 3 variations across 15 agents (standard, legacy, experimental)"
+
+5. **Prioritization Reasoning**: Explain why each issue was categorized as Critical/High/Medium/Low
+   - Example: "QA-001 marked Critical because invalid YAML prevents agent loading (blocks all functionality)"
+
+6. **Synthesis Decisions**: Document how findings were grouped into QA-XXX tasks and any trade-offs made
+   - Example: "Combined 3 temperature issues into QA-005 (all same root cause: copy-paste from template), separated QA-006 (intentional creative temp for creative-writer agent)"
+
 ### Phase 5: Plan Generation
 
 1. Synthesize all findings (automated + manual) into priority-ranked improvement tasks
+   - Document analysis process log from Phase 4.5 in `<thinking>` section
 2. Write plan file to `thoughts/shared/qa/YYYY-MM-DD-[Target].md`
    - For agents: Use agent filename (e.g., `2026-01-17-Planner-Agent.md`)
    - For skills: Use skill name (e.g., `2026-01-17-OpenCode-Skill.md`)
+   - Wrap your analysis process in `<thinking>` tags and the report template in `<answer>` tags
 3. Return summary with link to plan file
 
 ## Plan File Structure
@@ -174,7 +198,37 @@ files_found: 15
 Write to `thoughts/shared/qa/YYYY-MM-DD-[Target].md` using this exact template:
 
 ````markdown
+<thinking>
+1. **Target Discovery**: [How the target was identified - explicit path, codebase-locator delegation, or git diff]
+
+2. **Skill Loading**: [OpenCode skill load status and version]
+
+3. **Tool Execution**: [Commands executed, outputs, and availability status for yamllint, markdownlint, custom checks]
+
+4. **Manual Analysis**: [Files read with line ranges, sections analyzed]
+
+5. **Prioritization Reasoning**: [Why each issue was categorized as Critical/High/Medium/Low]
+
+6. **Delegation Log**: [Subagent invocations with task descriptions and response summaries]
+</thinking>
+
+<answer>
 ```markdown
+---
+# Message Envelope (auto-generated from analysis metadata)
+message_id: qa-YYYY-MM-DD-NNN  # Format: qa-{timestamp}-{sequence}, e.g., qa-2026-01-18-001
+correlation_id: ""  # Optional: Link to related workflow (e.g., plan-task-id, epic-name)
+timestamp: YYYY-MM-DDTHH:MM:SSZ  # ISO 8601 format, e.g., 2026-01-18T14:30:00Z
+message_type: QA_REPORT  # Fixed value for QA analysis reports
+qa_agent_version: "1.0"  # Version of opencode-qa-thorough agent
+target_path: ""  # Path to analyzed target (e.g., agent/planner.md or skills/opencode/)
+target_type: ""  # agent | skill
+overall_status: ""  # Pass | Conditional Pass | Fail
+critical_issues: 0  # Count of Critical priority issues
+high_priority_issues: 0  # Count of High priority issues
+improvement_opportunities: 0  # Count of Medium + Low priority issues
+---
+
 # OpenCode QA Analysis: [Target]
 
 ## Scan Metadata
@@ -266,6 +320,7 @@ For each issue:
 - Files analyzed: [list]
 - Subagents used: [list with tasks delegated]
 ```
+</answer>
 ````
 
 ## Guidelines
