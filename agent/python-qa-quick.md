@@ -314,6 +314,45 @@ low_count: [N]
 If ruff is not installed:
 
 ```markdown
+<thinking>
+Tool Execution Log:
+
+Commands Executed:
+- ruff check src/ (ruff: command not found)
+- pyright src/ (pyright 1.1.339)
+- bandit -r src/ (bandit 1.7.5)
+- interrogate --fail-under 80 -v --ignore-init-module --ignore-magic --ignore-private --ignore-semiprivate src/ (interrogate 1.5.0)
+
+Raw Outputs:
+- ruff: FAILED - command not found (tool not installed)
+- pyright: 0 errors, 0 warnings, 0 informations
+- bandit: 0 issues found
+- interrogate: 85.3% coverage (threshold 80%, +5.3% above threshold)
+
+Synthesis Reasoning:
+- Critical (0 issues): No security vulnerabilities detected
+- High (0 issues): No type errors detected
+- Medium (0 issues): No quality or documentation issues
+- Low (0 issues): No style issues (ruff unavailable)
+- Grouping: N/A
+- Hot spots: None
+- Tool availability: ruff missing but other tools successful
+</thinking>
+
+<answer>
+---
+message_id: python-qa-quick-2025-12-20-1842
+timestamp: 2025-12-20T14:32:15Z
+message_type: QA_RESULT
+target: src/
+tools_executed: [pyright, bandit, interrogate]
+tools_failed: [ruff]
+critical_count: 0
+high_count: 0
+medium_count: 0
+low_count: 0
+---
+
 ## 🚀 Quick Python QA Results
 
 ### ⏱️ Scan Summary
@@ -324,11 +363,51 @@ If ruff is not installed:
 **⚠️ Note**: `ruff` is not installed. Run `pip install ruff` to enable linting checks.
 
 [Continue with available tool results...]
+</answer>
 ```
 
 ### Example: No Issues Found
 
 ```markdown
+<thinking>
+Tool Execution Log:
+
+Commands Executed:
+- ruff check src/utils.py (ruff 0.1.9)
+- pyright src/utils.py (pyright 1.1.339)
+- bandit -r src/utils.py (bandit 1.7.5)
+- interrogate --fail-under 80 -v --ignore-init-module --ignore-magic --ignore-private --ignore-semiprivate src/utils.py (interrogate 1.5.0)
+
+Raw Outputs:
+- ruff: 1 issue found (E501 line-too-long)
+  - src/utils.py:15:1: E501 Line too long (95 > 88 characters)
+- pyright: 0 errors, 0 warnings, 0 informations
+- bandit: 0 issues found
+- interrogate: 92.0% coverage (threshold 80%, +12.0% above threshold)
+
+Synthesis Reasoning:
+- Critical (0 issues): No security vulnerabilities detected
+- High (0 issues): No type errors detected
+- Medium (0 issues): No quality or documentation issues
+- Low (1 issue): Single style issue (line length) - cosmetic only
+- Grouping: Single issue, no grouping needed
+- Hot spots: None
+- Overall: Excellent code quality, only minor style issue
+</thinking>
+
+<answer>
+---
+message_id: python-qa-quick-2025-12-20-2751
+timestamp: 2025-12-20T15:18:42Z
+message_type: QA_RESULT
+target: src/utils.py
+tools_executed: [ruff, pyright, bandit, interrogate]
+critical_count: 0
+high_count: 0
+medium_count: 0
+low_count: 1
+---
+
 ## 🚀 Quick Python QA Results
 
 ### ⏱️ Scan Summary
@@ -345,11 +424,62 @@ No critical, high, or medium priority issues detected.
 
 ### ✅ Next Steps
 Optional: Address style issue for consistency with project standards.
+</answer>
 ```
 
 ### Example: Multiple Issues
 
 ```markdown
+<thinking>
+Tool Execution Log:
+
+Commands Executed:
+- ruff check src/auth/ (ruff 0.1.9)
+- pyright src/auth/ (pyright 1.1.339)
+- bandit -r src/auth/ (bandit 1.7.5)
+- interrogate --fail-under 80 -v --ignore-init-module --ignore-magic --ignore-private --ignore-semiprivate src/auth/ (interrogate 1.5.0)
+
+Raw Outputs:
+- ruff: 3 issues found
+  - src/auth/validate.py:10:1: C901 Function is too complex (15)
+  - src/auth/utils.py:3:1: F401 'hashlib' imported but unused
+  - src/auth/utils.py:45:5: N806 Variable 'x' in function should be lowercase
+- pyright: 2 errors, 0 warnings, 0 informations
+  - src/auth/login.py:28:5 - error: Missing return type annotation for function "authenticate"
+  - src/auth/session.py:56:9 - error: "token" is possibly unbound
+- bandit: 2 issues found (2 HIGH severity)
+  - Issue: [B608:hardcoded_sql_expressions] Possible SQL injection vector through string-based query construction
+    Severity: HIGH   Confidence: MEDIUM
+    Location: src/auth/db.py:42
+  - Issue: [B105:hardcoded_password_string] Possible hardcoded password: 'admin123'
+    Severity: HIGH   Confidence: HIGH
+    Location: src/auth/config.py:15
+- interrogate: 65.0% coverage (threshold 80%, -15.0% below threshold)
+  - Missing docstrings: src/auth/login.py:28 (authenticate), src/auth/validate.py:10 (validate_user_input), src/auth/utils.py:20 (TokenManager)
+
+Synthesis Reasoning:
+- Critical (2 issues): bandit HIGH severity issues - SQL injection and hardcoded password are immediate security risks
+- High (2 issues): pyright errors block type checking - missing annotation and unbound variable
+- Medium (3 issues): ruff complexity warning affects maintainability, unused import is dead code, interrogate gap shows documentation debt
+- Low (1 issue): ruff style issue (variable naming) is cosmetic
+- Grouping: Kept all issues separate due to different root causes and fixes
+- Hot spots: src/auth/utils.py (3 issues across ruff categories), src/auth/login.py and src/auth/validate.py (2 issues each spanning typing and documentation)
+- Prioritization: Security first (bandit), then correctness (pyright), then maintainability (ruff + interrogate), then style (ruff)
+</thinking>
+
+<answer>
+---
+message_id: python-qa-quick-2025-12-20-4193
+timestamp: 2025-12-20T16:45:28Z
+message_type: QA_RESULT
+target: src/auth/
+tools_executed: [ruff, pyright, bandit, interrogate]
+critical_count: 2
+high_count: 2
+medium_count: 3
+low_count: 1
+---
+
 ## 🚀 Quick Python QA Results
 
 ### ⏱️ Scan Summary
@@ -381,6 +511,7 @@ Optional: Address style issue for consistency with project standards.
 2. Add type annotations to login.py and fix session.py logic error
 3. Refactor validate.py to reduce complexity
 4. Clean up imports and add documentation
+</answer>
 ```
 
 ## Error Handling
