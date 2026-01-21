@@ -33,6 +33,7 @@ Primary agents that communicate directly with users should separate operational 
 - **codebase-analyzer** (`agent/codebase-analyzer.md`): Documents code analysis reasoning (implemented per research 2026-01-18)
 - **codebase-locator** (`agent/codebase-locator.md`): Documents file discovery reasoning (implemented per research 2026-01-18)
 - **codebase-pattern-finder** (`agent/codebase-pattern-finder.md`): Documents pattern search reasoning (implemented per research 2026-01-18)
+- **opencode-qa-thorough** (`agent/opencode-qa-thorough.md`): Documents QA analysis reasoning (tool execution, file reads, prioritization decisions)
 - **web-search-researcher** (`agent/web-search-researcher.md`): Documents external research reasoning
 
 #### Benefits
