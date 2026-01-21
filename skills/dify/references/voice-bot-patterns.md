@@ -513,6 +513,267 @@ features:
 
 ---
 
+### CVG Voice Event Handling
+
+Voice bots receive CVG platform events through the start node. These events drive the conversation lifecycle (greeting, user message, timeout, termination). The start node must be configured with specific input variables to receive CVG event metadata.
+
+**Start Node Configuration for CVG:**
+```yaml
+- data:
+    type: start
+    variables:
+      - label: status              # CVG event type (CRITICAL for routing)
+        type: text-input
+        variable: status
+      - label: dialogId            # Unique conversation identifier
+        type: text-input
+        variable: dialogId
+      - label: authToken           # CVG authentication token
+        type: paragraph
+        variable: authToken
+      - label: local               # Local phone number (bot's number)
+        type: text-input
+        variable: local
+      - label: remote              # Caller's phone number
+        type: text-input
+        variable: remote
+      - label: triggeredBargeIn    # Caller interrupted bot (1 or 0)
+        type: number
+        variable: triggeredBargeIn
+      - label: callbackUrl         # CVG callback endpoint
+        type: text-input
+        variable: callbackUrl
+      - label: eventAsString       # Full event payload (for debugging)
+        type: paragraph
+        variable: eventAsString
+      - label: type                # Event type (redundant with status)
+        type: text-input
+        variable: type
+  id: '1762426927307'
+```
+
+**CRITICAL:** The `status` field is the primary routing signal. All CVG voice bots must route based on this field immediately after the start node.
+
+**CVG Event Types (status field values):**
+
+| Event Type | When Triggered | User Input Available | Typical Action |
+|------------|----------------|---------------------|----------------|
+| `greeting` | Call initiated | No | Play welcome message |
+| `message` | User spoke | Yes (`sys.query`) | Process user input with LLM |
+| `answer` | Bot expects response | No | Wait for user (not commonly used in Dify) |
+| `inactive` | User silent/timeout | No | Increment timeout counter, warn or terminate |
+| `termination` | Call ended by user/system | No | Log conversation, cleanup |
+| `recording-available` | Voice recording ready | No | Process recording (advanced use) |
+
+**Note:** The `message` event is the main conversation driver. `sys.query` contains the transcribed user input (STT output).
+
+**Event Routing Pattern (Root IF/ELSE):**
+
+All CVG voice bots use a root IF/ELSE node immediately after start to route events:
+
+```yaml
+- data:
+    cases:
+      - case_id: 'greeting'
+        conditions:
+          - comparison_operator: is
+            id: a1b2c3d4-e5f6-7890-a1b2-c3d4e5f67890
+            value: greeting
+            varType: string
+            variable_selector:
+              - '1762426927307'    # Start node ID
+              - status
+        id: 'greeting'
+        logical_operator: and
+      - case_id: 'message'
+        conditions:
+          - comparison_operator: is
+            id: b2c3d4e5-f6a7-8901-b2c3-d4e5f6a78901
+            value: message
+            varType: string
+            variable_selector:
+              - '1762426927307'
+              - status
+        id: 'message'
+      - case_id: 'inactive'
+        conditions:
+          - comparison_operator: is
+            id: c3d4e5f6-a7b8-9012-c3d4-e5f6a7b89012
+            value: inactive
+            varType: string
+            variable_selector:
+              - '1762426927307'
+              - status
+        id: 'inactive'
+      - case_id: 'termination'
+        conditions:
+          - comparison_operator: is
+            id: d4e5f6a7-b8c9-0123-d4e5-f6a7b8c90123
+            value: termination
+            varType: string
+            variable_selector:
+              - '1762426927307'
+              - status
+        id: 'termination'
+    type: if-else
+  id: '1765442525888'
+```
+
+**Pattern Notes:**
+- Each case routes to a different conversation path (greeting flow, main conversation, timeout handler, cleanup)
+- The `id` field in each case MUST match `case_id` (Dify requirement)
+- Use `is` operator for string comparison (status is always a string)
+- All conditions have unique `id` fields (UUIDs recommended)
+
+### Timeout/Inactive Handling Pattern
+
+Detect caller silence and escalate warnings before terminating inactive calls. This pattern implements multi-threshold timeout handling using a counter incremented on each `inactive` event.
+
+**Pattern Overview:**
+1. Declare `inactive_count` conversation variable (integer, default 0)
+2. On `inactive` event: increment counter with Code node
+3. Check threshold with IF/ELSE: 1st warning at count=1, terminate at count≥2
+4. Use environment variables for timeout messages
+
+**Step 1: Declare Conversation Variable**
+
+```yaml
+conversation_variables:
+  - description: Counter for consecutive inactive events in current state
+    id: f8a9c3d1-2b4e-5f6a-8c9d-1e2f3a4b5c6d
+    name: inactive_count
+    selector:
+      - conversation
+      - inactive_count
+    value: 0
+    value_type: integer
+```
+
+**Step 2: Increment Counter with Code Node**
+
+When the root IF/ELSE detects `status=inactive`, route to a Code node that increments the counter:
+
+```yaml
+- data:
+    code: |\n      def main(current_count: int) -> dict:\n          \"\"\"Increment inactive event counter.\"\"\"\n          return {\n              \"new_count\": current_count + 1\n          }\n    code_language: python3
+    outputs:
+      new_count:
+        children: null
+        type: number
+    title: 'Code: Increment Inactive Count'
+    type: code
+    variables:
+      - value_selector:
+          - conversation
+          - inactive_count
+        value_type: number
+        variable: current_count
+  id: '1736766201000'
+```
+
+**Step 2b: Update Conversation Variable**
+
+Use Variable Assigner v2 to copy the incremented value back to `conversation.inactive_count`:
+
+```yaml
+- data:
+    items:
+      - input_type: variable
+        operation: over-write
+        value:
+          - '1736766201000'    # Code node ID
+          - new_count
+        variable_selector:
+          - conversation
+          - inactive_count
+        write_mode: over-write
+    title: 'Timeout: Update Counter'
+    type: assigner
+    version: '2'
+  id: '1736766202000'
+```
+
+**Step 3: Check Threshold and Route**
+
+Use IF/ELSE to route based on counter value:
+
+```yaml
+- data:
+    cases:
+      - case_id: first_warning
+        conditions:
+          - comparison_operator: '='    # Numeric equality - must be quoted
+            id: e1e2f3a4-b5c6-4d7e-8f9a-0b1c2d3e4f5a
+            value: '1'                   # First timeout - warn
+            varType: number
+            variable_selector:
+              - conversation
+              - inactive_count
+        id: first_warning
+        logical_operator: and
+      - case_id: terminate
+        conditions:
+          - comparison_operator: ≥       # Unicode greater-than-or-equal
+            id: f2f3a4b5-c6d7-4e8f-9a0b-1c2d3e4f5a6b
+            value: '2'                   # Second+ timeout - terminate
+            varType: number
+            variable_selector:
+              - conversation
+              - inactive_count
+        id: terminate
+        logical_operator: and
+    title: 'Timeout: Check Threshold'
+    type: if-else
+  id: '1736766203000'
+```
+
+**Routing:**
+- `first_warning` case → Answer node with `{{#env.TIMEOUT_WARNING#}}`
+- `terminate` case → Answer node with `{{#env.TIMEOUT_TERMINATION#}}`, then CVG end call tool
+
+**Step 4: Define Timeout Messages**
+
+Use environment variables for reusable, translatable timeout messages:
+
+```yaml
+environment_variables:
+  - name: TIMEOUT_WARNING
+    value: Sind Sie noch da? Bitte antworten Sie, sonst muss ich das Gespräch beenden.
+  - name: TIMEOUT_FINAL_WARNING
+    value: Ich habe Sie jetzt länger nicht gehört. Wenn Sie noch Unterstützung benötigen, rufen Sie bitte erneut an.
+  - name: TIMEOUT_TERMINATION
+    value: Auf Wiederhören.
+```
+
+**Usage:**
+```yaml
+# In Answer node for first warning
+answer: '{{#env.TIMEOUT_WARNING#}}'
+
+# In Answer node for termination
+answer: '{{#env.TIMEOUT_TERMINATION#}}'
+```
+
+**Complete Workflow:**
+
+```
+Start (status=inactive) 
+  → IF/ELSE Router (route to inactive branch)
+    → Code Node (increment counter: current + 1)
+      → Assigner v2 (update conversation.inactive_count)
+        → IF/ELSE Threshold Check
+          ├─ count=1 → Answer (TIMEOUT_WARNING) → [return to conversation]
+          └─ count≥2 → Answer (TIMEOUT_TERMINATION) → CVG End Call Tool
+```
+
+**Key Points:**
+- Counter persists across conversation turns (conversation variable)
+- Reset counter to 0 when user responds (in message event handler)
+- Use Unicode `≥` operator for numeric comparison (not ASCII `>=`)
+- Always quote numeric comparison values: `'1'`, `'2'`
+
+---
+
 ## Voice-Specific Design Principles
 
 ### 1. Minimize Sequential Nodes

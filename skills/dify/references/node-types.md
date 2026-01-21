@@ -221,6 +221,127 @@ completion_params:
 - `text` - Generated text
 - `usage` - Token usage statistics
 
+### Structured Output Configuration
+
+**Purpose:** Enforce JSON output schema with validation for reliable data extraction. Essential for voice bots and classification tasks where structured, predictable output is required.
+
+**Basic Example:**
+```yaml
+- data:
+    model:
+      name: gpt-4o
+      provider: openai
+    prompt_template:
+      - role: system
+        text: "Extract user information and return as JSON..."
+    structured_output:
+      schema:
+        $schema: http://json-schema.org/draft-07/schema#
+        type: object
+        properties:
+          status:
+            type: string
+            enum: [complete, incomplete]
+          data:
+            type: object
+        required: [status, data]
+        additionalProperties: false
+    structured_output_enabled: true
+    type: llm
+  id: 'llm_extraction'
+```
+
+**Accessing Structured Output Fields:**
+```yaml
+# Reference structured output in subsequent nodes
+answer: "Status: {{#llm_extraction.structured_output.status#}}"
+
+# Use in IF/ELSE conditions
+variable_selector:
+  - llm_extraction
+  - structured_output
+  - status
+```
+
+**JSON Schema v7 Features:**
+
+| Feature | Purpose | Example |
+|---------|---------|---------|
+| `enum` | Restrict to specific values | `enum: [emergency, normal]` |
+| `required` | Mandatory fields | `required: [status, data]` |
+| `additionalProperties: false` | Strict validation (no extra fields) | Top-level schema property |
+| `if`/`then` | Conditional validation | See advanced example below |
+| `pattern` | Regex validation for strings | `pattern: "^\\+?[0-9]{10,15}$"` |
+| `minimum`/`maximum` | Number range validation | `minimum: 0, maximum: 100` |
+| `minLength`/`maxLength` | String length validation | `minLength: 5` |
+| `type` | Data type enforcement | `type: string/number/boolean/object/array` |
+
+**Advanced Example - Voice Bot Triage (from WIP-Netto-V2.yml):**
+```yaml
+structured_output:
+  schema:
+    $schema: http://json-schema.org/draft-07/schema#
+    type: object
+    additionalProperties: false
+    properties:
+      status:
+        type: string
+        enum: [complete, clarification_needed]
+        description: "Controls workflow - complete or needs more info"
+      question_to_user:
+        type: string
+        description: "Follow-up question if clarification needed"
+      analysis:
+        type: object
+        additionalProperties: false
+        properties:
+          severity:
+            type: string
+            enum: [emergency, critical, critical_ECT, normal, unknown]
+            description: "Urgency level for routing"
+          ticket_category:
+            type: string
+            description: "Category ID from knowledge base"
+          issue_area:
+            type: string
+            description: "Area for RAG selection (e.g., 'Kasse')"
+          scope:
+            type: string
+            enum: [one, all, not_relevant, unknown]
+        required: [severity, ticket_category, issue_area, scope]
+    required: [status, question_to_user, analysis]
+    # Conditional validation: if status is clarification_needed, question must have min length
+    if:
+      properties:
+        status:
+          const: clarification_needed
+    then:
+      properties:
+        question_to_user:
+          minLength: 5
+structured_output_enabled: true
+```
+
+**Accessing nested fields:**
+```yaml
+# Reference nested analysis fields
+{{#1765447098058.structured_output.analysis.severity#}}
+{{#1765447098058.structured_output.analysis.ticket_category#}}
+
+# Use in IF/ELSE for routing
+variable_selector:
+  - '1765447098058'
+  - structured_output
+  - status
+```
+
+**Common Use Cases:**
+- Voice bot triage with categorical severity levels
+- Multi-field extraction (name, phone number, issue category)
+- Classification tasks with enum constraints
+- Data validation for downstream API calls
+- Conditional validation based on workflow state
+
 ---
 
 ## Control Flow Nodes
