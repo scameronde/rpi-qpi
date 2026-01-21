@@ -218,9 +218,45 @@ Format findings using the template below. Keep output concise and actionable.
 
 ## Output Format
 
-Use this exact Markdown structure:
+Use this exact structure with <thinking> and <answer> tags:
 
-```markdown
+<thinking>
+Tool Execution Log:
+
+Commands Executed:
+- ruff check [path] (ruff X.Y.Z)
+- pyright [path] (pyright X.Y.Z)
+- bandit -r [path] (bandit X.Y.Z)
+- interrogate --fail-under 80 -v --ignore-init-module --ignore-magic --ignore-private --ignore-semiprivate [path] (interrogate X.Y.Z)
+
+Raw Outputs:
+- ruff: [N] issues found ([breakdown by category])
+- pyright: [N] issues found ([breakdown by type])
+- bandit: [N] issues found ([breakdown by severity])
+- interrogate: [coverage]% coverage (threshold 80%, [delta]% gap)
+
+Synthesis Reasoning:
+- Critical ([N] issues): [reasoning for categorization]
+- High ([N] issues): [reasoning]
+- Medium ([N] issues): [reasoning]
+- Low ([N] issues): [reasoning]
+- Grouping: [any summarization applied]
+- Hot spots: [files with multiple issues across categories]
+</thinking>
+
+<answer>
+---
+message_id: python-qa-quick-[YYYY-MM-DD]-[random-4-digit]
+timestamp: YYYY-MM-DDTHH:MM:SSZ
+message_type: QA_RESULT
+target: [path]
+tools_executed: [ruff, pyright, bandit, interrogate]
+critical_count: [N]
+high_count: [N]
+medium_count: [N]
+low_count: [N]
+---
+
 ## 🚀 Quick Python QA Results
 
 ### ⏱️ Scan Summary
@@ -236,14 +272,13 @@ Use this exact Markdown structure:
 
 ### 🟡 Medium Priority
 - [ ] [Issue description] - `[File:Line]` - [Tool]
-- [ ] Missing docstring coverage: XX% (threshold: 80%) - interrogate
 
 ### 🟢 Low Priority / Style
 - [ ] [Issue description] - `[File:Line]` - [Tool]
 
 ### ✅ Next Steps
 [Concrete actions to take]
-```
+</answer>
 
 ## Guidelines
 
