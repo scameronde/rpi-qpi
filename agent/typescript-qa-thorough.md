@@ -269,7 +269,7 @@ Use structured XML tags to separate operational reasoning from the final QA repo
 ### Phase 5: Plan Generation
 
 1. Synthesize all findings (automated + manual) into priority-ranked improvement tasks
-2. Write plan file to `thoughts/shared/qa/YYYY-MM-DD-[Target].md`
+2. Write plan file to `thoughts/shared/qa/YYYY-MM-DD-[Target].md` using the template below wrapped in `<thinking>` and `<answer>` tags as documented in Phase 4.5
 3. Return summary with link to plan file
 
 ## Plan File Structure
