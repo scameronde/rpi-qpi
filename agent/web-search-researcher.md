@@ -1,5 +1,5 @@
 ---
-description: "Researches external libraries, APIs, and best practices. Returns structured responses with YAML metadata, thinking/answer separation, and verified code examples. Use for external knowledge beyond the codebase."
+description: "Researches external libraries, APIs, and best practices. Returns structured responses with YAML metadata, thinking/answer separation, and verified code examples. Uses crawl4ai for dynamic content and webfetch for static pages. Use for external knowledge beyond the codebase."
 mode: subagent
 temperature: 0.2
 tools:

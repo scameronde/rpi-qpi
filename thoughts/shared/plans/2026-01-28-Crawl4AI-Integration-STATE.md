@@ -1,12 +1,13 @@
 # State: Crawl4AI Integration
 
 **Plan**: thoughts/shared/plans/2026-01-28-Crawl4AI-Integration.md  
-**Current Task**: PLAN-005  
+**Current Task**: COMPLETE  
 **Completed Tasks**: 
 - PLAN-001
 - PLAN-002
 - PLAN-003
 - PLAN-004
+- PLAN-005
 
 ## Task Checklist
 
@@ -14,7 +15,7 @@
 - [x] PLAN-002: Expand Tool Selection Strategy with crawl4ai decision tree
 - [x] PLAN-003: Update search_tools_used metadata field
 - [x] PLAN-004: Document crawl4ai in AGENTS.md
-- [ ] PLAN-005: Update agent description with crawl4ai reference
+- [x] PLAN-005: Update agent description with crawl4ai reference
 
 ## Quick Verification
 
