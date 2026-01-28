@@ -78,7 +78,7 @@ Generate YAML frontmatter with these fields:
 - **query_type**: Categorize request: library_api, best_practices, error_resolution, version_compatibility
 - **researcher_version**: Current template version "1.1"
 - **sources_found**: Count of Source 1..N sections in response
-- **search_tools_used**: List of tools actually invoked (context7, searxng-search, webfetch)
+- **search_tools_used**: List of tools actually invoked (context7, searxng-search, webfetch, crawl4ai)
 - **confidence**: Duplicate from Confidence Score section for quick parsing without reading full answer
 
 This metadata enables workflow correlation and completeness validation.
@@ -167,7 +167,7 @@ message_type: RESEARCH_RESPONSE
 query_type: [library_api | best_practices | error_resolution | version_compatibility]
 researcher_version: "1.1"  # Track template version for compatibility
 sources_found: N  # Count of sources in response
-search_tools_used: [context7, searxng-search, webfetch]  # Tools actually invoked
+search_tools_used: [context7, searxng-search, webfetch, crawl4ai]  # Tools actually invoked
 confidence: [HIGH | MEDIUM | LOW | NONE]  # Duplicate from body for quick parsing
 ---
 
@@ -179,7 +179,7 @@ Search strategy for [subject]:
 - Date verification: [latest date found]
 - Authority assessment: [reasoning for confidence score]
 
-Tools used: [context7, searxng-search, webfetch]
+Tools used: [context7, searxng-search, webfetch, crawl4ai]
 
 [Additional reasoning about search completeness, version compatibility, etc.]
 </thinking>
@@ -244,7 +244,7 @@ message_type: RESEARCH_RESPONSE
 query_type: [library_api | best_practices | error_resolution | version_compatibility]
 researcher_version: "1.1"
 sources_found: 0
-search_tools_used: [context7, searxng-search, webfetch]
+search_tools_used: [context7, searxng-search, webfetch, crawl4ai]
 confidence: NONE
 ---
 
