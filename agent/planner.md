@@ -540,16 +540,39 @@ Initial structure (created by Planner):
 **Current Task**: PLAN-001  
 **Completed Tasks**: (none yet)
 
+## Task Checklist
+
+[If plan has phases:]
+### Phase 1: [Phase Name]
+- [ ] PLAN-001: [One-line task description]
+- [ ] PLAN-002: [One-line task description]
+
+### Phase 2: [Phase Name]
+- [ ] PLAN-003: [One-line task description]
+
+[If plan has no phases:]
+- [ ] PLAN-001: [One-line task description]
+- [ ] PLAN-002: [One-line task description]
+
 ## Quick Verification
 <list verification commands from the plan>
 
 ## Notes
 - Plan created: YYYY-MM-DD
 - Total tasks: N
-- Phases: [list phase names]
+- Phases: [list phase names if applicable]
 ```
 
-**Important**: Keep this file minimal (≤30 lines). The Implementor will update it after each task completion.
+**Important**: Keep this file minimal (≤40 lines). The Implementor will update it after each task completion.
+
+**Task Description Format:**
+- Extract from the PLAN-XXX "Instruction" field first sentence or action verb phrase
+- Keep to one line (≤80 characters)
+- Include phase name if phases exist
+- Examples:
+  - "Update authentication logic to use JWT tokens"
+  - "Add type annotations to validation functions"
+  - "Create unit tests for UserService"
 
 ## How to Write for the Implementor
 - **Don't say**: "Improve the error handling."

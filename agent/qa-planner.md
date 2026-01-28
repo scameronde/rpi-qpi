@@ -215,13 +215,28 @@ You are the **QA Planner**. You translate quality analysis into actionable imple
      - For Python: Use ruff, pyright, bandit, pytest commands
      - For TypeScript: Use tsc, eslint, knip, npm test commands
      - For OpenCode: Use yamllint, markdownlint commands
-   - Format (keep minimal, ~20-30 lines):
+   - Format (keep minimal, ~30-45 lines):
      ```markdown
      # State: QA-Driven Implementation - [Target]
 
      **Plan**: thoughts/shared/plans/YYYY-MM-DD-QA-[Target].md  
      **Current Task**: PLAN-001  
      **Completed Tasks**: (none yet)
+
+     ## Task Checklist
+
+     ### Phase 1 (Critical)
+     - [ ] PLAN-001: [One-line description] (was QA-001)
+     - [ ] PLAN-002: [One-line description] (was QA-002)
+
+     ### Phase 2 (High)
+     - [ ] PLAN-003: [One-line description] (was QA-003)
+
+     ### Phase 3 (Medium)
+     - [ ] PLAN-004: [One-line description] (was QA-004)
+
+     ### Phase 4 (Low)
+     - [ ] PLAN-005: [One-line description] (was QA-005)
 
      ## Quick Verification
      [language-specific verification commands from Baseline Verification section]
@@ -232,6 +247,14 @@ You are the **QA Planner**. You translate quality analysis into actionable imple
      - Phases: Phase 1 (Critical: N), Phase 2 (High: N), Phase 3 (Medium: N), Phase 4 (Low: N)
      - QA report: thoughts/shared/qa/YYYY-MM-DD-[Target].md
      ```
+
+   **Task Description Format:**
+   - Extract from QA report's "Issue Title" or "Recommendation" field
+   - Keep to one line (≤80 characters)
+   - Preserve QA-XXX mapping for traceability
+   - Examples:
+     - "Fix SQL injection vulnerability in login endpoint (was QA-001)"
+     - "Add type hints to process_data function (was QA-002)"
 
 4. **Return summary**
    - Report both file paths (plan and STATE)
@@ -496,7 +519,7 @@ Record the current error/warning counts. Each phase should reduce these counts.
 - [ ] Verification commands appropriate for target language (Python)?
 - [ ] Plan filename follows `YYYY-MM-DD-QA-[Target].md` format?
 - [ ] STATE filename follows `YYYY-MM-DD-QA-[Target]-STATE.md` format?
-- [ ] STATE file is minimal (~20-30 lines)?
+- [ ] STATE file is minimal (~30-45 lines)?
 - [ ] STATE file contains verification commands from plan?
 
 ## Output Summary Format
