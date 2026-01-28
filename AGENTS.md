@@ -69,6 +69,37 @@ Industry sources:
 - Anthropic Multi-Agent Research System (June 2025): "Use `<thinking>` tags for reasoning"
 - Anthropic Chain-of-Thought Documentation (Current): "Structured CoT with XML tags most efficient for agent communication"
 
+### crawl4ai Tool Usage
+
+The `crawl4ai` custom tool provides AI-optimized web content extraction via the Crawl4AI service (http://crawl4ai.vier.services:11235). It complements the built-in `webfetch` tool for handling dynamic content and enabling token-efficient extraction.
+
+#### Three Operating Modes
+
+1. **crawl** (full page extraction): Returns CrawlResult with metadata, media inventory, cleaned HTML, and markdown
+2. **markdown** (filtered markdown): Supports BM25/LLM filtering for query-relevant content extraction (50-80% token reduction)
+3. **screenshot** (visual capture): Returns Base64 PNG with configurable wait time for dynamic content
+
+#### crawl4ai vs webfetch Comparison
+
+| Feature | webfetch (Built-in) | crawl4ai (Custom Tool) |
+|---------|---------------------|------------------------|
+| **JavaScript Execution** | ❌ No (static HTML only) | ✅ Yes (Playwright browser automation) |
+| **Markdown Extraction** | ❌ No (returns raw HTML) | ✅ Yes (clean, citation-ready markdown) |
+| **Content Filtering** | ❌ No (full page only) | ✅ Yes (BM25, LLM filtering) |
+| **Token Efficiency** | ❌ Returns full HTML | ✅ 50-80% reduction with BM25 |
+| **Best For** | Static pages, GitHub issues | Dynamic content, large docs, RAG pipelines |
+
+**Primary User**: web-search-researcher agent (with 12 delegating agents benefiting indirectly)
+
+**Availability**: Custom tools default to "allow" permission - crawl4ai is available to all agents without requiring explicit permission flags, though agents can add `crawl4ai: true` for documentation clarity.
+
+**Key Use Cases**:
+- JavaScript-heavy documentation sites (78% of top 10k websites require JS execution)
+- Large documentation pages with BM25 filtering (`markdown_filter: "bm25"`, `filter_query: <topic>`)
+- Clean markdown extraction for LLM consumption (RAG tasks show 23% accuracy boost)
+
+See `tool/crawl4ai.ts` for complete implementation and `thoughts/shared/research/2026-01-28-Crawl4AI-Tool-Analysis-and-Agent-Integration.md` for detailed analysis.
+
 ## Project Structure
 - `agent/*.md` - Agent definitions (YAML frontmatter + Markdown system prompt)
 - `tool/*.ts` - Custom tools using `@opencode-ai/plugin` package
