@@ -35,7 +35,7 @@ The framework enforces separation of concerns, evidence-based decision making, a
 
 ## Features
 
-- **18 Specialized Agents** - Purpose-built agents for each phase of development
+- **19 Specialized Agents** - Purpose-built agents for each phase of development
 - **Greenfield Workflow** - Mission-driven development from vision to specification to epics
 - **Evidence-Based Research** - Automated research with citation and verification requirements
 - **Structured Planning** - Detailed implementation blueprints with verification checkpoints
@@ -80,7 +80,7 @@ The framework enforces separation of concerns, evidence-based decision making, a
    ```bash
    cp -r /path/to/rpiqr/agent ~/.config/opencode/agent/
    cp -r /path/to/rpiqr/tool ~/.config/opencode/tool/
-   cp -r /path/to/rpiqr/command ~/.config/opencode/command/
+   cp -r /path/to/rpiqr/skills ~/.config/opencode/skills/
    ```
 
 ## Project Structure
@@ -96,6 +96,7 @@ rpiqr/
 │   ├── implementation-controller.md # Implementation orchestrator (primary)
 │   ├── task-executor.md             # Single-task builder (subagent)
 │   ├── qa-planner.md                # QA-to-plan converter (subagent)
+│   ├── opencode-qa-thorough.md      # Thorough OpenCode QA (primary)
 │   ├── python-qa-quick.md           # Quick Python QA (primary)
 │   ├── python-qa-thorough.md        # Thorough Python QA (primary)
 │   ├── typescript-qa-quick.md       # Quick TypeScript QA (primary)
@@ -109,7 +110,10 @@ rpiqr/
 ├── tool/                            # Custom tools
 │   └── searxng-search.ts            # SearXNG web search integration
 ├── skills/                          # Reusable knowledge modules
-│   └── dify-reference/              # Example: Dify bot development reference
+│   ├── dify/                        # Dify bot development reference
+│   │   ├── SKILL.md                 # Skill definition and documentation
+│   │   └── references/              # Reference documentation files
+│   └── opencode/                    # OpenCode framework reference
 │       ├── SKILL.md                 # Skill definition and documentation
 │       └── references/              # Reference documentation files
 ├── thoughts/                        # Generated artifacts
@@ -249,10 +253,11 @@ Primary agents that can be invoked directly:
 6. **Implementation-Controller** (@implementation-controller) - Plan execution orchestrator
 
 **QA Workflow**:
-7. **Python-QA-Quick** (@python-qa-quick) - Rapid Python quality checks
-8. **Python-QA-Thorough** (@python-qa-thorough) - Comprehensive Python analysis
-9. **TypeScript-QA-Quick** (@typescript-qa-quick) - Rapid TypeScript quality checks
-10. **TypeScript-QA-Thorough** (@typescript-qa-thorough) - Comprehensive TypeScript analysis
+7. **OpenCode-QA-Thorough** (@opencode-qa-thorough) - Comprehensive OpenCode project analysis
+8. **Python-QA-Quick** (@python-qa-quick) - Rapid Python quality checks
+9. **Python-QA-Thorough** (@python-qa-thorough) - Comprehensive Python analysis
+10. **TypeScript-QA-Quick** (@typescript-qa-quick) - Rapid TypeScript quality checks
+11. **TypeScript-QA-Thorough** (@typescript-qa-thorough) - Comprehensive TypeScript analysis
 
 ## Available Agents
 
@@ -268,6 +273,7 @@ Primary agents that can be invoked directly:
 | `implementation-controller` | Primary | 0.2 | Plan execution orchestration |
 | `task-executor` | Subagent | 0.2 | Single-task code builder |
 | **QA Workflow** | | | |
+| `opencode-qa-thorough` | Primary | 0.1 | Thorough OpenCode QA (yamllint, markdownlint) |
 | `python-qa-quick` | Primary | 0.1 | Quick Python QA (ruff, pyright, bandit) |
 | `python-qa-thorough` | Primary | 0.1 | Thorough Python QA with report generation |
 | `typescript-qa-quick` | Primary | 0.1 | Quick TypeScript QA (eslint, tsc) |
@@ -304,7 +310,7 @@ Returns up to 10 search results with titles, URLs, and snippets.
 
 Skills are reusable knowledge modules that provide domain-specific expertise to agents. Each skill contains curated reference documentation and can be invoked when specialized knowledge is needed.
 
-### dify-reference
+### dify
 
 Comprehensive technical reference for Dify bot development.
 
@@ -316,18 +322,40 @@ Comprehensive technical reference for Dify bot development.
 
 **Usage:**
 ```
-Load the dify-reference skill when working with Dify bots
+Load the dify skill when working with Dify bots
 ```
 
 **Structure:**
 ```
-skills/dify-reference/
+skills/dify/
 ├── SKILL.md                    # Skill definition and quick reference
 └── references/                 # Detailed documentation
     ├── node-types.md           # Complete node catalog
     ├── variable-system.md      # Variable reference guide
     ├── voice-bot-patterns.md   # Voice-specific patterns
     └── architecture.md         # Platform deep dive
+```
+
+### opencode
+
+Comprehensive reference for OpenCode Skills and Agents systems.
+
+**Provides:**
+- Skills system best practices
+- Agent definition guidelines
+- Claude Sonnet-4.5 optimization techniques
+- Prompt engineering patterns
+
+**Usage:**
+```
+Load the opencode skill when working with OpenCode agents and skills
+```
+
+**Structure:**
+```
+skills/opencode/
+├── SKILL.md                    # Skill definition and quick reference
+└── references/                 # Detailed documentation
 ```
 
 ### Creating Custom Skills
@@ -407,6 +435,11 @@ To use standard providers (Anthropic, OpenAI, etc.), run `/connect` in OpenCode 
    Controller will execute tasks one at a time, waiting for "PROCEED" or "CONTINUE" after each task.
 
 ### Running QA
+
+**Thorough OpenCode QA** (using `opencode-qa-thorough` agent):
+```
+Run thorough QA on the OpenCode project
+```
 
 **Quick TypeScript QA** (using `typescript-qa-quick` agent):
 ```
