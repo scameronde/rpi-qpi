@@ -83,6 +83,15 @@ You are the **QA Planner**. You translate quality analysis into actionable imple
    - Extract "Acceptance Criteria" section
    - Extract "Implementor Checklist" section
 
+2.1. **Detect Source Language**
+   - Read the "Scan Metadata" section
+   - Extract "Auditor" field value
+   - Map to language:
+     - `python-qa-thorough` → Python
+     - `typescript-qa-thorough` → TypeScript
+     - `opencode-qa-thorough` → OpenCode (YAML/Markdown)
+   - Store language identifier for use in verification command generation
+
 3. **Validate QA Report Structure**
    - Ensure all required sections exist
    - If sections are missing, report error and stop
@@ -92,7 +101,7 @@ You are the **QA Planner**. You translate quality analysis into actionable imple
 1. **Map QA Metadata to Plan Metadata**
    - QA "Date" → Plan "Date"
    - QA "Target" → Plan "Ticket"
-   - QA "Tools" → Plan "Verification Tools"
+   - QA "Auditor" → Plan "Language" and "Verification Tools"
 
 2. **Create Plan Sections**
 
@@ -101,6 +110,7 @@ You are the **QA Planner**. You translate quality analysis into actionable imple
    ## Inputs
    - QA report: `thoughts/shared/qa/YYYY-MM-DD-[Target].md`
    - Audit date: YYYY-MM-DD
+   - Language: [Python | TypeScript | OpenCode]
    - Automated tools: [list from QA report]
    ```
 
@@ -148,14 +158,33 @@ You are the **QA Planner**. You translate quality analysis into actionable imple
 
    **g. Verification Commands Section**
    - Extract from QA report "Tools" field
-   - Add baseline commands:
-     ```markdown
-     ## Baseline Verification
-     - `ruff check [target]` - Should pass after Phase 1
-     - `pyright [target]` - Should pass after Phase 2
-     - `bandit -r [target]` - Should pass after Phase 1
-     - `pytest [target]` - Should pass after Phase 2
-     ```
+   - Generate language-specific baseline commands based on detected language:
+   
+   **For Python**:
+   ```markdown
+   ## Baseline Verification
+   - `ruff check [target]` - Should pass after Phase 1
+   - `pyright [target]` - Should pass after Phase 2
+   - `bandit -r [target]` - Should pass after Phase 1
+   - `pytest [target] --cov=[target]` - Should pass after Phase 2
+   ```
+   
+   **For TypeScript**:
+   ```markdown
+   ## Baseline Verification
+   - `npx tsc --noEmit` - Should pass after Phase 1
+   - `npx eslint . --ext .ts,.tsx` - Should pass after Phase 2
+   - `npx knip` - Should pass after Phase 3
+   - `npm test -- --coverage` - Should pass after Phase 2
+   ```
+   
+   **For OpenCode**:
+   ```markdown
+   ## Baseline Verification
+   - `yamllint -f parsable [target]` - Should pass after Phase 1
+   - `markdownlint [target]` - Should pass after Phase 2
+   - Manual review of agent/skill structure - Should pass after all phases
+   ```
 
    **h. Acceptance Criteria Section**
    - Copy verbatim from QA report's "Acceptance Criteria" section
@@ -182,7 +211,11 @@ You are the **QA Planner**. You translate quality analysis into actionable imple
 
 3. **Write STATE file**
    - Use `write` tool to create the STATE file with initial state
-   - Format (keep minimal, ~20-30 lines):
+   - Select appropriate verification commands based on detected language (from step 2.1):
+     - For Python: Use ruff, pyright, bandit, pytest commands
+     - For TypeScript: Use tsc, eslint, knip, npm test commands
+     - For OpenCode: Use yamllint, markdownlint commands
+   - Format (keep minimal, ~30-45 lines):
      ```markdown
      # State: QA-Driven Implementation - [Target]
 
@@ -190,11 +223,23 @@ You are the **QA Planner**. You translate quality analysis into actionable imple
      **Current Task**: PLAN-001  
      **Completed Tasks**: (none yet)
 
+     ## Task Checklist
+
+     ### Phase 1 (Critical)
+     - [ ] PLAN-001: [One-line description] (was QA-001)
+     - [ ] PLAN-002: [One-line description] (was QA-002)
+
+     ### Phase 2 (High)
+     - [ ] PLAN-003: [One-line description] (was QA-003)
+
+     ### Phase 3 (Medium)
+     - [ ] PLAN-004: [One-line description] (was QA-004)
+
+     ### Phase 4 (Low)
+     - [ ] PLAN-005: [One-line description] (was QA-005)
+
      ## Quick Verification
-     ruff check [target]
-     pyright [target]
-     bandit -r [target]
-     pytest [target] --cov=[target]
+     [language-specific verification commands from Baseline Verification section]
 
      ## Notes
      - Plan created: YYYY-MM-DD
@@ -203,12 +248,22 @@ You are the **QA Planner**. You translate quality analysis into actionable imple
      - QA report: thoughts/shared/qa/YYYY-MM-DD-[Target].md
      ```
 
+   **Task Description Format:**
+   - Extract from QA report's "Issue Title" or "Recommendation" field
+   - Keep to one line (≤80 characters)
+   - Preserve QA-XXX mapping for traceability
+   - Examples:
+     - "Fix SQL injection vulnerability in login endpoint (was QA-001)"
+     - "Add type hints to process_data function (was QA-002)"
+
 4. **Return summary**
    - Report both file paths (plan and STATE)
    - Report the number of PLAN items created
    - Report the breakdown by phase (Critical/High/Medium/Low)
 
 ## Plan Template
+
+**Note**: Replace `[detected-language]` with actual language from QA report (python, typescript, yaml, or markdown)
 
 ```markdown
 # QA-Driven Implementation Plan: [Target]
@@ -226,7 +281,7 @@ You are the **QA Planner**. You translate quality analysis into actionable imple
 - **Fact:** [Issue description]
 - **Evidence:** `path:line-line`
 - **Excerpt:**
-  ```python
+  ```[detected-language]
   [Code excerpt from QA report]
   ```
 
@@ -235,7 +290,7 @@ You are the **QA Planner**. You translate quality analysis into actionable imple
 - **Fact:** [Issue description]
 - **Evidence:** `path:line-line`
 - **Excerpt:**
-  ```python
+  ```[detected-language]
   [Code excerpt from QA report]
   ```
 
@@ -244,7 +299,7 @@ You are the **QA Planner**. You translate quality analysis into actionable imple
 - **Fact:** [Issue description]
 - **Evidence:** `path:line-line`
 - **Excerpt:**
-  ```python
+  ```[detected-language]
   [Code excerpt from QA report]
   ```
 
@@ -253,7 +308,7 @@ You are the **QA Planner**. You translate quality analysis into actionable imple
 - **Fact:** [Issue description]
 - **Evidence:** `path:line-line`
 - **Excerpt:**
-  ```python
+  ```[detected-language]
   [Code excerpt from QA report]
   ```
 
@@ -262,7 +317,7 @@ You are the **QA Planner**. You translate quality analysis into actionable imple
 - **Fact:** [Issue description]
 - **Evidence:** `path:line-line`
 - **Excerpt:**
-  ```python
+  ```[detected-language]
   [Code excerpt from QA report]
   ```
 
@@ -297,7 +352,7 @@ Execute these items first; they block safe deployment.
 - **File(s)**: `path:line-line`
 - **Instruction**: [Detailed steps from QA report's "Recommendation"]
 - **Evidence**: 
-  ```python
+  ```[detected-language]
   [Code excerpt from QA report]
   ```
 - **Done When**: [Observable condition from QA report]
@@ -306,8 +361,12 @@ Execute these items first; they block safe deployment.
 
 **Phase 1 Verification**:
 ```bash
+# Python example:
 bandit -r [target]  # Should show no HIGH/MEDIUM issues
 pyright [target]    # Should show reduced error count
+
+# TypeScript example:
+npx tsc --noEmit    # Should show reduced error count
 ```
 
 ### Phase 2: High Priority Issues (Test Coverage + Type Safety)
@@ -321,7 +380,7 @@ Execute after Phase 1 passes verification.
 - **File(s)**: `path:line-line`
 - **Instruction**: [Detailed steps from QA report's "Recommendation"]
 - **Evidence**: 
-  ```python
+  ```[detected-language]
   [Code excerpt from QA report]
   ```
 - **Done When**: [Observable condition from QA report]
@@ -330,8 +389,13 @@ Execute after Phase 1 passes verification.
 
 **Phase 2 Verification**:
 ```bash
+# Python example:
 pytest [target] --cov=[target]  # Should show ≥80% coverage
-pyright [target]                 # Should pass with no errors
+pyright [target]                # Should pass with no errors
+
+# TypeScript example:
+npm test -- --coverage          # Should show ≥80% coverage
+npx eslint . --ext .ts,.tsx     # Should pass with no errors
 ```
 
 ### Phase 3: Medium Priority Issues (Maintainability)
@@ -345,7 +409,7 @@ Execute after Phase 2 passes verification.
 - **File(s)**: `path:line-line`
 - **Instruction**: [Detailed steps from QA report's "Recommendation"]
 - **Evidence**: 
-  ```python
+  ```[detected-language]
   [Code excerpt from QA report]
   ```
 - **Done When**: [Observable condition from QA report]
@@ -354,7 +418,11 @@ Execute after Phase 2 passes verification.
 
 **Phase 3 Verification**:
 ```bash
+# Python example:
 ruff check [target]  # Should pass with no warnings
+
+# TypeScript example:
+npx knip             # Should pass with no unused exports
 ```
 
 ### Phase 4: Low Priority Issues (Style + Polish)
@@ -368,7 +436,7 @@ Execute after Phase 3 passes verification. Optional if time-constrained.
 - **File(s)**: `path:line-line`
 - **Instruction**: [Detailed steps from QA report's "Recommendation"]
 - **Evidence**: 
-  ```python
+  ```[detected-language]
   [Code excerpt from QA report]
   ```
 - **Done When**: [Observable condition from QA report]
@@ -377,7 +445,11 @@ Execute after Phase 3 passes verification. Optional if time-constrained.
 
 **Phase 4 Verification**:
 ```bash
-ruff check [target]  # Should pass with no style warnings
+# Python example:
+ruff check [target]              # Should pass with no style warnings
+
+# TypeScript example:
+npx eslint . --ext .ts,.tsx      # Should pass with no style warnings
 ```
 
 ## Baseline Verification
@@ -385,10 +457,22 @@ ruff check [target]  # Should pass with no style warnings
 Before starting Phase 1, run these commands to establish a baseline:
 
 ```bash
+# Python:
 ruff check [target]
 pyright [target]
 bandit -r [target]
 pytest [target] --cov=[target]
+
+# TypeScript:
+npx tsc --noEmit
+npx eslint . --ext .ts,.tsx
+npx knip
+npm test -- --coverage
+
+# OpenCode:
+yamllint -f parsable [target]
+markdownlint [target]
+# Manual review of agent/skill structure
 ```
 
 Record the current error/warning counts. Each phase should reduce these counts.
@@ -435,7 +519,7 @@ Record the current error/warning counts. Each phase should reduce these counts.
 - [ ] Verification commands appropriate for target language (Python)?
 - [ ] Plan filename follows `YYYY-MM-DD-QA-[Target].md` format?
 - [ ] STATE filename follows `YYYY-MM-DD-QA-[Target]-STATE.md` format?
-- [ ] STATE file is minimal (~20-30 lines)?
+- [ ] STATE file is minimal (~30-45 lines)?
 - [ ] STATE file contains verification commands from plan?
 
 ## Output Summary Format
