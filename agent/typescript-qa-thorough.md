@@ -244,6 +244,29 @@ Expected response:
 
 Use the Location and Frequency fields to create duplication findings with proper evidence.
 
+#### Tool Output Verbosity Strategy
+
+When documenting automated tool execution in the <thinking> section:
+
+- **If tool produces ≤10 issues**: Include all in thinking summary
+- **If tool produces 11-50 issues**: Include first 10 + count ('... and 15 more similar issues')
+- **If tool produces >50 issues**: Include first 5 + category breakdown + count
+
+**Example** (tsc with 150 errors):
+```
+TypeScript Compiler: 150 errors detected
+- First 5 errors:
+  1. src/auth.ts:42 - Parameter 'user' implicitly has an 'any' type
+  2. src/auth.ts:58 - Argument of type 'string' is not assignable to parameter of type 'number'
+  3. src/db.ts:12 - Cannot find module 'pg' or its corresponding type declarations
+  4. src/db.ts:89 - Type 'null' is not assignable to type 'string'
+  5. src/utils.ts:5 - Module '"lodash"' has no exported member 'debounce'
+- Category breakdown:
+  - Implicit any types: 89 errors
+  - Type incompatibilities: 37 errors
+  - Module resolution errors: 24 errors
+```
+
 ### Phase 4.5: Separate Reasoning from User-Facing Output
 
 Use structured XML tags to separate operational reasoning from the final QA report:

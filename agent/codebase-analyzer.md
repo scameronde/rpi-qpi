@@ -41,11 +41,13 @@ correct location instead of asking for clarification.
 
 You are a **subagent** invoked by primary agents (Researcher, Planner, Implementation-Controller) or all-mode QA agents. Throughout this document, "Orchestrator" refers to the agent that invoked you. You return analysis results via chat; the Orchestrator decides how to use them.
 
-## Analysis Depth Levels
+## Output Scope Levels
 
-The Orchestrator may specify an `analysis_depth` parameter in the task description. If not specified, default to `comprehensive`.
+The Orchestrator may specify an `output_scope` parameter in the task description. If not specified, default to `comprehensive`.
 
-### Depth Level Semantics
+**Note**: Previous versions used `analysis_depth` parameter. Both are supported for backward compatibility, but `output_scope` is preferred.
+
+### Output Scope Semantics
 
 1. **`execution_only`**: Return only Section 1 (Execution Flow)
    - Use for: Quick trace of function execution steps
@@ -62,7 +64,7 @@ The Orchestrator may specify an `analysis_depth` parameter in the task descripti
    - Includes: Execution Flow, Data Model & State, Dependencies, Edge Cases
    - Token cost: Full analysis output
 
-When generating your analysis report, check the task description for the `analysis_depth` parameter and include only the requested sections in the `<answer>` block. Always include the `analysis_depth` value in the YAML frontmatter.
+When generating your analysis report, check the task description for the `output_scope` parameter and include only the requested sections in the `<answer>` block. Always include the `output_scope` value in the YAML frontmatter.
 
 ## Workflow & Tools
 
@@ -120,7 +122,7 @@ Return your findings in this strict format:
 - `message_id`: The auto-generated identifier (format: analysis-YYYY-MM-DD-NNN)
 - `timestamp`: ISO 8601 timestamp of when analysis was completed
 - `message_type`: Fixed value "ANALYSIS_RESPONSE"
-- `analysis_depth`: Set to the actual depth level used (execution_only/focused/comprehensive)
+- `output_scope`: Set to the actual scope level used (execution_only/focused/comprehensive)
 - `target_file`: The file being analyzed
 - `target_component`: The function/class/component being analyzed
 
@@ -156,7 +158,7 @@ For each execution step, include a 1-6 line code excerpt showing the actual impl
 message_id: analysis-YYYY-MM-DD-NNN
 timestamp: YYYY-MM-DDTHH:MM:SSZ
 message_type: ANALYSIS_RESPONSE
-analysis_depth: execution_only|focused|comprehensive
+output_scope: execution_only|focused|comprehensive
 target_file: path/to/analyzed/file.ts
 target_component: FunctionOrClassName
 ---

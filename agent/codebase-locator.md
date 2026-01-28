@@ -75,7 +75,24 @@ you receive. This optimizes token usage for different consumer needs.
      })
      ```
 
-3. **`comprehensive`** (~320 tokens, complete atlas)
+3. **`focused`** (~200 tokens, 37% savings)
+   - **Use Case:** Planner needs implementation + config files
+     without tests
+   - **Sections Returned:** Primary Implementation + Related
+     Configuration
+   - **Note:** The 'focused' scope aligns with thoughts-locator's
+     focused scope for consistency
+   - **Example:**
+
+     ```javascript
+     task({
+       subagent_type: "codebase-locator",
+       prompt: "Find order processing files and their config. " +
+               "search_scope: focused"
+     })
+     ```
+
+4. **`comprehensive`** (~320 tokens, complete atlas)
    - **Use Case:** Researcher agents needing full topology (default)
    - **Sections Returned:** Primary Implementation, Related
      Configuration, Testing Coordinates, Directory Structure
@@ -95,7 +112,7 @@ you receive. This optimizes token usage for different consumer needs.
 **How to Specify:** Include `search_scope: [value]` or
 `Search scope: [value]` (case-insensitive) anywhere in your task
 prompt. The locator will parse it using regex
-`(?i)search.?scope:\s*(tests_only|paths_only|comprehensive)` and
+`(?i)search.?scope:\s*(tests_only|paths_only|focused|comprehensive)` and
 return only the requested sections.
 
 ## Tools & Constraints
@@ -197,7 +214,7 @@ directories_scanned: [count]
   "correlation_id: XXX" in task prompt; use "none" if absent
 - **timestamp**: Current time in format "2026-01-18T12:00:00Z"
 - **message_type**: Always use "LOCATION_RESPONSE"
-- **search_scope**: The scope level you detected and applied
+- **search_scope**: The scope level you detected and applied (tests_only, paths_only, focused, or comprehensive)
 - **locator_version**: Use "1.1" (version of this template)
 - **query_topic**: Short description extracted from task (e.g.,
   "authentication tests", "database models")
@@ -254,6 +271,22 @@ depend on the `search_scope` parameter:
 ### Primary Implementation
 - `src/features/auth/AuthService.ts` [entry-point, exports: 5]
 - `src/features/auth/AuthController.ts` [secondary, exports: 3]
+</answer>
+```
+
+**For scope = focused:**
+
+```markdown
+<answer>
+## Coordinates: Focused Example
+
+### Primary Implementation
+- `src/features/auth/AuthService.ts` [entry-point, exports: 5]
+- `src/features/auth/AuthController.ts` [secondary, exports: 3]
+
+### Related Configuration
+- `config/auth.yaml` [config]
+- `.env.schema` [config]
 </answer>
 ```
 
@@ -315,13 +348,14 @@ Search strategy for authentication test files:
 ### Implementation Logic
 
 1. Parse the task prompt using regex: `(?i)search.?scope:\s*(\w+)`
-2. Match against valid scopes: tests_only, paths_only, comprehensive
+2. Match against valid scopes: tests_only, paths_only, focused, comprehensive
 3. Default to comprehensive if no match or invalid value
 4. Execute search as normal (glob/bash/read)
 5. Collect all findings (all 4 sections worth of data)
 6. Filter output based on scope:
    - If `tests_only`: Include only "Testing Coordinates" section
    - If `paths_only`: Include only "Primary Implementation" section
+   - If `focused`: Include "Primary Implementation" + "Related Configuration" sections
    - If `comprehensive` or no scope specified: Include all 4 sections
 7. Generate YAML frontmatter with all 9 required fields
 8. Wrap search strategy/reasoning in `<thinking>` tags

@@ -367,7 +367,7 @@ interrogate --fail-under 80 -vv --omit-covered-files --ignore-init-module --igno
 message_id: qa-thorough-YYYY-MM-DD-NNN
 correlation_id: [workflow-id or user-request-id]
 timestamp: YYYY-MM-DDTHH:MM:SSZ
-message_type: QA_ANALYSIS_REPORT
+message_type: QA_REPORT  # Fixed value for QA analysis reports
 qa_agent: python-qa-thorough
 qa_agent_version: "1.0"
 target_path: [path/to/target]
