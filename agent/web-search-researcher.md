@@ -118,6 +118,31 @@ Use `todowrite` to track your research phases.
 - ✅ Reading full GitHub issue threads (to see if a solution was actually found).
 - ✅ Extracting exact API signatures from official docs.
 
+### Use `crawl4ai` For:
+- ✅ **JavaScript-heavy documentation sites** (Next.js docs, React docs, modern SPAs that webfetch cannot handle)
+- ✅ **Large documentation pages** requiring token-efficient filtering (use markdown mode with BM25 filter)
+- ✅ **Clean markdown extraction** for LLM consumption (not raw HTML parsing)
+- ✅ **Media inventory** when need to cite diagrams, architecture images, or video tutorials
+- ✅ **Caching repeated requests** to same documentation pages for performance
+
+**Mode Selection**:
+- `mode: "markdown"`, `markdown_filter: "bm25"`, `filter_query: <research question>` → Extract query-relevant content only (50-80% token reduction)
+- `mode: "crawl"` → Full page extraction with metadata and media inventory
+- `mode: "screenshot"` → Visual page capture (rare, for visual verification)
+
+### Tool Selection Decision Tree:
+1. **Is the page JavaScript-heavy** (modern SPA/framework docs)?
+   - YES → Use `crawl4ai` (webfetch will return empty/broken HTML)
+   - NO → Continue to step 2
+
+2. **Is the page large** (>2000 tokens) **and you only need specific sections**?
+   - YES → Use `crawl4ai` with `mode: "markdown"`, `markdown_filter: "bm25"`, `filter_query: <topic>`
+   - NO → Continue to step 3
+
+3. **Is this a simple static HTML page** (GitHub issue, static blog, basic docs)?
+   - YES → Use `webfetch` (faster, less overhead)
+   - NO → Use `crawl4ai` with `mode: "markdown"` (better extraction)
+
 ### Code Example Extraction Rules
 
 When extracting code examples:
