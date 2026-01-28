@@ -76,11 +76,25 @@ The framework enforces separation of concerns, evidence-based decision making, a
    /init
    ```
 
-5. **Copy RPIQPI agents to your project** (optional)
+5. **Install RPIQPI agents and tools**
+   
+   Choose one of the following installation methods:
+   
+   **Option A: Global Installation** (available in all projects)
    ```bash
    cp -r /path/to/rpiqr/agent ~/.config/opencode/agent/
    cp -r /path/to/rpiqr/tool ~/.config/opencode/tool/
    cp -r /path/to/rpiqr/skills ~/.config/opencode/skills/
+   ```
+   
+   **Option B: Project-Specific Installation** (only available in current project)
+   ```bash
+   cd /path/to/your/project
+   mkdir -p .opencode
+   cp -r /path/to/rpiqr/agent .opencode/
+   cp -r /path/to/rpiqr/tool .opencode/
+   cp -r /path/to/rpiqr/skills .opencode/
+   cp /path/to/rpiqr/opencode.json .opencode/
    ```
 
 ## Project Structure
