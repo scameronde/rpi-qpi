@@ -14,6 +14,7 @@ tools:
   todoread: true
   todowrite: true
   webfetch: true
+  crawl4ai: true  # AI-optimized web scraping with markdown filtering
   searxng-search: true
   sequential-thinking: true
   context7: true
