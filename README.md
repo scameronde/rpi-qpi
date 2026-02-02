@@ -43,7 +43,7 @@ The framework enforces separation of concerns, evidence-based decision making, a
 - **Multi-Level QA** - Quick and thorough code review for both Python and TypeScript
 - **QA-to-Implementation Bridge** - Seamless conversion of QA findings into actionable plans
 - **Skills System** - Reusable knowledge modules for domain-specific expertise
-- **Custom Tools** - SearXNG web search integration
+- **Custom Tools** - SearXNG web search and Crawl4AI web content extraction
 - **MCP Integration** - Context7 for library docs, Sequential Thinking for reasoning
 
 ## Prerequisites
@@ -122,6 +122,7 @@ rpiqr/
 │   ├── thoughts-analyzer.md         # Document analyzer (subagent)
 │   └── thoughts-locator.md          # Document locator (subagent)
 ├── tool/                            # Custom tools
+│   ├── crawl4ai.ts                  # Crawl4AI web content extraction
 │   └── searxng-search.ts            # SearXNG web search integration
 ├── skills/                          # Reusable knowledge modules
 │   ├── dify/                        # Dify bot development reference
@@ -304,6 +305,41 @@ Primary agents that can be invoked directly:
 Switch between primary agents using the **Tab** key in OpenCode.
 
 ## Custom Tools
+
+### crawl4ai
+
+AI-optimized web content extraction using Crawl4AI service (supports JavaScript execution, markdown extraction, and content filtering).
+
+```typescript
+// Mode 1: Full page extraction (crawl)
+crawl4ai({
+  url: "https://docs.example.com/api",
+  mode: "crawl"
+})
+
+// Mode 2: Filtered markdown (markdown)
+crawl4ai({
+  url: "https://docs.example.com/guide",
+  mode: "markdown",
+  markdown_filter: "bm25",
+  filter_query: "authentication setup"
+})
+
+// Mode 3: Screenshot (screenshot)
+crawl4ai({
+  url: "https://example.com",
+  mode: "screenshot",
+  screenshot_wait: 2.0
+})
+```
+
+**Features:**
+- JavaScript execution via Playwright (handles dynamic content)
+- Clean markdown extraction (citation-ready)
+- BM25/LLM content filtering (50-80% token reduction)
+- Screenshot capture for visual content
+
+**Primary user:** `web-search-researcher` agent
 
 ### searxng-search
 
