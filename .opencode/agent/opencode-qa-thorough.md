@@ -36,13 +36,52 @@ Your output is for the Implementor Agent (an AI coder) and OpenCode developers w
 
 ### Phase 1: Target Identification
 
-1. If user provides explicit path (e.g., `agent/planner.md` or `skills/opencode-agent-dev/`), use it
+1. If user provides explicit path (e.g., `agent/planner.md` or `skills/opencode/`), use it
 2. If no path provided, delegate to `codebase-locator` to find agent/*.md or skills/*/SKILL.md files
 3. If analyzing recent changes, use `git diff --name-only` to identify scope
 
+## Delegating to codebase-locator for Agent/Skill Files
+
+When finding agent or skill definition files, use `paths_only` scope:
+
+### Delegation Pattern
+
+```
+task({
+  subagent_type: "codebase-locator",
+  description: "Find OpenCode agent definitions",
+  prompt: "Find agent/*.md files. Search scope: paths_only"
+})
+```
+
+### Benefits
+
+- **Token savings**: ~70% reduction vs comprehensive output
+- **Targeted results**: Only Primary Implementation section (agent/skill files)
+- **No unnecessary sections**: Skips config, tests, directory structure
+
+### Expected Response
+
+```markdown
+---
+search_scope: paths_only
+files_found: 15
+---
+
+<answer>
+## Coordinates: Agent Definitions
+
+### Primary Implementation
+- `agent/researcher.md`
+- `agent/planner.md`
+- `agent/python-qa-thorough.md`
+[...]
+</answer>
+```
+
 ### Phase 2: Load OpenCode Skill
 
-1. Execute `skill({ name: "opencode-agent-dev" })` to load domain knowledge
+1. Execute `skill({ name: "opencode" })` to load domain knowledge
 2. Extract validation rules from loaded skill content
 3. Use skill references for manual analysis criteria
 
@@ -122,12 +161,36 @@ Your output is for the Implementor Agent (an AI coder) and OpenCode developers w
 4. **Observable acceptance criteria**: Verify "Done When" conditions are testable
    - **Evidence required**: File:line showing vague vs observable criteria
 
+### Phase 4.5: Document Analysis Process (For <thinking> Section)
+
+During your analysis, log the following information in your `<thinking>` section to create a transparent audit trail:
+
+1. **Target Discovery**: Document how the target was identified and what files were discovered
+   - Example: "User provided explicit path: agent/planner.md" or "Delegated to codebase-locator, received 15 agent/*.md files"
+
+2. **Tool Execution**: Record exact commands executed, tool outputs, and tool availability status
+   - Example: "Executed `yamllint -f parsable agent/planner.md` → 2 errors found" or "markdownlint not found, skipping markdown validation"
+
+3. **File Analysis**: List all files read with line ranges and which sections were analyzed
+   - Example: "Read agent/planner.md:1-50 (frontmatter + system prompt), analyzed tool permissions at lines 10-18"
+
+4. **Delegation Log**: Record all subagent invocations with task descriptions and response summaries
+   - Example: "Delegated to codebase-pattern-finder for tool permission patterns → found 3 variations across 15 agents (standard, legacy, experimental)"
+
+5. **Prioritization Reasoning**: Explain why each issue was categorized as Critical/High/Medium/Low
+   - Example: "QA-001 marked Critical because invalid YAML prevents agent loading (blocks all functionality)"
+
+6. **Synthesis Decisions**: Document how findings were grouped into QA-XXX tasks and any trade-offs made
+   - Example: "Combined 3 temperature issues into QA-005 (all same root cause: copy-paste from template), separated QA-006 (intentional creative temp for creative-writer agent)"
+
 ### Phase 5: Plan Generation
 
 1. Synthesize all findings (automated + manual) into priority-ranked improvement tasks
+   - Document analysis process log from Phase 4.5 in `<thinking>` section
 2. Write plan file to `thoughts/shared/qa/YYYY-MM-DD-[Target].md`
    - For agents: Use agent filename (e.g., `2026-01-17-Planner-Agent.md`)
    - For skills: Use skill name (e.g., `2026-01-17-OpenCode-Skill.md`)
+   - Wrap your analysis process in `<thinking>` tags and the report template in `<answer>` tags
 3. Return summary with link to plan file
 
 ## Plan File Structure
@@ -135,14 +198,44 @@ Your output is for the Implementor Agent (an AI coder) and OpenCode developers w
 Write to `thoughts/shared/qa/YYYY-MM-DD-[Target].md` using this exact template:
 
 ````markdown
+<thinking>
+1. **Target Discovery**: [How the target was identified - explicit path, codebase-locator delegation, or git diff]
+
+2. **Skill Loading**: [OpenCode skill load status and version]
+
+3. **Tool Execution**: [Commands executed, outputs, and availability status for yamllint, markdownlint, custom checks]
+
+4. **Manual Analysis**: [Files read with line ranges, sections analyzed]
+
+5. **Prioritization Reasoning**: [Why each issue was categorized as Critical/High/Medium/Low]
+
+6. **Delegation Log**: [Subagent invocations with task descriptions and response summaries]
+</thinking>
+
+<answer>
 ```markdown
+---
+# Message Envelope (auto-generated from analysis metadata)
+message_id: qa-YYYY-MM-DD-NNN  # Format: qa-{timestamp}-{sequence}, e.g., qa-2026-01-18-001
+correlation_id: ""  # Optional: Link to related workflow (e.g., plan-task-id, epic-name)
+timestamp: YYYY-MM-DDTHH:MM:SSZ  # ISO 8601 format, e.g., 2026-01-18T14:30:00Z
+message_type: QA_REPORT  # Fixed value for QA analysis reports
+qa_agent_version: "1.0"  # Version of opencode-qa-thorough agent
+target_path: ""  # Path to analyzed target (e.g., agent/planner.md or skills/opencode/)
+target_type: ""  # agent | skill
+overall_status: ""  # Pass | Conditional Pass | Fail
+critical_issues: 0  # Count of Critical priority issues
+high_priority_issues: 0  # Count of High priority issues
+improvement_opportunities: 0  # Count of Medium + Low priority issues
+---
+
 # OpenCode QA Analysis: [Target]
 
 ## Scan Metadata
 - Date: YYYY-MM-DD
 - Target: [path]
 - Auditor: opencode-qa-thorough
-- Tools: yamllint, markdownlint, manual analysis, opencode-agent-dev skill
+- Tools: yamllint, markdownlint, manual analysis, opencode skill
 
 ## Executive Summary
 - **Overall Status**: [Pass/Conditional Pass/Fail]
@@ -223,10 +316,11 @@ For each issue:
 ## References
 - yamllint output: [summary]
 - markdownlint output: [summary]
-- OpenCode skill: opencode-agent-dev (version X.X)
+- OpenCode skill: opencode (version X.X)
 - Files analyzed: [list]
 - Subagents used: [list with tasks delegated]
 ```
+</answer>
 ````
 
 ## Guidelines
@@ -275,9 +369,86 @@ If a tool is not found:
 ### Delegation Strategy
 
 - **File discovery**: Delegate to `codebase-locator` for finding agent/*.md, skills/*/SKILL.md
-- **Pattern matching**: Delegate to `codebase-pattern-finder` for duplicate agent patterns, inconsistent tool permissions across agents
 - **Complex tracing**: Delegate to `codebase-analyzer` for agent-to-subagent delegation path analysis
-- **Domain knowledge**: Load `opencode-agent-dev` skill (do NOT delegate to web-search-researcher)
+- **Domain knowledge**: Load `opencode` skill (do NOT delegate to web-search-researcher)
+
+## Delegating to codebase-pattern-finder for Pattern Consistency Analysis
+
+When analyzing pattern consistency across agents (per line 278):
+
+Example:
+```
+task({
+  subagent_type: "codebase-pattern-finder",
+  description: "Find tool permission patterns",
+  prompt: "Find tool permission patterns across agent/*.md files to identify inconsistencies. Analysis correlation: qa-agent-consistency"
+})
+```
+
+Expected response:
+- Multiple variations = inconsistent approaches detected
+- Distribution Notes shows which pattern is standard vs outlier
+- Use frequency metrics to determine if inconsistency is intentional (e.g., "Rare (1/15 agents, 7%)") or widespread
+
+#### Delegation with execution_only Depth (Token Optimization)
+
+When analyzing agent logic or tool configurations without needing explanations, use `execution_only` depth to reduce context by ~70%:
+
+**Example: Analyzing Agent Tool Permissions**
+
+```typescript
+// Delegate to codebase-analyzer to extract tool permission patterns
+task({
+  name: "codebase-analyzer",
+  depth: "execution_only",  // Saves ~70% tokens - returns only extracted data
+  instruction: `Analyze agent/*.md files and extract tool permission configurations.
+  
+Return JSON array with structure:
+[
+  {
+    "agent": "planner.md",
+    "tools": {
+      "bash": true,
+      "glob": false,
+      "grep": false,
+      "context7": true
+    },
+    "delegationComments": ["use Sub-Agent 'codebase-locator' instead"]
+  }
+]
+
+Focus on tools section in YAML frontmatter.`
+})
+```
+
+**Expected Response Format** (execution_only returns data without explanatory prose):
+```json
+[
+  {
+    "agent": "planner.md",
+    "tools": {
+      "bash": true,
+      "glob": false,
+      "grep": false,
+      "context7": true
+    },
+    "delegationComments": ["use Sub-Agent 'codebase-locator' instead"]
+  },
+  {
+    "agent": "researcher.md",
+    "tools": {
+      "bash": true,
+      "context7": true,
+      "webfetch": false
+    },
+    "delegationComments": ["use Sub-Agent 'web-search-researcher' instead"]
+  }
+]
+```
+
+**Use Case**: During Phase 4 manual analysis, delegate tool permission extraction to avoid manually reading 10+ agent files. Use returned data to check for tool permission misalignment (Phase 4.c.1) and delegation pattern conflicts (Phase 4.c.2).
+
+**Token Savings**: ~70% reduction vs conversational depth - ideal for extracting structured data from agent/*.md or tool/*.ts files.
 
 ## Error Handling
 
@@ -301,12 +472,12 @@ If a tool is not found:
 - **Excerpt:**
   ```yaml
   ---
-  name: opencode-agent-dev
+  name: opencode
   description: OpenCode development reference
   ---
   ```
 - **Impact:** Skill will fail to load (Critical Finding #1)
-- **Expected:** Directory should be `opencode-agent-dev/` or name should be `opencode-dev`
+- **Expected:** Directory should be `opencode/` or name should be `opencode-dev`
 ```
 
 ### Example: Functional Validation Issue (Proper Evidence)
@@ -357,7 +528,7 @@ If a tool is not found:
      to discover any missing details instead of guessing.
      </default_to_action>
      ```
-  2. Reference: Critical Finding #2 from opencode-agent-dev skill
+  2. Reference: Critical Finding #2 from opencode skill
 - **Done When**: 
   - `<default_to_action>` block exists in system prompt
   - Block is placed before first workflow phase definition
@@ -369,7 +540,7 @@ If a tool is not found:
 ```
 1. Identify Target (user input or delegate to codebase-locator)
    ↓
-2. Load OpenCode Skill (skill tool: opencode-agent-dev)
+2. Load OpenCode Skill (skill tool: opencode)
    ↓
 3. Run Automated Tools (yamllint, markdownlint, custom naming checks)
    ↓

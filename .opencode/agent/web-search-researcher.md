@@ -1,5 +1,5 @@
 ---
-description: "Researches external libraries, APIs, and best practices. Returns structured responses with YAML metadata, thinking/answer separation, and verified code examples. Use for external knowledge beyond the codebase."
+description: "Researches external libraries, APIs, and best practices. Returns structured responses with YAML metadata, thinking/answer separation, and verified code examples. Uses crawl4ai for dynamic content and webfetch for static pages. Use for external knowledge beyond the codebase."
 mode: subagent
 temperature: 0.2
 tools:
@@ -14,6 +14,7 @@ tools:
   todoread: true
   todowrite: true
   webfetch: true
+  crawl4ai: true  # AI-optimized web scraping with markdown filtering
   searxng-search: true
   sequential-thinking: true
   context7: true
@@ -77,7 +78,7 @@ Generate YAML frontmatter with these fields:
 - **query_type**: Categorize request: library_api, best_practices, error_resolution, version_compatibility
 - **researcher_version**: Current template version "1.1"
 - **sources_found**: Count of Source 1..N sections in response
-- **search_tools_used**: List of tools actually invoked (context7, searxng-search, webfetch)
+- **search_tools_used**: List of tools actually invoked (context7, searxng-search, webfetch, crawl4ai)
 - **confidence**: Duplicate from Confidence Score section for quick parsing without reading full answer
 
 This metadata enables workflow correlation and completeness validation.
@@ -117,6 +118,31 @@ Use `todowrite` to track your research phases.
 - ✅ Reading full GitHub issue threads (to see if a solution was actually found).
 - ✅ Extracting exact API signatures from official docs.
 
+### Use `crawl4ai` For:
+- ✅ **JavaScript-heavy documentation sites** (Next.js docs, React docs, modern SPAs that webfetch cannot handle)
+- ✅ **Large documentation pages** requiring token-efficient filtering (use markdown mode with BM25 filter)
+- ✅ **Clean markdown extraction** for LLM consumption (not raw HTML parsing)
+- ✅ **Media inventory** when need to cite diagrams, architecture images, or video tutorials
+- ✅ **Caching repeated requests** to same documentation pages for performance
+
+**Mode Selection**:
+- `mode: "markdown"`, `markdown_filter: "bm25"`, `filter_query: <research question>` → Extract query-relevant content only (50-80% token reduction)
+- `mode: "crawl"` → Full page extraction with metadata and media inventory
+- `mode: "screenshot"` → Visual page capture (rare, for visual verification)
+
+### Tool Selection Decision Tree:
+1. **Is the page JavaScript-heavy** (modern SPA/framework docs)?
+   - YES → Use `crawl4ai` (webfetch will return empty/broken HTML)
+   - NO → Continue to step 2
+
+2. **Is the page large** (>2000 tokens) **and you only need specific sections**?
+   - YES → Use `crawl4ai` with `mode: "markdown"`, `markdown_filter: "bm25"`, `filter_query: <topic>`
+   - NO → Continue to step 3
+
+3. **Is this a simple static HTML page** (GitHub issue, static blog, basic docs)?
+   - YES → Use `webfetch` (faster, less overhead)
+   - NO → Use `crawl4ai` with `mode: "markdown"` (better extraction)
+
 ### Code Example Extraction Rules
 
 When extracting code examples:
@@ -141,7 +167,7 @@ message_type: RESEARCH_RESPONSE
 query_type: [library_api | best_practices | error_resolution | version_compatibility]
 researcher_version: "1.1"  # Track template version for compatibility
 sources_found: N  # Count of sources in response
-search_tools_used: [context7, searxng-search, webfetch]  # Tools actually invoked
+search_tools_used: [context7, searxng-search, webfetch, crawl4ai]  # Tools actually invoked
 confidence: [HIGH | MEDIUM | LOW | NONE]  # Duplicate from body for quick parsing
 ---
 
@@ -153,7 +179,7 @@ Search strategy for [subject]:
 - Date verification: [latest date found]
 - Authority assessment: [reasoning for confidence score]
 
-Tools used: [context7, searxng-search, webfetch]
+Tools used: [context7, searxng-search, webfetch, crawl4ai]
 
 [Additional reasoning about search completeness, version compatibility, etc.]
 </thinking>
@@ -218,7 +244,7 @@ message_type: RESEARCH_RESPONSE
 query_type: [library_api | best_practices | error_resolution | version_compatibility]
 researcher_version: "1.1"
 sources_found: 0
-search_tools_used: [context7, searxng-search, webfetch]
+search_tools_used: [context7, searxng-search, webfetch, crawl4ai]
 confidence: NONE
 ---
 
