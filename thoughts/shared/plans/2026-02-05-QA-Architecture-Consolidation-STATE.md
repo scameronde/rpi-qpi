@@ -1,12 +1,13 @@
 # State: QA Architecture Consolidation
 
 **Plan**: thoughts/shared/plans/2026-02-05-QA-Architecture-Consolidation.md  
-**Current Task**: PLAN-005  
+**Current Task**: PLAN-006  
 **Completed Tasks**: 
 - PLAN-001
 - PLAN-002
 - PLAN-003
 - PLAN-004
+- PLAN-005
 
 ## Task Checklist
 
@@ -17,7 +18,7 @@
 
 ### Phase 2: Extend Researcher and Planner
 - [x] PLAN-004: Add QA mode detection to agent/researcher.md
-- [ ] PLAN-005: Add QA report detection to agent/planner.md
+- [x] PLAN-005: Add QA report detection to agent/planner.md
 
 ### Phase 3: Update Documentation
 - [ ] PLAN-006: Update AGENTS.md with QA workflow and deprecation notice
