@@ -1,11 +1,12 @@
 # State: QA Architecture Consolidation
 
 **Plan**: thoughts/shared/plans/2026-02-05-QA-Architecture-Consolidation.md  
-**Current Task**: PLAN-004  
+**Current Task**: PLAN-005  
 **Completed Tasks**: 
 - PLAN-001
 - PLAN-002
 - PLAN-003
+- PLAN-004
 
 ## Task Checklist
 
@@ -15,7 +16,7 @@
 - [x] PLAN-003: Create skills/opencode-qa/SKILL.md with 4 sections
 
 ### Phase 2: Extend Researcher and Planner
-- [ ] PLAN-004: Add QA mode detection to agent/researcher.md
+- [x] PLAN-004: Add QA mode detection to agent/researcher.md
 - [ ] PLAN-005: Add QA report detection to agent/planner.md
 
 ### Phase 3: Update Documentation
