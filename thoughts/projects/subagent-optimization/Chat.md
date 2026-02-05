@@ -12,15 +12,17 @@ Great. Now we know, that the codebase-analyzer is not meant to present it's outp
 
 ### newest
 
-Read "thoughts/shared/research/2026-01-18-Codebase-Analyzer-Agent-Communication.md" and then perform a similar analysis for the subagent "agent/task-executor.md". You can depend on the background research that has already been done. You don't have to do it twice.
+Read "thoughts/shared/research/2026-01-20-OpenCode-QA-Thorough-Agent-Communication.md" and then perform a similar analysis for the subagent "agent/typescript-qa-thorough.md". You can depend on the background research that has already been done. You don't have to do it twice.
+
+Read "thoughts/shared/research/2026-01-18-Codebase-Analyzer-Agent-Communication.md" and then perform a similar analysis for the primary agent "agent/thoughts-analyzer.md". The goal is a little bit different here. The primary agent should delegate most of it's work to other agents. It should do all to keep it's own context as small as possible. It's output should be informative enough for a human, but not too verbose. You can depend on the background research that has already been done. You don't have to do it twice.
 
 ## Planner
 
-Read the research report "thoughts/shared/research/2026-01-18-Codebase-Analyzer-Agent-Communication.md" and create a plan to improve the situation.
+Read the research report "thoughts/shared/research/2026-01-21-TypeScript-QA-Thorough-Agent-Communication.md" and create plan.
 
 ## Implementor
 
-Read the plan "thoughts/shared/plans/2026-01-18-Codebase-Locator-Communication-Optimization-STATE.md" and list the tasks.
+Read "thoughts/shared/plans/2026-01-21-TypeScript-QA-Thorough-Communication-STATE.md", add and commit the plan and the research, then list the open tasks
 
 ## QA
 
