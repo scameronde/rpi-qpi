@@ -4,6 +4,19 @@
 - No package.json found - this is a configuration-only OpenCode project
 - No test suite configured - verify changes manually or via OpenCode's built-in validation
 
+### Deprecated Agents
+
+The following agents have been consolidated into the skills-based QA workflow:
+- ~~`agent/python-qa-thorough.md`~~ → Use `researcher` in QA mode with `python-qa` skill
+- ~~`agent/python-qa-quick.md`~~ → Use `researcher` in QA mode with `python-qa` skill (inline output)
+- ~~`agent/typescript-qa-thorough.md`~~ → Use `researcher` in QA mode with `typescript-qa` skill
+- ~~`agent/typescript-qa-quick.md`~~ → Use `researcher` in QA mode with `typescript-qa` skill (inline output)
+- ~~`agent/opencode-qa-thorough.md`~~ → Use `researcher` in QA mode with `opencode-qa` skill
+- ~~`agent/qa-planner.md`~~ → Use `planner` with QA report detection
+
+**Migration Date:** 2026-02-05
+**Rationale:** Consolidation reduces maintenance burden from ~3,582 lines to ~600 lines while maintaining QA quality standards
+
 ## Agent Communication Patterns
 
 ### Thinking/Answer Separation for User-Facing Outputs
@@ -106,6 +119,12 @@ See `tool/crawl4ai.ts` for complete implementation and `thoughts/shared/research
 - `skills/[skill-name]/` - Reusable knowledge modules with domain-specific expertise
   - `SKILL.md` - Skill definition with metadata and documentation
   - `references/` - Reference documentation files
+
+### QA Skills
+- `skills/python-qa/SKILL.md` - Python code quality analysis (ruff, pyright, bandit, interrogate)
+- `skills/typescript-qa/SKILL.md` - TypeScript code quality analysis (tsc, eslint, knip)
+- `skills/opencode-qa/SKILL.md` - OpenCode agent/skill quality analysis (yamllint, markdownlint)
+
 - `thoughts/shared/missions/` - Mission statements (YYYY-MM-DD-[Project-Name].md) - vision and value for greenfield work
 - `thoughts/shared/specs/` - Specifications (YYYY-MM-DD-[Project-Name].md) - abstract architecture from missions
 - `thoughts/shared/epics/` - Epic decompositions (YYYY-MM-DD-[Epic-Name].md) - story-based breakdowns from specs
@@ -347,6 +366,42 @@ The implementation system uses a **two-agent architecture** to minimize LLM cont
 - **Git as Evidence**: Each task = one commit, git history becomes audit trail
 - **Single Source of Truth**: STATE file tracks progress, plan remains unchanged
 - **Scalability**: Future parallel task execution possible
+
+## QA Workflow (Researcher → Planner → Implementation-Controller)
+
+### QA Analysis (Researcher in QA Mode)
+
+1. User invokes Researcher with QA intent: "Analyze code quality for [target]"
+2. Researcher detects QA mode (keywords, file extensions, explicit skill request)
+3. Researcher loads appropriate skill (python-qa, typescript-qa, or opencode-qa)
+4. Researcher executes 4-phase workflow:
+   - Phase 1: Target Discovery (codebase-locator if needed)
+   - Phase 2: Automated Tool Execution (bash with commands from skill)
+   - Phase 3: Manual Analysis (read files, delegate to analyzers)
+   - Phase 4: Synthesis (apply prioritization rules from skill)
+5. Researcher writes to `thoughts/shared/qa/YYYY-MM-DD-[Target].md` with message_type: QA_REPORT
+
+### QA Planning (Planner with QA Detection)
+
+1. User invokes Planner: "Create plan from latest QA report"
+2. Planner reads QA report from `thoughts/shared/qa/`
+3. Planner detects QA input (path or message_type field)
+4. Planner extracts "Auditor" field, maps to skill (python-qa-thorough → python-qa)
+5. Planner loads appropriate skill
+6. Planner extracts verification commands from skill Section 4
+7. Planner applies QA template: QA-XXX → PLAN-XXX, Priority → Phase
+8. Planner writes to `thoughts/shared/plans/YYYY-MM-DD-QA-[Target].md`
+
+### QA Implementation (Implementation-Controller)
+
+Same workflow as standard implementation (no changes needed).
+
+### Key Benefits
+
+- **Centralized QA Knowledge**: Tool commands, prioritization rules, templates in 3 skills (~600 lines) vs 6 agents (~3,582 lines)
+- **Reduced Duplication**: Language-specific logic maintained in one place
+- **Easier Updates**: Change tool command once in skill instead of in 6 agent files
+- **Backward Compatible**: QA reports maintain same structure, Implementation-Controller unchanged
 
 ## Codebase-Analyzer Output Format and Depth Levels
 
