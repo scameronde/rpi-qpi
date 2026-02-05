@@ -1,7 +1,7 @@
 # State: QA Architecture Consolidation
 
 **Plan**: thoughts/shared/plans/2026-02-05-QA-Architecture-Consolidation.md  
-**Current Task**: PLAN-007  
+**Current Task**: COMPLETE  
 **Completed Tasks**: 
 - PLAN-001
 - PLAN-002
@@ -9,6 +9,7 @@
 - PLAN-004
 - PLAN-005
 - PLAN-006
+- PLAN-007
 
 ## Task Checklist
 
@@ -25,7 +26,7 @@
 - [x] PLAN-006: Update AGENTS.md with QA workflow and deprecation notice
 
 ### Phase 4: Deprecate Agents
-- [ ] PLAN-007: Move 6 QA agents to deprecated/ with README
+- [x] PLAN-007: Move 6 QA agents to deprecated/ with README
 
 ## Quick Verification
 
