@@ -559,7 +559,7 @@ Required structure:
 ## Inputs
 - QA report: `thoughts/shared/qa/YYYY-MM-DD-[Target].md`
 - Audit date: YYYY-MM-DD
-- Language: [Python | TypeScript | OpenCode]
+- Language: [Detected from QA skill]
 - QA Skill: [language]-qa (loaded via skill tool)
 - Automated tools: [list from QA report]
 
