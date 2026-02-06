@@ -96,7 +96,7 @@ Activate QA Mode when the user request includes:
 
 **Step 1: Execute QA Workflow Phases**
 
-**Note:** OpenCode automatically loads the appropriate QA skill based on file extensions and user intent. No manual skill loading is required.
+**Note:** Use the appropriate QA skill for the target language to access automated tools, prioritization rules, and report templates.
 
 **Phase 1: Target Discovery**
 - Use `codebase-locator` with `tests_only` scope to find test files
