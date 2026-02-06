@@ -393,6 +393,38 @@ For most planning tasks, you can **skip `thoughts-locator`** and go directly to 
    - **Open Questions** (items missing evidence)
 4. Only then decompose into planning components.
 
+### QA Report Detection
+
+After reading input file(s) in Phase 1, check if input is a QA report:
+
+**Detection Methods:**
+1. File path starts with `thoughts/shared/qa/`
+2. YAML frontmatter contains `message_type: QA_REPORT`
+
+**If QA report detected:**
+
+1. **Extract Language**
+   - Read "Scan Metadata" section
+   - Extract "Auditor" field value
+   - Map auditor to language identifier:
+     - `python-qa-thorough` → `python-qa`
+     - `typescript-qa-thorough` → `typescript-qa`
+     - `opencode-qa-thorough` → `opencode-qa`
+
+2. **Load QA Skill**
+   - Use `skill({ name: "[language]-qa" })` (e.g., `skill({ name: "python-qa" })`)
+   - Extract verification commands from Section 4 of the skill
+
+3. **Apply QA Planning Template**
+   - Map QA-XXX items to PLAN-XXX items (1:1 mapping)
+   - Organize into phases by priority:
+     - Phase 1 = Critical priority items
+     - Phase 2 = High priority items
+     - Phase 3 = Medium priority items
+     - Phase 4 = Low priority items
+   - Include verification commands from skill in Baseline Verification section
+   - Use QA plan structure documented in Output Format section below
+
 ### Phase 2: Verification (The "Reality Check")
 - **Crucial Step**: Before planning a change to `File A`, you must `read` `File A`.
 - Ensure the line numbers and logic in your head match the reality on disk.
@@ -474,6 +506,8 @@ Write TWO artifacts:
 
 ### 1. Plan File: `thoughts/shared/plans/YYYY-MM-DD-[Ticket].md`
 
+**For Standard Implementation Plans:**
+
 Required structure:
 
 ```
@@ -525,6 +559,146 @@ For each assumption:
 ## Implementor Checklist
 - [ ] PLAN-001 ...
 - [ ] PLAN-002 ...
+```
+
+**For QA Implementation Plans (when input is QA report):**
+
+Required structure:
+
+```markdown
+# QA Implementation Plan: [Target]
+
+## Inputs
+- QA report: `thoughts/shared/qa/YYYY-MM-DD-[Target].md`
+- Audit date: YYYY-MM-DD
+- Language: [Python | TypeScript | OpenCode]
+- QA Skill: [language]-qa (loaded via skill tool)
+- Automated tools: [list from QA report]
+
+## Scan Summary
+
+Quality issues identified:
+- Critical: [N] items (Phase 1)
+- High: [N] items (Phase 2)
+- Medium: [N] items (Phase 3)
+- Low: [N] items (Phase 4)
+- **Total**: [N] items
+
+## Verified Current State
+
+[Group by category: Security, Type Safety, Readability, Maintainability, Testability]
+
+For each issue:
+- **Fact:** [Issue description]
+- **Evidence:** `path:line-line`
+- **Excerpt:**
+  ```[language]
+  [Code excerpt from QA report]
+  ```
+
+## Goals / Non-Goals
+- **Goals**: Resolve all issues identified in QA report
+- **Non-Goals**: New features, performance optimization beyond QA scope, refactoring unrelated code
+
+## Design Overview
+
+Quality improvements across identified categories:
+1. **Security**: [Summary of security fixes]
+2. **Type Safety**: [Summary of type improvements]
+3. **Readability**: [Summary of readability improvements]
+4. **Maintainability**: [Summary of maintainability improvements]
+5. **Testability**: [Summary of test coverage improvements]
+
+## Implementation Instructions (For Implementor)
+
+### Phase 1: Critical Issues (Security + Blocking Errors)
+
+#### PLAN-001: [Issue Title] (was QA-001)
+- **Priority**: Critical
+- **Category**: [Security/Types/etc]
+- **Change Type**: modify/create/remove
+- **File(s)**: `path/to/file.ext`
+- **Instruction:** [Detailed steps from QA report]
+- **Evidence:** `path:line-line`
+- **Excerpt:**
+  ```[language]
+  [Code excerpt]
+  ```
+- **Done When:** [Observable condition from QA report]
+
+[Repeat for all Critical items]
+
+### Phase 2: High Priority Issues (Test Coverage + Type Safety)
+
+#### PLAN-XXX: [Issue Title] (was QA-XXX)
+- **Priority**: High
+- **Category**: [Testability/Types/etc]
+- **Change Type**: modify/create/remove
+- **File(s)**: `path/to/file.ext`
+- **Instruction:** [Detailed steps from QA report]
+- **Evidence:** `path:line-line`
+- **Done When:** [Observable condition from QA report]
+
+[Repeat for all High items]
+
+### Phase 3: Medium Priority Issues (Maintainability)
+
+[Same structure as Phase 2]
+
+### Phase 4: Low Priority Issues (Style + Polish)
+
+[Same structure as Phase 2]
+
+## Baseline Verification
+
+Commands from [language]-qa skill Section 4:
+
+**For Python:**
+```bash
+ruff check [target]          # Should pass after Phase 1
+pyright [target]             # Should pass after Phase 2
+bandit -r [target]           # Should pass after Phase 1
+pytest [target] --cov=[target]  # Should pass after Phase 2
+```
+
+**For TypeScript:**
+```bash
+npx tsc --noEmit             # Should pass after Phase 1
+npx eslint . --ext .ts,.tsx  # Should pass after Phase 2
+npx knip                     # Should pass after Phase 3
+npm test -- --coverage       # Should pass after Phase 2
+```
+
+**For OpenCode:**
+```bash
+yamllint -f parsable [target]  # Should pass after Phase 1
+markdownlint [target]          # Should pass after Phase 2
+# Manual review of agent/skill structure
+```
+
+## Acceptance Criteria
+
+[Copy verbatim from QA report's "Acceptance Criteria" section]
+
+## Implementor Checklist
+
+### Phase 1 (Critical)
+- [ ] PLAN-001: [Short title] (was QA-001)
+- [ ] PLAN-002: [Short title] (was QA-002)
+
+### Phase 2 (High)
+- [ ] PLAN-XXX: [Short title] (was QA-XXX)
+
+### Phase 3 (Medium)
+- [ ] PLAN-XXX: [Short title] (was QA-XXX)
+
+### Phase 4 (Low)
+- [ ] PLAN-XXX: [Short title] (was QA-XXX)
+
+## References
+- Source QA report: `thoughts/shared/qa/YYYY-MM-DD-[Target].md`
+- QA Skill: [language]-qa
+- Automated tools: [list]
 ```
 
 ### 2. State File: `thoughts/shared/plans/YYYY-MM-DD-[Ticket]-STATE.md`

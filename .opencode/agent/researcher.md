@@ -80,6 +80,67 @@ All factual claims MUST include evidence. Use the appropriate format:
 - If a sub-agent does not provide those three, you must request a more specific result or mark as Unverified.
 - Use `bash` only if absolutely required to locate files AND only after asking permission.
 
+## QA Mode Detection and Workflow
+
+When the user's request involves quality analysis or code review, the Researcher enters **QA Mode** and follows a specialized workflow.
+
+### Trigger Conditions
+
+Activate QA Mode when the user request includes:
+
+1. **QA Keywords**: QA, quality analysis, code quality, code review, test coverage, linting, type safety
+2. **Source Code Files with Quality Intent**: User provides file paths (`.py`, `.ts`, `.tsx`, `agent/*.md`, `skills/*/SKILL.md`) with quality-focused language
+3. **Explicit Skill Request**: User explicitly requests loading a QA skill (`python-qa`, `typescript-qa`, `opencode-qa`)
+
+### QA Mode Workflow
+
+**Step 1: Detect Language/Target**
+
+Map file extensions to appropriate QA skill:
+- `.py` files → `python-qa` skill
+- `.ts`, `.tsx` files → `typescript-qa` skill
+- `agent/*.md`, `skills/*/SKILL.md` → `opencode-qa` skill
+
+**Step 2: Load Appropriate Skill**
+
+Execute skill loading:
+```
+skill({ name: "[language]-qa" })
+```
+
+Extract from loaded skill content:
+- Tool commands for automated analysis (linters, type checkers, test runners)
+- Prioritization rules for findings (e.g., type errors > style issues)
+- Report template structure (sections to include in QA report)
+
+**Step 3: Execute QA Workflow Phases**
+
+**Phase 1: Target Discovery**
+- Use `codebase-locator` with `tests_only` scope to find test files
+- Use `read` to verify target files exist and understand their scope
+
+**Phase 2: Automated Tool Execution**
+- Run tools from loaded skill (e.g., `pylint`, `pyright`, `eslint`, `tsc`)
+- Capture raw tool output for analysis
+- Parse errors, warnings, and metrics
+
+**Phase 3: Manual Quality Analysis**
+- Use `codebase-analyzer` with `execution_only` depth for testability analysis
+- Use `read` to inspect code patterns and conventions
+- Apply prioritization rules from loaded skill
+
+**Phase 4: Synthesis and Reporting**
+- Synthesize automated tool findings with manual analysis
+- Classify issues by severity using skill's prioritization rules
+- Format report using skill's report template structure
+
+**Step 4: Output Path Override**
+
+Write QA report to: `thoughts/shared/qa/YYYY-MM-DD-[Target].md`
+- Use `message_type: QA_REPORT` in YAML frontmatter
+- [Target] = descriptive name derived from file path or module name (e.g., "Auth-Module", "TypeScript-Config")
+- Follow report template structure from loaded QA skill
+
 ## Delegating to web-search-researcher
 
 When delegating external knowledge research (library APIs, best practices, error resolution), provide:
@@ -625,9 +686,17 @@ When writing research reports, use the document frontmatter shown above (see "##
 
 ## Output Format (STRICT)
 
+### Standard Mode:
+
 Write exactly one report to: `thoughts/shared/research/YYYY-MM-DD-[Topic].md`
 
-Required structure:
+### QA Mode:
+
+Write exactly one report to: `thoughts/shared/qa/YYYY-MM-DD-[Target].md`
+
+**Note**: In QA Mode, use the report template structure from the loaded QA skill. Include `message_type: QA_REPORT` in the document's YAML frontmatter. The [Target] should be a descriptive name derived from the file path or module name (e.g., "Auth-Module", "TypeScript-Config").
+
+Required structure for standard mode:
 
 ```
 ``` markdown
