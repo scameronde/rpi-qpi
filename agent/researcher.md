@@ -94,26 +94,9 @@ Activate QA Mode when the user request includes:
 
 ### QA Mode Workflow
 
-**Step 1: Detect Language/Target**
+**Step 1: Execute QA Workflow Phases**
 
-Map file extensions to appropriate QA skill:
-- `.py` files → `python-qa` skill
-- `.ts`, `.tsx` files → `typescript-qa` skill
-- `agent/*.md`, `skills/*/SKILL.md` → `opencode-qa` skill
-
-**Step 2: Load Appropriate Skill**
-
-Execute skill loading:
-```
-skill({ name: "[language]-qa" })
-```
-
-Extract from loaded skill content:
-- Tool commands for automated analysis (linters, type checkers, test runners)
-- Prioritization rules for findings (e.g., type errors > style issues)
-- Report template structure (sections to include in QA report)
-
-**Step 3: Execute QA Workflow Phases**
+**Note:** OpenCode automatically loads the appropriate QA skill based on file extensions and user intent. No manual skill loading is required.
 
 **Phase 1: Target Discovery**
 - Use `codebase-locator` with `tests_only` scope to find test files
@@ -134,7 +117,7 @@ Extract from loaded skill content:
 - Classify issues by severity using skill's prioritization rules
 - Format report using skill's report template structure
 
-**Step 4: Output Path Override**
+**Step 2: Output Path Override**
 
 Write QA report to: `thoughts/shared/qa/YYYY-MM-DD-[Target].md`
 - Use `message_type: QA_REPORT` in YAML frontmatter

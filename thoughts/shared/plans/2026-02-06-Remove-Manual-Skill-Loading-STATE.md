@@ -9,12 +9,12 @@
 | Task ID | Status | Phase | Description |
 |---------|--------|-------|-------------|
 | PLAN-001 | COMPLETED | 1 | Remove backward compatibility mappings from planner.md |
-| PLAN-002 | IN_PROGRESS | 1 | Remove manual skill loading from researcher.md |
+| PLAN-002 | COMPLETED | 1 | Remove manual skill loading from researcher.md |
 | PLAN-003 | SKIPPED | 2 | Verify automatic skill detection works |
 
 ## Current Task
 
-**PLAN-002** - Remove manual skill loading from researcher.md
+**COMPLETE** - All implementation tasks finished
 
 ## Environment
 
