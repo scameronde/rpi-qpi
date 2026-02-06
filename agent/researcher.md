@@ -90,7 +90,7 @@ Activate QA Mode when the user request includes:
 
 1. **QA Keywords**: QA, quality analysis, code quality, code review, test coverage, linting, type safety
 2. **Source Code Files with Quality Intent**: User provides source code file paths with quality-focused language
-3. **Explicit Skill Request**: User explicitly requests loading a QA skill (`python-qa`, `typescript-qa`, `opencode-qa`)
+3. **Explicit Skill Request**: User explicitly requests loading a language-specific QA skill
 
 ### QA Mode Workflow
 
