@@ -147,7 +147,7 @@ Use `todowrite` to track your research phases.
 
 When extracting code examples:
 1. **Source URL**: Provide direct link to the page containing the code
-2. **Language**: Auto-detect from code syntax (JavaScript, Python, TypeScript, etc.)
+2. **Language**: Auto-detect from code syntax
 3. **Excerpt Length**: Extract 3-10 lines maximum (avoid copy/paste of entire docs)
 4. **Line Numbers**: Approximate line numbers from source document (e.g., "lines 42-48 from docs")
 5. **Exact Syntax**: Copy code exactly as it appears in webfetch result (no modifications)
