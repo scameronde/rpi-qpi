@@ -254,7 +254,7 @@ You are empowered to make these decisions WITHOUT asking Control Agent:
 
 2. **Naming Conventions**
    - Follow existing conventions in the file (e.g., camelCase vs snake_case)
-   - Use language idioms (e.g., Python: `_private`, TypeScript: `#private`)
+   - Use language-specific idioms and conventions for the target codebase (e.g., private member naming, module patterns)
 
 3. **Minor Adaptations**
    - Line numbers shifted slightly (within ±10 lines)
