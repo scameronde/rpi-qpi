@@ -89,7 +89,7 @@ When the user's request involves quality analysis or code review, the Researcher
 Activate QA Mode when the user request includes:
 
 1. **QA Keywords**: QA, quality analysis, code quality, code review, test coverage, linting, type safety
-2. **Source Code Files with Quality Intent**: User provides file paths (`.py`, `.ts`, `.tsx`, `agent/*.md`, `skills/*/SKILL.md`) with quality-focused language
+2. **Source Code Files with Quality Intent**: User provides source code file paths with quality-focused language
 3. **Explicit Skill Request**: User explicitly requests loading a QA skill (`python-qa`, `typescript-qa`, `opencode-qa`)
 
 ### QA Mode Workflow
