@@ -641,28 +641,11 @@ Quality improvements across identified categories:
 
 Commands from [language]-qa skill Section 4:
 
-**For Python:**
 ```bash
-ruff check [target]          # Should pass after Phase 1
-pyright [target]             # Should pass after Phase 2
-bandit -r [target]           # Should pass after Phase 1
-pytest [target] --cov=[target]  # Should pass after Phase 2
+[Insert verification commands from loaded QA skill]
 ```
 
-**For TypeScript:**
-```bash
-npx tsc --noEmit             # Should pass after Phase 1
-npx eslint . --ext .ts,.tsx  # Should pass after Phase 2
-npx knip                     # Should pass after Phase 3
-npm test -- --coverage       # Should pass after Phase 2
-```
-
-**For OpenCode:**
-```bash
-yamllint -f parsable [target]  # Should pass after Phase 1
-markdownlint [target]          # Should pass after Phase 2
-# Manual review of agent/skill structure
-```
+**Note:** The specific verification tools and commands are provided by the loaded QA skill for the target language. Refer to the skill's Section 4 for the complete verification command set.
 
 ## Acceptance Criteria
 
