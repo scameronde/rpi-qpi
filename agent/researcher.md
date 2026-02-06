@@ -103,7 +103,7 @@ Activate QA Mode when the user request includes:
 - Use `read` to verify target files exist and understand their scope
 
 **Phase 2: Automated Tool Execution**
-- Run tools from loaded skill (e.g., `pylint`, `pyright`, `eslint`, `tsc`)
+- Run automated tools from loaded QA skill (e.g., linters, type checkers, test runners) (tool names vary by language - refer to loaded skill)
 - Capture raw tool output for analysis
 - Parse errors, warnings, and metrics
 
