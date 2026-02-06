@@ -403,26 +403,14 @@ After reading input file(s) in Phase 1, check if input is a QA report:
 
 **If QA report detected:**
 
-1. **Extract Language**
-   - Read "Scan Metadata" section
-   - Extract "Auditor" field value
-   - Map auditor to language identifier:
-     - `python-qa-thorough` → `python-qa`
-     - `typescript-qa-thorough` → `typescript-qa`
-     - `opencode-qa-thorough` → `opencode-qa`
-
-2. **Load QA Skill**
-   - Use `skill({ name: "[language]-qa" })` (e.g., `skill({ name: "python-qa" })`)
-   - Extract verification commands from Section 4 of the skill
-
-3. **Apply QA Planning Template**
+1. **Apply QA Planning Template**
    - Map QA-XXX items to PLAN-XXX items (1:1 mapping)
    - Organize into phases by priority:
      - Phase 1 = Critical priority items
      - Phase 2 = High priority items
      - Phase 3 = Medium priority items
      - Phase 4 = Low priority items
-   - Include verification commands from skill in Baseline Verification section
+   - Include verification commands from automatically loaded QA skill in Baseline Verification section
    - Use QA plan structure documented in Output Format section below
 
 ### Phase 2: Verification (The "Reality Check")
