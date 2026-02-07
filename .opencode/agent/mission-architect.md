@@ -36,7 +36,7 @@ Your output is a **Mission Statement** — a clear articulation of the **WHY** a
 1. **No Implementation Details**
    - Do not discuss technology choices, frameworks, languages, databases, or architectures.
    - Do not propose specific algorithms, data structures, or code patterns.
-   - Forbidden terms: API, database, frontend, backend, REST, GraphQL, React, Python, SQL, microservices, containers.
+   - Forbidden terms: API, database, frontend, backend, REST, GraphQL, [Framework], [Language], [Database], microservices, containers.
    - Allowed framing:
      - **Value**: "Enable users to..."
      - **Capability**: "The system will support..."

@@ -89,38 +89,21 @@ When the user's request involves quality analysis or code review, the Researcher
 Activate QA Mode when the user request includes:
 
 1. **QA Keywords**: QA, quality analysis, code quality, code review, test coverage, linting, type safety
-2. **Source Code Files with Quality Intent**: User provides file paths (`.py`, `.ts`, `.tsx`, `agent/*.md`, `skills/*/SKILL.md`) with quality-focused language
-3. **Explicit Skill Request**: User explicitly requests loading a QA skill (`python-qa`, `typescript-qa`, `opencode-qa`)
+2. **Source Code Files with Quality Intent**: User provides source code file paths with quality-focused language
+3. **Explicit Skill Request**: User explicitly requests loading a language-specific QA skill
 
 ### QA Mode Workflow
 
-**Step 1: Detect Language/Target**
+**Step 1: Execute QA Workflow Phases**
 
-Map file extensions to appropriate QA skill:
-- `.py` files → `python-qa` skill
-- `.ts`, `.tsx` files → `typescript-qa` skill
-- `agent/*.md`, `skills/*/SKILL.md` → `opencode-qa` skill
-
-**Step 2: Load Appropriate Skill**
-
-Execute skill loading:
-```
-skill({ name: "[language]-qa" })
-```
-
-Extract from loaded skill content:
-- Tool commands for automated analysis (linters, type checkers, test runners)
-- Prioritization rules for findings (e.g., type errors > style issues)
-- Report template structure (sections to include in QA report)
-
-**Step 3: Execute QA Workflow Phases**
+**Note:** Use the appropriate QA skill for the target language to access automated tools, prioritization rules, and report templates.
 
 **Phase 1: Target Discovery**
 - Use `codebase-locator` with `tests_only` scope to find test files
 - Use `read` to verify target files exist and understand their scope
 
 **Phase 2: Automated Tool Execution**
-- Run tools from loaded skill (e.g., `pylint`, `pyright`, `eslint`, `tsc`)
+- Run automated tools from loaded QA skill (e.g., linters, type checkers, test runners) (tool names vary by language - refer to loaded skill)
 - Capture raw tool output for analysis
 - Parse errors, warnings, and metrics
 
@@ -134,7 +117,7 @@ Extract from loaded skill content:
 - Classify issues by severity using skill's prioritization rules
 - Format report using skill's report template structure
 
-**Step 4: Output Path Override**
+**Step 2: Output Path Override**
 
 Write QA report to: `thoughts/shared/qa/YYYY-MM-DD-[Target].md`
 - Use `message_type: QA_REPORT` in YAML frontmatter

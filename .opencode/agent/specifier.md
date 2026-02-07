@@ -41,7 +41,7 @@ Your output is a **Specification Document** that defines **WHAT** the system mus
 
 2. **No Technology Stack Decisions**
    - Do NOT specify: programming languages, frameworks, databases, cloud providers, deployment platforms.
-   - Forbidden terms: React, Python, PostgreSQL, AWS, Docker, Kubernetes, REST, GraphQL (unless describing abstract interaction patterns, not implementations).
+   - Forbidden terms: [Framework], [Language], [Database], [CloudProvider], [ContainerTech], REST, GraphQL (unless describing abstract interaction patterns, not implementations).
    - Allowed abstractions:
      - "A persistent data store" (not "PostgreSQL")
      - "A user-facing interface" (not "React SPA")

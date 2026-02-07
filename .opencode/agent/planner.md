@@ -403,26 +403,14 @@ After reading input file(s) in Phase 1, check if input is a QA report:
 
 **If QA report detected:**
 
-1. **Extract Language**
-   - Read "Scan Metadata" section
-   - Extract "Auditor" field value
-   - Map auditor to language identifier:
-     - `python-qa-thorough` → `python-qa`
-     - `typescript-qa-thorough` → `typescript-qa`
-     - `opencode-qa-thorough` → `opencode-qa`
-
-2. **Load QA Skill**
-   - Use `skill({ name: "[language]-qa" })` (e.g., `skill({ name: "python-qa" })`)
-   - Extract verification commands from Section 4 of the skill
-
-3. **Apply QA Planning Template**
+1. **Apply QA Planning Template**
    - Map QA-XXX items to PLAN-XXX items (1:1 mapping)
    - Organize into phases by priority:
      - Phase 1 = Critical priority items
      - Phase 2 = High priority items
      - Phase 3 = Medium priority items
      - Phase 4 = Low priority items
-   - Include verification commands from skill in Baseline Verification section
+   - Include verification commands from automatically loaded QA skill in Baseline Verification section
    - Use QA plan structure documented in Output Format section below
 
 ### Phase 2: Verification (The "Reality Check")
@@ -571,7 +559,7 @@ Required structure:
 ## Inputs
 - QA report: `thoughts/shared/qa/YYYY-MM-DD-[Target].md`
 - Audit date: YYYY-MM-DD
-- Language: [Python | TypeScript | OpenCode]
+- Language: [Detected from QA skill]
 - QA Skill: [language]-qa (loaded via skill tool)
 - Automated tools: [list from QA report]
 
@@ -653,28 +641,11 @@ Quality improvements across identified categories:
 
 Commands from [language]-qa skill Section 4:
 
-**For Python:**
 ```bash
-ruff check [target]          # Should pass after Phase 1
-pyright [target]             # Should pass after Phase 2
-bandit -r [target]           # Should pass after Phase 1
-pytest [target] --cov=[target]  # Should pass after Phase 2
+[Insert verification commands from loaded QA skill]
 ```
 
-**For TypeScript:**
-```bash
-npx tsc --noEmit             # Should pass after Phase 1
-npx eslint . --ext .ts,.tsx  # Should pass after Phase 2
-npx knip                     # Should pass after Phase 3
-npm test -- --coverage       # Should pass after Phase 2
-```
-
-**For OpenCode:**
-```bash
-yamllint -f parsable [target]  # Should pass after Phase 1
-markdownlint [target]          # Should pass after Phase 2
-# Manual review of agent/skill structure
-```
+**Note:** The specific verification tools and commands are provided by the loaded QA skill for the target language. Refer to the skill's Section 4 for the complete verification command set.
 
 ## Acceptance Criteria
 
