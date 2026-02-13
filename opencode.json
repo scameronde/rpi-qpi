@@ -1,31 +1,32 @@
 {
   "$schema": "https://opencode.ai/config.json",
-	"provider": {
-		"aigateway": {
-			"npm": "@ai-sdk/openai-compatible",
-			"name": "VIER AI Gateway",
-			"options": {
-				"baseURL": "https://aigateway.eu/core/v1"
-			},
-			"models": {
-				"code---anthropic-claude-haiku": {
-					"name": "Anthropic Claude Haiku",
-					"limit": {
-						"context": 200000,
-						"output": 64000
-					}
-				},
-				"code---anthropic-claude-sonnet": {
-					"name": "Anthropic Claude Sonnet",
-					"limit": {
-						"context": 200000,
-						"output": 64000
-					}
-				}
-			}
-		}
-	},
-	"model": "aigateway/code---anthropic-claude-sonnet",
+  "provider": {
+    "aigateway": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "VIER AI Gateway",
+      "options": {
+        "baseURL": "https://aigateway.eu/core/v1"
+      },
+      "models": {
+        "code---anthropic-claude-haiku": {
+          "name": "Anthropic Claude Haiku",
+          "limit": {
+            "context": 200000,
+            "output": 64000
+          }
+        },
+        "code---anthropic-claude-sonnet": {
+          "name": "Anthropic Claude Sonnet",
+          "limit": {
+            "context": 200000,
+            "output": 64000
+          }
+        }
+      }
+    }
+  },
+  "model": "aigateway/code---anthropic-claude-sonnet",
+  "small_model": "aigateway/code---anthropic-claude-haiku",
   "mcp": {
     "context7": {
       "type": "remote",
@@ -44,4 +45,3 @@
     }
   }
 }
-
