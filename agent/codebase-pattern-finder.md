@@ -19,6 +19,7 @@ tools:
   searxng-search: false  # use Sub-Agent 'web-search-researcher' instead
   sequential-thinking: true
   context7: true
+  lsp: true  # for workspaceSymbol, findReferences, goToDefinition
 ---
 
 # Pattern Librarian: Code Examples & Conventions
@@ -62,11 +63,14 @@ Before running commands, use `todowrite` to create a search plan:
 
 Use your tools to find the "Ground Truth":
 
-- **`grep` / `bash`**: To find occurrences.
-- **`read`**: **CRITICAL**. You must read the actual file to extract
-  the snippet. Do not rely on grep output alone.
-- **`glob`**: To find file types (e.g., `**/*.test.ts` to find
-  testing patterns).
+- **`lsp`**: **PREFER for symbol searches**. Use `workspaceSymbol` to find class/function definitions, `findReferences` to locate all usages of a symbol.
+- **`grep` / `bash`**: Use for string literal searches, comments, or when LSP doesn't apply (non-code patterns).
+- **`read`**: **CRITICAL**. You must read the actual file to extract the snippet. Do not rely on grep or LSP output alone.
+- **`glob`**: To find file types (e.g., `**/*.test.ts` to find testing patterns).
+
+**LSP vs Grep Decision Guide**:
+- **Use LSP** when searching for: class names, function names, type definitions, symbol usages (e.g., "find all usages of UserRepository")
+- **Use grep** when searching for: string patterns, comments, non-symbol text, regex patterns (e.g., "find files containing TODO comments")
 
 ### 3. Report
 
@@ -74,21 +78,30 @@ Return your findings using the specific format below.
 
 ## Search Strategy Guide
 
-**For Concepts (Architecture)**:
+**For Concepts (Architecture)** - Prefer LSP:
 
-```bash
+```javascript
+// Use LSP to find symbol definitions
+lsp({ operation: "workspaceSymbol", query: "Repository" })
+lsp({ operation: "workspaceSymbol", query: "Controller" })
+
+// Fallback to grep for regex patterns
 grep -r "class.*Repository" src/ --include="*.ts"
 grep -r "implements.*Controller" src/ --include="*.ts"
 ```
 
-**For Features (Usage)**:
+**For Features (Usage)** - Use LSP for symbols, grep for strings:
 
-```bash
+```javascript
+// Use LSP to find all references to a hook/function
+lsp({ operation: "findReferences", uri: "file:///path/to/file.tsx", position: { line: X, character: Y } })
+
+// Use grep for string literal searches
 grep -r "usePagination" src/ --include="*.tsx"
 grep -r "withAuth" src/ --include="*.ts"
 ```
 
-**For Testing Patterns**:
+**For Testing Patterns** - Grep is usually better:
 
 ```bash
 grep -r "describe(.*Auth" tests/

@@ -17,6 +17,7 @@ tools:
   searxng-search: false
   sequential-thinking: true
   context7: true
+  lsp: true  # for goToDefinition, findReferences, callHierarchy, hover, documentSymbol
 ---
 
 # Codebase Logic Analyst
@@ -81,8 +82,11 @@ Use `sequential-thinking` for complex analysis scenarios:
 1. **Receive Target**: The Orchestrator will give you a file and a focus (e.g., "Analyze the `processOrder` function in `src/orders.ts`").
 2. **Read & Trace**: Use `read` to examine the code.
 3. **Follow Dependencies**:
-    - If Function A calls Function B (imported from `./utils.ts`), use `read` on `./utils.ts`.
-    - **Constraint**: If an import is ambiguous (e.g., Dependency Injection or Aliases like `@/utils`) and you cannot resolve it with `list`, **STOP** and ask the Orchestrator to locate the file for you.
+    - **Prefer LSP for navigation**: Use `goToDefinition` to jump directly to function/class definitions instead of manually resolving imports.
+    - **Use LSP for execution flow**: Use `callHierarchy` (with `incomingCalls` and `outgoingCalls`) to map function call chains.
+    - **Use LSP for type info**: Use `hover` to get type signatures without reading type definition files.
+    - **Fallback to read**: If LSP fails (unresolved import, dynamic code), fall back to `read` on the import path.
+    - **Old constraint no longer applies**: With LSP, ambiguous imports (DI, aliases like `@/utils`) can be resolved via `goToDefinition`. Only STOP and ask Orchestrator if LSP cannot resolve the symbol.
 4. **Map Data**: Document how variables change state.
 
 ### 2. Output Protocol

@@ -17,6 +17,7 @@ tools:
   searxng-search: false
   sequential-thinking: true
   context7: true
+  lsp: true  # for goToDefinition, findReferences, hover (helps with evidence mismatch scenarios)
 ---
 
 # Task Executor: Single-Task Implementation Agent
@@ -70,7 +71,8 @@ You are the **Task Executor**. You implement exactly ONE task (PLAN-XXX) from an
 * **read**: Inspect target files and understand current state
 * **edit**: Make precise changes to existing files
 * **write**: Create new files when required by task
-* **glob/grep**: Locate code references (e.g., "find all usages of function X")
+* **lsp**: Navigate code intelligently - use `goToDefinition` when evidence doesn't match, `hover` to verify type signatures, `findReferences` to check change impact
+* **glob/grep**: Locate code references (e.g., "find all usages of function X") - use when LSP is not applicable
 * **list**: Explore directory structure
 * **context7**: Look up external library documentation
 * **sequential-thinking**: Plan multi-step edits within the task scope
@@ -293,9 +295,13 @@ You are empowered to make these decisions WITHOUT asking Control Agent:
 **Task says**: Modify function at `src/foo.ts:42-50`  
 **Reality**: Function is at `src/foo.ts:38-46` (shifted by 4 lines)
 
-**Action**: Adapt and report
+**Action**: Use LSP to locate, then adapt and report
+1. **Try LSP first**: Use `goToDefinition` on the function name to find its actual location
+2. **Fallback to search**: If LSP fails, use grep to search for the function
+3. **Adapt and report**: Apply changes to actual location and document the mismatch
+
 ```markdown
-ADAPTATION: Line numbers shifted by 4 lines. Applied changes to actual location (38-46).
+ADAPTATION: Line numbers shifted by 4 lines. Used goToDefinition to locate function at actual location (38-46).
 ```
 
 ### Scenario: File Not Found
@@ -314,10 +320,12 @@ ADAPTATION: Line numbers shifted by 4 lines. Applied changes to actual location 
 **Reality**: Function already exists
 
 **Action**: 
-1. Read existing function
-2. Compare with task requirements
-3. If existing function matches requirements: Report "Already implemented, skipping"
-4. If existing function differs: Update to match requirements and report
+1. Use `goToDefinition` to locate the existing function quickly
+2. Use `hover` to check its type signature if task involves type changes
+3. Read existing function for full context
+4. Compare with task requirements
+5. If existing function matches requirements: Report "Already implemented, skipping"
+6. If existing function differs: Update to match requirements and report
 
 ### Scenario: Need Unlisted File
 

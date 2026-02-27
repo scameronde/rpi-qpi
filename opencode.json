@@ -27,6 +27,9 @@
   },
   "model": "aigateway/code---anthropic-claude-sonnet",
   "small_model": "aigateway/code---anthropic-claude-haiku",
+  "experimental": {
+    "lsp_tool": true
+  },
   "mcp": {
     "context7": {
       "type": "remote",
