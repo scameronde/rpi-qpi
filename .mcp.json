@@ -1,0 +1,27 @@
+{
+  "mcpServers": {
+    "crawl4ai": {
+      "command": "node",
+      "args": [
+        ".claude/mcp/crawl4ai/dist/index.js"
+      ]
+    },
+    "searxng": {
+      "command": "node",
+      "args": [
+        ".claude/mcp/searxng/dist/index.js"
+      ]
+    },
+    "context7": {
+      "type": "http",
+      "url": "https://mcp.context7.com/mcp",
+      "headers": {
+        "CONTEXT7_API_KEY": "<your key here>"
+      }
+    },
+    "sequential-thinking": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"]
+    }
+  }
+}
