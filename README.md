@@ -4,15 +4,27 @@ A structured agentic development workflow for [Claude Code](https://claude.ai/co
 
 ## Pipeline
 
+**Greenfield (new project):**
 ```
 /mission-architect → /specifier → /epic-planner → /researcher → /planner → /implement
+```
+
+**Brownfield (new feature in existing system):**
+```
+/feature-architect → /epic-planner → /researcher → /planner → /implement
+```
+
+**Small change or bug fix:**
+```
+/researcher → /planner → /implement
 ```
 
 Each stage produces artifacts in `thoughts/shared/`:
 
 | Stage | Command | Output |
 |---|---|---|
-| Vision | `/mission-architect` | `thoughts/shared/missions/` |
+| Vision (greenfield) | `/mission-architect` | `thoughts/shared/missions/` |
+| Feature brief (brownfield) | `/feature-architect` | `thoughts/shared/features/` |
 | Specification | `/specifier` | `thoughts/shared/specs/` |
 | Epics | `/epic-planner` | `thoughts/shared/epics/` |
 | Research | `/researcher` | `thoughts/shared/research/` |
@@ -52,7 +64,8 @@ Set the Crawl4AI and SearXNG base URLs in the MCP server source files if your in
 
 | Command | Purpose |
 |---|---|
-| `/mission-architect` | Discover and articulate project vision (why + what, not how) |
+| `/mission-architect` | Discover and articulate project vision (why + what, not how) — greenfield |
+| `/feature-architect` | Define a new feature within an existing system — brownfield |
 | `/specifier` | Translate a mission statement into a technical specification |
 | `/epic-planner` | Decompose a spec into epics and user stories |
 | `/researcher` | Map the codebase or investigate a topic before planning |
@@ -84,7 +97,7 @@ Invoked via the `Skill` tool (not slash commands):
   settings.json      # enableAllProjectMcpServers: true
   settings.local.json  # Tool permissions
 
-thoughts/shared/     # Workflow artifacts (missions, specs, epics, research, plans)
+thoughts/shared/     # Workflow artifacts (missions, features, specs, epics, research, plans)
 
 agent/               # Original OpenCode agent definitions (reference)
 skills/              # Original OpenCode skill definitions (reference)

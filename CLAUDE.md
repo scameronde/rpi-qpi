@@ -8,15 +8,27 @@ This project uses a structured agentic workflow for software development. User-f
 
 ## Workflow Pipeline
 
+**Greenfield (new project):**
 ```
 /mission-architect → /specifier → /epic-planner → /researcher → /planner → /implement
+```
+
+**Brownfield (new feature in existing system):**
+```
+/feature-architect → /epic-planner → /researcher → /planner → /implement
+```
+
+**Small change or bug fix:**
+```
+/researcher → /planner → /implement
 ```
 
 Each stage produces artifacts written to `thoughts/shared/`:
 
 | Stage | Command | Output directory |
 |---|---|---|
-| Vision | `/mission-architect` | `thoughts/shared/missions/` |
+| Vision (greenfield) | `/mission-architect` | `thoughts/shared/missions/` |
+| Feature brief (brownfield) | `/feature-architect` | `thoughts/shared/features/` |
 | Spec | `/specifier` | `thoughts/shared/specs/` |
 | Epics | `/epic-planner` | `thoughts/shared/epics/` |
 | Research | `/researcher` | `thoughts/shared/research/` or `thoughts/shared/qa/` |
@@ -28,7 +40,8 @@ Each stage produces artifacts written to `thoughts/shared/`:
 ### Workflow Orchestration
 | Command | Purpose |
 |---|---|
-| `/mission-architect` | Discover project vision and goals via conversation |
+| `/mission-architect` | Discover project vision and goals via conversation (greenfield) |
+| `/feature-architect` | Define a new feature within an existing system (brownfield) |
 | `/specifier` | Translate a mission into a technical specification |
 | `/epic-planner` | Decompose a spec into epics and user stories |
 | `/researcher` | Map the codebase relevant to a spec or question |
@@ -55,8 +68,8 @@ These live in `.claude/agents/` and are invoked by orchestration commands via th
 | `codebase-pattern-finder.md` | Find recurring patterns | Explore |
 | `thoughts-locator.md` | Find docs in `thoughts/` directory | Explore |
 | `thoughts-analyzer.md` | Extract signal from docs | Explore |
-| `web-researcher.md` | External knowledge and docs | general-purpose |
-| `task-executor.md` | Implement a single PLAN-XXX task | general-purpose |
+| `web-search-researcher.md` | External knowledge and docs | general-purpose |
+| `coder.md` | Implement a single PLAN-XXX task | general-purpose |
 
 ## MCP Servers
 
@@ -103,6 +116,7 @@ cd .claude/mcp/searxng  && npm install && npm run build
 thoughts/
   shared/
     missions/     # Vision artifacts from /mission-architect
+    features/     # Feature briefs from /feature-architect
     specs/        # Technical specs from /specifier
     epics/        # Epics from /epic-planner
     research/     # Codebase research from /researcher
@@ -116,7 +130,7 @@ tool/             # Original opencode tool source files (crawl4ai.ts, searxng-se
 
 ### commands/ vs agents/ vs skills/
 
-- **`commands/`** — Invoked directly by the user via `/command-name`. These are the primary workflow orchestrators (`/mission-architect`, `/specifier`, `/epic-planner`, `/researcher`, `/planner`, `/implementation-controller`).
+- **`commands/`** — Invoked directly by the user via `/command-name`. These are the primary workflow orchestrators (`/mission-architect`, `/feature-architect`, `/specifier`, `/epic-planner`, `/researcher`, `/planner`, `/implement`).
 - **`agents/`** — Never invoked directly. Orchestrators embed their content in `Agent` tool `prompt` parameters. Each file corresponds to a specialized subagent role.
 - **`skills/`** — User-invocable skills loaded via the `Skill` tool. Each subdirectory contains a `SKILL.md` and optional `references/`.
 
