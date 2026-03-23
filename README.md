@@ -40,6 +40,10 @@ Each stage produces artifacts in `thoughts/shared/`:
 - A running [Crawl4AI](https://crawl4ai.com) instance (for the crawl4ai MCP server)
 - A running [SearXNG](https://searxng.org) instance (for the searxng MCP server)
 
+### Installation
+
+Copy the folder `.claude` and the file `.mcp.json` into your project directory.
+
 ### Setup
 
 Build the MCP servers before first use:
@@ -57,6 +61,8 @@ Set the Crawl4AI and SearXNG base URLs in the MCP server source files if your in
 
 - `.claude/mcp/crawl4ai/src/index.ts` — `BASE_URL`
 - `.claude/mcp/searxng/src/index.ts` — base URL constant
+
+Edit `.mcp.json` and set you Context7 API Key. You can get one for free at [Context7](https://context7.com/)
 
 ## Commands
 
