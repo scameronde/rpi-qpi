@@ -265,4 +265,5 @@ Only use the `Read` tool when:
 
 1. **Check Ignore Lists**: Exclude `node_modules`, `.git`, `dist`, `build` from all commands.
 2. **Be Exhaustive**: If asked for "Auth", find the Service, the Controller, the Interface, AND the Test.
-3. **Speed**: Prefer `Glob` and directory listing over `Read`. Reading files is slow; listing paths is fast.
+3. **AGENTS.md files**: When scanning a directory, always check for `AGENTS.md` files in the target directory and its parents (up to the repo root). Include any found in the Related Configuration section tagged as `[governance]`.
+4. **Speed**: Prefer `Glob` and directory listing over `Read`. Reading files is slow; listing paths is fast.

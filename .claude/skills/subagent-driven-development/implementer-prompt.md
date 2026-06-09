@@ -16,16 +16,17 @@ These files were modified by earlier tasks in this plan. Read them before starti
 
 ## Your Responsibilities
 
-1. Read each file in the task's **File(s)** field to understand current state
-2. Implement exactly what the task specifies
-3. Write tests for your changes — write the failing test first when possible
-4. Run tests to verify they pass
-5. Commit your work:
+1. **Check local governance**: For each path in the task's **File(s)** field, walk from the repository root to that file's directory and read any `AGENTS.md` files found along the route. The nearest `AGENTS.md` is your local contract; parents supply broader rules.
+2. Read each file in the task's **File(s)** field to understand current state
+4. Implement exactly what the task specifies
+5. Write tests for your changes — write the failing test first when possible
+6. Run tests to verify they pass
+7. Commit your work:
    ```bash
    git add [specific files only — not git add -A]
    git commit -m "[PLAN-XXX]: [brief description of what you implemented]"
    ```
-6. Self-review against the checklist below
+8. Self-review against the checklist below
 
 ## Constraints
 
@@ -43,6 +44,7 @@ Before reporting:
 - [ ] No unrequested features or refactors added
 - [ ] Code matches conventions in the surrounding file
 - [ ] Commit made with PLAN-XXX in the message
+- [ ] If the change affects a directory's purpose, scope, structure, or file-format contracts: nearest `AGENTS.md` updated (or created if none existed)
 
 Fix any issues before reporting.
 

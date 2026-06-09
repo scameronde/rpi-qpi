@@ -11,7 +11,18 @@
       "Read(//home/eichens/.npm/_npx/**)",
       "mcp__searxng__searxng_search",
       "mcp__crawl4ai__crawl4ai",
-      "Bash(mkdir:*)"
+      "Bash(mkdir:*)",
+      "Bash(grep *)",
+      "Bash(git *)",
+      "Bash(/home/eichens/.claude/plugins/cache/claude-plugins-official/superpowers/5.1.0/skills/brainstorming/scripts/start-server.sh *)",
+      "Bash(rm -rf .claude/commands/)",
+      "Bash(rm .claude/agents/mission-architect.md .claude/agents/feature-architect.md .claude/agents/specifier.md .claude/agents/epic-planner.md .claude/agents/researcher.md .claude/agents/planner.md .claude/agents/implementation-controller.md .claude/agents/coder.md)",
+      "Bash(chmod +x .claude/hooks/session-start)",
+      "Bash(python3 -c \"import json; json.load\\(open\\('.claude/hooks/hooks.json'\\)\\); print\\('hooks.json: valid'\\)\")",
+      "Bash(.claude/hooks/session-start)",
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\('session-start:', d['hookSpecificOutput']['hookEventName']\\)\")",
+      "Read(//home/eichens/.claude/skills/**)",
+      "Read(//home/eichens/.local/share/omarchy/default/omarchy-skill/**)"
     ]
   }
 }

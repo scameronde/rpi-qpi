@@ -165,3 +165,13 @@ Plans produced by `/planner` follow this structure:
 ```
 
 `/subagent-driven-development` reads the plan and dispatches one implementer subagent per PLAN-XXX task.
+
+## DOX Protocol
+
+`AGENTS.md` files are local governance contracts for directory subtrees. Claude Code does not read them automatically — this section activates the protocol.
+
+**Before editing any file:** Walk from the repository root to each target file's directory. At each level, check for an `AGENTS.md` and read it. The nearest `AGENTS.md` to the file being edited is the local contract; parent `AGENTS.md` files supply broader rules. This `CLAUDE.md` is always the top-level contract.
+
+**After a meaningful change:** If the change affects a directory's purpose, scope, ownership, structure, file format contracts, or naming conventions — update the nearest owning `AGENTS.md`. If a directory is created or repurposed, also update the parent `AGENTS.md`'s Child DOX Index.
+
+**Conflict rule:** When `AGENTS.md` files conflict, the closer file governs local details. No `AGENTS.md` may override this `CLAUDE.md`.
