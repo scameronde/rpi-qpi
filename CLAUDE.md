@@ -4,28 +4,28 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 # Claude Code Workflow
 
-This project uses a structured agentic workflow for software development. User-facing commands are in `.claude/commands/` and invoked via `/command-name`. Subagents are in `.claude/agents/` and invoked programmatically via the Agent tool.
+This project uses a structured agentic workflow for software development. Workflow orchestrators are Skills in `.claude/skills/` and invoked via `/skill-name`. Worker agents are in `.claude/agents/` and spawned by Skills via the Agent tool.
 
 ## Workflow Pipeline
 
 **Greenfield (new project):**
 ```
-/mission-architect → /specifier → /epic-planner → /researcher → /planner → /implement
+/mission-architect → /specifier → /epic-planner → /researcher → /planner → /subagent-driven-development
 ```
 
 **Brownfield (new feature in existing system):**
 ```
-/feature-architect → /epic-planner → /researcher → /planner → /implement
+/feature-architect → /epic-planner → /researcher → /planner → /subagent-driven-development
 ```
 
 **Small change or bug fix:**
 ```
-/researcher → /planner → /implement
+/researcher → /planner → /subagent-driven-development
 ```
 
 Each stage produces artifacts written to `thoughts/shared/`:
 
-| Stage | Command | Output directory |
+| Stage | Skill | Output directory |
 |---|---|---|
 | Vision (greenfield) | `/mission-architect` | `thoughts/shared/missions/` |
 | Feature brief (brownfield) | `/feature-architect` | `thoughts/shared/features/` |
@@ -33,12 +33,13 @@ Each stage produces artifacts written to `thoughts/shared/`:
 | Epics | `/epic-planner` | `thoughts/shared/epics/` |
 | Research | `/researcher` | `thoughts/shared/research/` or `thoughts/shared/qa/` |
 | Plan | `/planner` | `thoughts/shared/plans/` |
-| Execution | `/implement` | Updates STATE file, commits each task |
+| Execution | `/subagent-driven-development` | Git commits per task |
 
-## Development Commands
+## Workflow Skills
 
-### Workflow Orchestration
-| Command | Purpose |
+All workflow orchestration is done via Skills (invoked with `/skill-name` or proactively by Claude):
+
+| Skill | Purpose |
 |---|---|
 | `/mission-architect` | Discover project vision and goals via conversation (greenfield) |
 | `/feature-architect` | Define a new feature within an existing system (brownfield) |
@@ -46,9 +47,10 @@ Each stage produces artifacts written to `thoughts/shared/`:
 | `/epic-planner` | Decompose a spec into epics and user stories |
 | `/researcher` | Map the codebase relevant to a spec or question |
 | `/planner` | Produce a sequenced, evidence-based implementation plan |
-| `/implement` | Execute a plan task-by-task via subagents, committing after each |
+| `/subagent-driven-development` | Execute a plan task-by-task via subagents, with spec + quality review per task |
 
-### Skills (invoked via the `Skill` tool, not slash commands)
+## Quality Skills
+
 | Skill | Purpose |
 |---|---|
 | `clean-code` | Language-agnostic code quality review (Clean Code, Pragmatic Programmer, etc.) |
@@ -57,9 +59,9 @@ Each stage produces artifacts written to `thoughts/shared/`:
 | `logic-bugs-qa` | Logic and bug analysis across languages |
 | `claude-code-extensions` | Reference for creating commands, skills, subagents, and MCP servers |
 
-## Subagents (used internally by orchestration commands)
+## Worker Agents (used internally by Skills)
 
-These live in `.claude/agents/` and are invoked by orchestration commands via the `Agent` tool — not user-facing slash commands. Orchestrators embed the full agent file content in the Agent tool `prompt` parameter.
+These live in `.claude/agents/` and are spawned by Skills via the `Agent` tool — never invoked directly.
 
 | File | Role | Agent type |
 |---|---|---|
@@ -69,7 +71,6 @@ These live in `.claude/agents/` and are invoked by orchestration commands via th
 | `thoughts-locator.md` | Find docs in `thoughts/` directory | Explore |
 | `thoughts-analyzer.md` | Extract signal from docs | Explore |
 | `web-search-researcher.md` | External knowledge and docs | general-purpose |
-| `coder.md` | Implement a single PLAN-XXX task | general-purpose |
 
 ## MCP Servers
 
@@ -104,9 +105,9 @@ cd .claude/mcp/searxng  && npm install && npm run build
 
 ```
 .claude/
-  commands/       # User-facing slash commands (workflow orchestration)
-  agents/         # Subagent prompt files (embedded by orchestrators via Agent tool)
-  skills/         # User-invocable skills (clean-code, python-qa, typescript-qa, logic-bugs-qa, claude-code-extensions)
+  agents/         # Worker agents (spawned by Skills via Agent tool)
+  skills/         # All skills — workflow orchestrators + quality reviewers
+  hooks/          # SessionStart hook for skill bootstrap
   mcp/
     crawl4ai/     # MCP server wrapping Crawl4AI
     searxng/      # MCP server wrapping SearXNG
@@ -128,11 +129,10 @@ skills/           # Original opencode skill definitions (reference only)
 tool/             # Original opencode tool source files (crawl4ai.ts, searxng-search.ts)
 ```
 
-### commands/ vs agents/ vs skills/
+### agents/ vs skills/
 
-- **`commands/`** — Invoked directly by the user via `/command-name`. These are the primary workflow orchestrators (`/mission-architect`, `/feature-architect`, `/specifier`, `/epic-planner`, `/researcher`, `/planner`, `/implement`).
-- **`agents/`** — Never invoked directly. Orchestrators embed their content in `Agent` tool `prompt` parameters. Each file corresponds to a specialized subagent role.
-- **`skills/`** — User-invocable skills loaded via the `Skill` tool. Each subdirectory contains a `SKILL.md` and optional `references/`.
+- **`agents/`** — Worker agents, never invoked directly. Skills embed their path in `Agent` tool `subagent_type` parameters. Each file defines a specialized read-only or search role (Explore type) or a web researcher (general-purpose type). Context isolation comes from the Agent tool call, not from file type.
+- **`skills/`** — Skills loaded via the `Skill` tool. Workflow orchestrators (`/mission-architect` through `/subagent-driven-development`) plus quality tools. The `/subagent-driven-development` skill directory also contains three prompt template files used to build implementer and reviewer prompts.
 
 ## Plan File Format
 
@@ -141,11 +141,18 @@ Plans produced by `/planner` follow this structure:
 ```markdown
 # Plan: <title>
 
-## STATE
-Current: PLAN-001
-Status: pending|in_progress|completed|blocked
+## Inputs
+- Research report(s) used: thoughts/shared/research/...
 
-## Tasks
+## Verified Current State
+- **Fact:** ...
+- **Evidence:** file:line-line
+
+## Goals / Non-Goals
+
+## Design Overview
+
+## Implementation Instructions
 
 ### PLAN-001: <task name>
 - changeType: modify|create|remove
@@ -153,8 +160,8 @@ Status: pending|in_progress|completed|blocked
 - instruction: What to do
 - evidence: file:line-line
 - doneWhen: Verifiable completion criterion
-- allowedAdjacentEdits: [optional related files]
+- allowedAdjacentEdits: [optional]
 - context: Why this change is needed
 ```
 
-`/implement` reads the STATE to resume interrupted plans.
+`/subagent-driven-development` reads the plan and dispatches one implementer subagent per PLAN-XXX task.
