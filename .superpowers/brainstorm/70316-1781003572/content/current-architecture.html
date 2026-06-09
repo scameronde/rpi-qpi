@@ -1,0 +1,80 @@
+<h2>Current Architecture</h2>
+<p class="subtitle">What exists today — and where it breaks down</p>
+
+<div class="section">
+<h3>Workflow Orchestrators (Command + Agent pairs — both needed?)</h3>
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px;">
+  <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 14px;">
+    <div class="label" style="color: #f59e0b;">Commands (.claude/commands/)</div>
+    <ul style="margin: 8px 0 0 0; padding-left: 18px; font-size: 0.9em; line-height: 1.8;">
+      <li>/mission-architect</li>
+      <li>/feature-architect</li>
+      <li>/specifier</li>
+      <li>/epic-planner</li>
+      <li>/researcher</li>
+      <li>/planner</li>
+      <li>/implementation-controller</li>
+    </ul>
+  </div>
+  <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 14px;">
+    <div class="label" style="color: #8b5cf6;">Agents (.claude/agents/) — Orchestrators</div>
+    <ul style="margin: 8px 0 0 0; padding-left: 18px; font-size: 0.9em; line-height: 1.8;">
+      <li>mission-architect.md</li>
+      <li>feature-architect.md</li>
+      <li>specifier.md</li>
+      <li>epic-planner.md</li>
+      <li>researcher.md</li>
+      <li>planner.md</li>
+      <li>implementation-controller.md</li>
+    </ul>
+  </div>
+</div>
+</div>
+
+<div class="section">
+<h3>Worker Agents (Agents only — no Commands)</h3>
+<div style="background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 14px; margin-top: 8px;">
+  <div class="label" style="color: #8b5cf6;">Agents (.claude/agents/) — Workers</div>
+  <div style="display: flex; gap: 24px; margin-top: 8px; font-size: 0.9em;">
+    <ul style="margin: 0; padding-left: 18px; line-height: 1.8;">
+      <li>codebase-locator.md</li>
+      <li>codebase-analyzer.md</li>
+      <li>codebase-pattern-finder.md</li>
+    </ul>
+    <ul style="margin: 0; padding-left: 18px; line-height: 1.8;">
+      <li>thoughts-locator.md</li>
+      <li>thoughts-analyzer.md</li>
+      <li>web-search-researcher.md</li>
+      <li style="color: #ef4444;">coder.md ⚠️ broken delegation</li>
+    </ul>
+  </div>
+</div>
+</div>
+
+<div class="section">
+<h3>Skills (.claude/skills/)</h3>
+<div style="background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 14px; margin-top: 8px;">
+  <div class="label" style="color: #10b981;">Skills — Code Quality Only</div>
+  <div style="display: flex; gap: 24px; margin-top: 8px; font-size: 0.9em;">
+    <ul style="margin: 0; padding-left: 18px; line-height: 1.8;">
+      <li>clean-code</li>
+      <li>python-qa</li>
+    </ul>
+    <ul style="margin: 0; padding-left: 18px; line-height: 1.8;">
+      <li>typescript-qa</li>
+      <li>logic-bugs-qa</li>
+      <li>claude-code-extensions</li>
+    </ul>
+  </div>
+</div>
+</div>
+
+<div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 14px; margin-top: 16px;">
+  <div class="label" style="color: #ef4444;">Known Problems</div>
+  <ul style="margin: 8px 0 0 0; padding-left: 18px; font-size: 0.9em; line-height: 1.9;">
+    <li>7 Commands + 7 matching Agent files = duplicated intent, maintenance burden</li>
+    <li>IC Agent bypasses Coder via <code>cat &gt; file &lt;&lt; EOF</code> in Bash — delegation never works</li>
+    <li>Orchestrator agents (IC, researcher, planner…) are not truly isolated — Bash lets them escape tool restrictions</li>
+    <li>No hook to bootstrap skill awareness at session start</li>
+  </ul>
+</div>

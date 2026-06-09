@@ -1,0 +1,134 @@
+<h2>Design: Workflow Pipeline</h2>
+<p class="subtitle">Section 2 of 4 — how each stage flows in the new structure</p>
+
+<div class="section">
+<h3>Greenfield pipeline</h3>
+<div style="background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 16px; font-size: 0.88em;">
+  <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; line-height: 2.2;">
+    <span style="background: #3b82f6; color: white; padding: 3px 10px; border-radius: 4px;">/mission-architect</span>
+    <span style="color: #6b7280;">→</span>
+    <span style="background: #3b82f6; color: white; padding: 3px 10px; border-radius: 4px;">/specifier</span>
+    <span style="color: #6b7280;">→</span>
+    <span style="background: #3b82f6; color: white; padding: 3px 10px; border-radius: 4px;">/epic-planner</span>
+    <span style="color: #6b7280;">→</span>
+    <span style="background: #3b82f6; color: white; padding: 3px 10px; border-radius: 4px;">/researcher</span>
+    <span style="color: #6b7280;">→</span>
+    <span style="background: #3b82f6; color: white; padding: 3px 10px; border-radius: 4px;">/planner</span>
+    <span style="color: #6b7280;">→</span>
+    <span style="background: #6366f1; color: white; padding: 3px 10px; border-radius: 4px;">/subagent-driven-development</span>
+  </div>
+  <div style="margin-top: 8px; color: #6b7280; font-size: 0.9em;">All invocations are now Skill calls — user types /skill-name or Claude invokes proactively</div>
+</div>
+</div>
+
+<div class="section">
+<h3>What each Skill does internally</h3>
+<table style="width: 100%; border-collapse: collapse; font-size: 0.85em;">
+  <thead>
+    <tr style="border-bottom: 2px solid var(--border);">
+      <th style="text-align: left; padding: 8px 12px; width: 22%;">Skill</th>
+      <th style="text-align: left; padding: 8px 12px;">Claude's role</th>
+      <th style="text-align: left; padding: 8px 12px;">Agent calls</th>
+      <th style="text-align: left; padding: 8px 12px; width: 18%;">Output</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr style="border-bottom: 1px solid var(--border);">
+      <td style="padding: 8px 12px;"><strong>mission-architect</strong></td>
+      <td style="padding: 8px 12px;">Conversation with user</td>
+      <td style="padding: 8px 12px; color: #6b7280;">None</td>
+      <td style="padding: 8px 12px;"><code>thoughts/shared/missions/</code></td>
+    </tr>
+    <tr style="border-bottom: 1px solid var(--border);">
+      <td style="padding: 8px 12px;"><strong>feature-architect</strong></td>
+      <td style="padding: 8px 12px;">Conversation + light scan</td>
+      <td style="padding: 8px 12px;">Spawns <code>codebase-locator</code></td>
+      <td style="padding: 8px 12px;"><code>thoughts/shared/features/</code></td>
+    </tr>
+    <tr style="border-bottom: 1px solid var(--border);">
+      <td style="padding: 8px 12px;"><strong>specifier</strong></td>
+      <td style="padding: 8px 12px;">Reads mission, writes spec</td>
+      <td style="padding: 8px 12px; color: #6b7280;">None</td>
+      <td style="padding: 8px 12px;"><code>thoughts/shared/specs/</code></td>
+    </tr>
+    <tr style="border-bottom: 1px solid var(--border);">
+      <td style="padding: 8px 12px;"><strong>epic-planner</strong></td>
+      <td style="padding: 8px 12px;">Reads spec, writes epics</td>
+      <td style="padding: 8px 12px; color: #6b7280;">None</td>
+      <td style="padding: 8px 12px;"><code>thoughts/shared/epics/</code></td>
+    </tr>
+    <tr style="border-bottom: 1px solid var(--border); background: #fef9c3;">
+      <td style="padding: 8px 12px;"><strong>researcher</strong></td>
+      <td style="padding: 8px 12px;">Orchestrates research</td>
+      <td style="padding: 8px 12px;">Spawns <code>codebase-locator</code>, <code>codebase-analyzer</code>, <code>codebase-pattern-finder</code>, <code>web-search-researcher</code> — results isolated</td>
+      <td style="padding: 8px 12px;"><code>thoughts/shared/research/</code></td>
+    </tr>
+    <tr style="border-bottom: 1px solid var(--border); background: #fef9c3;">
+      <td style="padding: 8px 12px;"><strong>planner</strong></td>
+      <td style="padding: 8px 12px;">Reads research, writes plan</td>
+      <td style="padding: 8px 12px;">Spawns <code>codebase-analyzer</code> for evidence — results isolated</td>
+      <td style="padding: 8px 12px;"><code>thoughts/shared/plans/</code></td>
+    </tr>
+    <tr style="border-bottom: 1px solid var(--border); background: #ede9fe;">
+      <td style="padding: 8px 12px;"><strong>subagent-driven-development</strong></td>
+      <td style="padding: 8px 12px;">Orchestrates per-task loop</td>
+      <td style="padding: 8px 12px;">Per task: <code>general-purpose</code> implementer → <code>general-purpose</code> spec reviewer → <code>general-purpose</code> quality reviewer</td>
+      <td style="padding: 8px 12px;">Git commits per task</td>
+    </tr>
+  </tbody>
+</table>
+<div style="margin-top: 8px; color: #6b7280; font-size: 0.85em;">⭐ Highlighted rows are where isolation matters most — Agent calls keep heavy file work out of main context.</div>
+</div>
+
+<div class="section">
+<h3>Skill anatomy — what each Skill file looks like</h3>
+<div class="split">
+  <div class="mockup">
+    <div class="mockup-header">skills/researcher/SKILL.md</div>
+    <div class="mockup-body" style="font-family: monospace; font-size: 0.8em; line-height: 1.7; white-space: pre-wrap;">---
+name: researcher
+description: Map codebase relevant to a
+  spec or question. Spawns codebase
+  agents for isolation. Outputs to
+  thoughts/shared/research/
+---
+
+# Researcher
+
+[instructions for Claude on how to
+orchestrate the research phase]
+
+## Agent Calls
+
+Spawn codebase-locator, codebase-
+analyzer, web-search-researcher
+via the Agent tool. Pass only the
+specific query — results return as
+research findings, not raw file dumps.</div>
+  </div>
+  <div class="mockup">
+    <div class="mockup-header">skills/subagent-driven-development/SKILL.md</div>
+    <div class="mockup-body" style="font-family: monospace; font-size: 0.8em; line-height: 1.7; white-space: pre-wrap;">---
+name: subagent-driven-development
+description: Execute plan task-by-task
+  via subagents with review after each
+---
+
+# SDD
+
+[per-task loop instructions]
+
+## Per task:
+1. Spawn general-purpose implementer
+   with full task text + context
+2. Spawn spec reviewer
+3. Spawn quality reviewer
+4. Commit, advance to next task
+
+## Prompt templates:
+./implementer-prompt.md
+./spec-reviewer-prompt.md
+./code-quality-reviewer-prompt.md</div>
+  </div>
+</div>
+</div>

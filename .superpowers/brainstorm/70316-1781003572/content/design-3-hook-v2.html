@@ -1,0 +1,97 @@
+<h2>Design: SessionStart Hook</h2>
+<p class="subtitle">Section 3 of 4 — what the hook injects and why</p>
+
+<div class="section">
+<h3>Why a hook?</h3>
+<p style="font-size: 0.9em; line-height: 1.7;">Without a hook, Claude discovers skills lazily — only when the user types <code>/skill-name</code>. With a hook, Claude is briefed at session start: it knows what skills exist, when to use each one, and invokes them proactively. Same mechanism Superpowers uses for its own skill bootstrap.</p>
+</div>
+
+<div class="section">
+<h3>Two new files</h3>
+<div class="split">
+  <div class="mockup">
+    <div class="mockup-header">.claude/hooks/hooks.json</div>
+    <div class="mockup-body" style="font-family: monospace; font-size: 0.8em; line-height: 1.7;">
+<pre style="margin:0; white-space: pre-wrap;">{
+  "hooks": {
+    "SessionStart": [{
+      "matcher": ".*",
+      "hooks": [{
+        "type": "command",
+        "command": ".claude/hooks/session-start",
+        "async": false
+      }]
+    }]
+  }
+}</pre>
+    </div>
+  </div>
+  <div class="mockup">
+    <div class="mockup-header">.claude/hooks/session-start (bash script)</div>
+    <div class="mockup-body" style="font-family: monospace; font-size: 0.8em; line-height: 1.7;">
+<pre style="margin:0; white-space: pre-wrap;">#!/usr/bin/env bash
+# Inject workflow skill awareness
+# at every session start
+
+SKILLS_DIR="$(pwd)/.claude/skills"
+
+context="You have workflow skills.
+
+## Available Skills
+
+/mission-architect — greenfield vision
+/feature-architect — brownfield feature
+/specifier — mission → spec
+/epic-planner — spec → epics
+/researcher — codebase research
+/planner — implementation plan
+/subagent-driven-development — execute plan
+
+## When to invoke
+
+Invoke the right skill proactively
+when the user's request matches.
+Always use /researcher before /planner.
+Always use /planner before /sdd."
+
+printf '{
+  "hookSpecificOutput": {
+    "hookEventName": "SessionStart",
+    "additionalContext": "%s"
+  }
+}' "$context"</pre>
+    </div>
+  </div>
+</div>
+</div>
+
+<div class="section">
+<h3>What this changes for the user</h3>
+<table style="width: 100%; border-collapse: collapse; font-size: 0.88em;">
+  <thead>
+    <tr style="border-bottom: 2px solid var(--border);">
+      <th style="text-align: left; padding: 8px 12px;">Without hook</th>
+      <th style="text-align: left; padding: 8px 12px;">With hook</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr style="border-bottom: 1px solid var(--border);">
+      <td style="padding: 8px 12px;">"Research the auth module" → Claude just starts reading files itself</td>
+      <td style="padding: 8px 12px;">Claude recognises the research intent → invokes /researcher Skill automatically</td>
+    </tr>
+    <tr style="border-bottom: 1px solid var(--border);">
+      <td style="padding: 8px 12px;">User must know to type "/researcher"</td>
+      <td style="padding: 8px 12px;">Claude surfaces the right workflow step proactively</td>
+    </tr>
+    <tr style="border-bottom: 1px solid var(--border);">
+      <td style="padding: 8px 12px;">No guardrails on ordering (user might skip researcher)</td>
+      <td style="padding: 8px 12px;">Hook injects ordering rules: researcher before planner, planner before SDD</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<div class="section">
+<h3>Hook vs. CLAUDE.md for this content</h3>
+<p style="font-size: 0.88em; line-height: 1.7;">CLAUDE.md already documents the workflow — but it's static documentation Claude reads passively. The hook injects a live reminder into every session's context as <code>additionalContext</code>, which Claude treats as active instructions rather than background reading. Both are useful; they serve different purposes.</p>
+</div>

@@ -1,0 +1,83 @@
+<h2>Design: New File Structure</h2>
+<p class="subtitle">Section 1 of 4 — what .claude/ looks like after the restructure</p>
+
+<div class="split">
+  <div class="mockup">
+    <div class="mockup-header">Before (25 files)</div>
+    <div class="mockup-body" style="font-family: monospace; font-size: 0.82em; line-height: 1.9;">
+      <div style="color: #6b7280;">.claude/</div>
+      <div style="color: #f59e0b; margin-left: 14px;">commands/  <span style="color: #6b7280;">(7 files)</span></div>
+      <div style="margin-left: 28px; color: #f59e0b;">mission-architect.md</div>
+      <div style="margin-left: 28px; color: #f59e0b;">feature-architect.md</div>
+      <div style="margin-left: 28px; color: #f59e0b;">specifier.md</div>
+      <div style="margin-left: 28px; color: #f59e0b;">epic-planner.md</div>
+      <div style="margin-left: 28px; color: #f59e0b;">researcher.md</div>
+      <div style="margin-left: 28px; color: #f59e0b;">planner.md</div>
+      <div style="margin-left: 28px; color: #f59e0b;">implementation-controller.md</div>
+      <div style="color: #8b5cf6; margin-left: 14px;">agents/  <span style="color: #6b7280;">(14 files)</span></div>
+      <div style="margin-left: 28px; color: #8b5cf6;">mission-architect.md</div>
+      <div style="margin-left: 28px; color: #8b5cf6;">feature-architect.md</div>
+      <div style="margin-left: 28px; color: #8b5cf6;">specifier.md</div>
+      <div style="margin-left: 28px; color: #8b5cf6;">epic-planner.md</div>
+      <div style="margin-left: 28px; color: #8b5cf6;">researcher.md</div>
+      <div style="margin-left: 28px; color: #8b5cf6;">planner.md</div>
+      <div style="margin-left: 28px; color: #ef4444;">implementation-controller.md ⚠️</div>
+      <div style="margin-left: 28px; color: #ef4444;">coder.md ⚠️</div>
+      <div style="margin-left: 28px; color: #8b5cf6;">codebase-locator.md</div>
+      <div style="margin-left: 28px; color: #8b5cf6;">codebase-analyzer.md</div>
+      <div style="margin-left: 28px; color: #8b5cf6;">codebase-pattern-finder.md</div>
+      <div style="margin-left: 28px; color: #8b5cf6;">thoughts-locator.md</div>
+      <div style="margin-left: 28px; color: #8b5cf6;">thoughts-analyzer.md</div>
+      <div style="margin-left: 28px; color: #8b5cf6;">web-search-researcher.md</div>
+      <div style="color: #10b981; margin-left: 14px;">skills/  <span style="color: #6b7280;">(4 skills)</span></div>
+      <div style="margin-left: 28px; color: #10b981;">clean-code/</div>
+      <div style="margin-left: 28px; color: #10b981;">python-qa/</div>
+      <div style="margin-left: 28px; color: #10b981;">typescript-qa/</div>
+      <div style="margin-left: 28px; color: #10b981;">logic-bugs-qa/</div>
+      <div style="margin-left: 28px; color: #10b981;">claude-code-extensions/</div>
+      <div style="color: #6b7280; margin-left: 14px;">hooks/  <span style="color: #6b7280;">(none)</span></div>
+    </div>
+  </div>
+
+  <div class="mockup">
+    <div class="mockup-header">After (15 files)</div>
+    <div class="mockup-body" style="font-family: monospace; font-size: 0.82em; line-height: 1.9;">
+      <div style="color: #6b7280;">.claude/</div>
+      <div style="color: #ef4444; margin-left: 14px; text-decoration: line-through;">commands/  removed</div>
+      <div style="color: #8b5cf6; margin-left: 14px;">agents/  <span style="color: #6b7280;">(6 files — workers only)</span></div>
+      <div style="margin-left: 28px; color: #8b5cf6;">codebase-locator.md</div>
+      <div style="margin-left: 28px; color: #8b5cf6;">codebase-analyzer.md</div>
+      <div style="margin-left: 28px; color: #8b5cf6;">codebase-pattern-finder.md</div>
+      <div style="margin-left: 28px; color: #8b5cf6;">thoughts-locator.md</div>
+      <div style="margin-left: 28px; color: #8b5cf6;">thoughts-analyzer.md</div>
+      <div style="margin-left: 28px; color: #8b5cf6;">web-search-researcher.md</div>
+      <div style="color: #10b981; margin-left: 14px;">skills/  <span style="color: #6b7280;">(7 new + 5 existing)</span></div>
+      <div style="margin-left: 28px; color: #3b82f6;">mission-architect/  ✨ new</div>
+      <div style="margin-left: 28px; color: #3b82f6;">feature-architect/  ✨ new</div>
+      <div style="margin-left: 28px; color: #3b82f6;">specifier/  ✨ new</div>
+      <div style="margin-left: 28px; color: #3b82f6;">epic-planner/  ✨ new</div>
+      <div style="margin-left: 28px; color: #3b82f6;">researcher/  ✨ new</div>
+      <div style="margin-left: 28px; color: #3b82f6;">planner/  ✨ new</div>
+      <div style="margin-left: 28px; color: #3b82f6;">subagent-driven-development/  ✨ new</div>
+      <div style="margin-left: 28px; color: #10b981;">clean-code/</div>
+      <div style="margin-left: 28px; color: #10b981;">python-qa/</div>
+      <div style="margin-left: 28px; color: #10b981;">typescript-qa/</div>
+      <div style="margin-left: 28px; color: #10b981;">logic-bugs-qa/</div>
+      <div style="margin-left: 28px; color: #10b981;">claude-code-extensions/</div>
+      <div style="color: #3b82f6; margin-left: 14px;">hooks/  ✨ new</div>
+      <div style="margin-left: 28px; color: #3b82f6;">session-start</div>
+      <div style="margin-left: 28px; color: #3b82f6;">hooks.json</div>
+    </div>
+  </div>
+</div>
+
+<div style="margin-top: 16px; padding: 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; font-size: 0.88em; line-height: 1.7;">
+  <strong>Key moves:</strong>
+  <ul style="margin: 6px 0 0 0; padding-left: 18px;">
+    <li><strong>commands/ → removed entirely.</strong> Skills replace them — Claude discovers and invokes them via /skill-name or proactively.</li>
+    <li><strong>7 orchestrator agents → removed.</strong> Their content migrates into Skills.</li>
+    <li><strong>IC + Coder → removed.</strong> Replaced by the subagent-driven-development Skill.</li>
+    <li><strong>6 worker agents → unchanged.</strong> Explore-type write-safety preserved.</li>
+    <li><strong>hooks/ → added.</strong> session-start script injects skill awareness at every session open.</li>
+  </ul>
+</div>

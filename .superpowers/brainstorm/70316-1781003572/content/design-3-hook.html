@@ -1,0 +1,29 @@
+<h2>Design: SessionStart Hook</h2>
+<p class="subtitle">Section 3 of 4 — what the hook injects and why</p>
+
+<div class="section">
+<h3>Why a hook?</h3>
+<p style="font-size: 0.9em; line-height: 1.7;">Without a hook, Claude discovers skills lazily — only when the user explicitly types <code>/skill-name</code>. With a hook, Claude is briefed at session start: it knows what skills exist, when to invoke each one, and can trigger them proactively. This is exactly what Superpowers does for its own skills.</p>
+</div>
+
+<div class="section">
+<h3>Two files needed</h3>
+<div class="split">
+  <div class="mockup">
+    <div class="mockup-header">hooks/hooks.json</div>
+    <div class="mockup-body" style="font-family: monospace; font-size: 0.82em; line-height: 1.7; white-space: pre-wrap;">{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": ".*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"${CLAUDE_PLUGIN_ROOT:-$(pwd)/.claude}/hooks/session-start\"",
+            "async": false
+          }
+        ]
+      }
+    ]
+  }
+}
