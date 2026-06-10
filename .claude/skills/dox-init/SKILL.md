@@ -104,7 +104,7 @@ When the user requests a durable behavior change, record it here or in the relev
 
 ## Child DOX Index
 
-[POPULATE WITH ACTUAL TOP-LEVEL DIRECTORIES WHEN WRITING THIS FILE — see Phase 2 below]
+[to be populated with actual top-level directory entries]
 ```
 
 ### Bundled Asset 2 — CLAUDE.md DOX Protocol section
@@ -182,6 +182,8 @@ find . -type d \
   | sort
 ```
 
+Note: this exclusion list covers common cases but is not exhaustive. Use judgment when encountering obvious build-artifact or cache directories not listed above — skip them rather than generating AGENTS.md files for generated content.
+
 Store the result as the working directory list.
 
 ### Phase 2 — Root `./AGENTS.md`
@@ -196,7 +198,7 @@ Store the result as the working directory list.
 - If CLAUDE.md does not exist: skip this phase and note in the final report.
 - If CLAUDE.md exists: search its content for the string `## DOX Protocol`.
   - If found: skip. Do NOT modify.
-  - If NOT found: append Bundled Asset 2 to the end of CLAUDE.md using `Edit` (append after the last line).
+  - If NOT found: append Bundled Asset 2 to the end of CLAUDE.md using `Edit`. To append using `Edit`: read the file's current content, identify the last non-empty line, use `Edit` with `old_string` set to that last line and `new_string` set to that same line followed by a blank line and Bundled Asset 2.
 
 ### Phase 4 — Per-subdirectory loop
 
@@ -205,7 +207,7 @@ Process each directory from Phase 1 except `.`:
 For each directory path `<dir>`:
 
 1. Attempt to `Read <dir>/AGENTS.md`. If it exists: mark as SKIPPED and continue to next dir.
-2. Run `Bash ls -A <dir>`. If output is empty (directory has no files at all): mark as SKIPPED (empty dir) and continue.
+2. Run `Bash ls -A <dir>`. If output is empty (directory truly contains nothing — no files and no subdirectories): mark as SKIPPED (empty dir) and continue. Directories that contain only subdirectories are still processed in step 3 onward.
 3. Run `Bash ls -la <dir>` to get the full file listing.
 4. If a `README.md`, `README`, or obvious entry-point file exists in the dir, `Read` it (first 60 lines only).
 5. Based on the file listing and any README content, write `<dir>/AGENTS.md` using the Child AGENTS.md schema. Content must be specific to this directory — not boilerplate. Omit sections that don't apply.
