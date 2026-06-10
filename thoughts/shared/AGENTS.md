@@ -25,8 +25,8 @@ Persistent artifact store for all workflow pipeline outputs. Every stage of the 
 | `qa/` | `/researcher` (QA mode) | human review |
 | `plans/` | `/planner` | `/subagent-driven-development` |
 
-**Currently populated:** `plans/` (34 files), `research/` (25 files), `qa/` (4 files).
-**Currently empty:** `missions/`, `features/`, `specs/`, `epics/`.
+**Currently populated:** `plans/` (34 files), `research/` (25 files), `qa/` (4 files), `features/` (1 file).
+**Currently empty:** `missions/`, `specs/`, `epics/`.
 
 ## Work Guidance
 
