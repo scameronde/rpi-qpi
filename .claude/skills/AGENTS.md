@@ -28,6 +28,10 @@ Each skill lives in its own subdirectory with a `SKILL.md` entry point:
 - `logic-bugs-qa/` — Logic and bug analysis; contains `references/` subdirectory
 - `claude-code-extensions/` — Reference for extending Claude Code
 
+**DOX maintenance skills:**
+- `dox-init/` — Bootstrap a complete DOX governance tree for any project
+- `dox-update/` — Detect and repair stale AGENTS.md files
+
 ## Work Guidance
 
 - Skills spawn agents via the `Agent` tool — never invoke agents directly
