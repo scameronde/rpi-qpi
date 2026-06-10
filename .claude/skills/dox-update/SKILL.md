@@ -52,6 +52,13 @@ Run:
 find . -name "AGENTS.md" \
   -not -path './.git*' \
   -not -path '*/node_modules*' \
+  -not -path '*/dist*' \
+  -not -path '*/build*' \
+  -not -path '*/__pycache__*' \
+  -not -path '*/.venv*' \
+  -not -path '*/vendor*' \
+  -not -path '*/coverage*' \
+  -not -path '*/.nyc_output*' \
   | sort
 ```
 
@@ -59,11 +66,13 @@ Store the list.
 
 ### Phase 2 — Per-file staleness check and repair
 
+**Note on root `./AGENTS.md`:** Do not apply the child schema heading format (`# <dirname>/`) to the root `./AGENTS.md` — there is no dirname for the repo root. Instead, preserve the existing heading as-is and rewrite only the sections that are stale.
+
 For each path in the list:
 
 1. Determine the governing directory: strip `/AGENTS.md` suffix from the path.
 2. `Read` the AGENTS.md.
-3. Run `Bash ls -la <governing_dir>` to get the current file listing.
+3. Run `Bash ls -la <governing_dir>` to get the current file listing. Note: this listing is non-recursive. For directories that contain only subdirectories and no files, use the subdirectory names as the primary signal for the staleness judgment.
 4. Apply the staleness criteria: is this AGENTS.md still accurate?
 5. If **current**: mark as SKIPPED and continue.
 6. If **stale**:
