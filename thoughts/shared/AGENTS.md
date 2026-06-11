@@ -7,7 +7,7 @@ Persistent artifact store for all workflow pipeline outputs. Every stage of the 
 ## Ownership
 
 - Skills write artifacts here; they do not delete or overwrite existing files
-- Implementer subagents (via `/subagent-driven-development`) update STATE files in `plans/`
+- Implementer subagents (via `/implement`) update STATE files in `plans/`
 - All other files are write-once after creation
 
 ## Local Contracts
@@ -23,14 +23,14 @@ Persistent artifact store for all workflow pipeline outputs. Every stage of the 
 | `epics/` | `/epic-planner` | `/researcher`, `/planner` |
 | `research/` | `/researcher` | `/planner` |
 | `qa/` | `/researcher` (QA mode) | human review |
-| `plans/` | `/planner` | `/subagent-driven-development` |
+| `plans/` | `/planner` | `/implement` |
 
 **Currently populated:** `plans/` (34 files), `research/` (25 files), `qa/` (4 files), `features/` (1 file).
 **Currently empty:** `missions/`, `specs/`, `epics/`.
 
 ## Work Guidance
 
-- Never edit research or plan files manually while `/subagent-driven-development` is executing
+- Never edit research or plan files manually while `/implement` is executing
 - When referencing an artifact in a plan or prompt, use the full relative path from the repo root
 - Artifact files are read-only after creation (except STATE files in `plans/`)
 
