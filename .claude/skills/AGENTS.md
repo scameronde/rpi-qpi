@@ -35,8 +35,8 @@ Each skill lives in its own subdirectory with a `SKILL.md` entry point:
 ## Work Guidance
 
 - Skills spawn agents via the `Agent` tool — never invoke agents directly
-- Workflow ordering is enforced: researcher must precede planner; planner must precede SDD
-- Prompt templates in `subagent-driven-development/` are embedded verbatim into agent calls — they are not skills themselves
+- Workflow ordering is enforced: researcher must precede planner; planner must precede /implement
+- Prompt templates in `implement/` are embedded verbatim into agent calls — they are not skills themselves
 
 ## Verification
 
