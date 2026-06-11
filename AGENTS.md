@@ -59,11 +59,11 @@ Closeout checklist:
 An agentic engineering framework for Claude Code. Provides a full pipeline from project vision to code implementation via specialized skills, subagents, and MCP servers.
 
 **Workflow pipeline:**
-- Greenfield: `/mission-architect` → `/specifier` → `/epic-planner` → `/researcher` → `/planner` → `/subagent-driven-development`
-- Brownfield: `/feature-architect` → `/epic-planner` → `/researcher` → `/planner` → `/subagent-driven-development`
-- Small fix: `/researcher` → `/planner` → `/subagent-driven-development`
+- Greenfield: `/mission-architect` → `/specifier` → `/epic-planner` → `/researcher` → `/planner` → `/implement`
+- Brownfield: `/feature-architect` → `/epic-planner` → `/researcher` → `/planner` → `/implement`
+- Small fix: `/researcher` → `/planner` → `/implement`
 
-**Key rule:** `/researcher` must precede `/planner`; `/planner` must precede `/subagent-driven-development`. See `CLAUDE.md` for full documentation.
+**Key rule:** `/researcher` must precede `/planner`; `/planner` must precede `/implement`. See `CLAUDE.md` for full documentation.
 
 ## Child DOX Index
 

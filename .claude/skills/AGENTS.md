@@ -19,7 +19,7 @@ Each skill lives in its own subdirectory with a `SKILL.md` entry point:
 - `epic-planner/` — Decompose spec to epics; output to `thoughts/shared/epics/`
 - `researcher/` — Map codebase or research topic; output to `thoughts/shared/research/` or `thoughts/shared/qa/`
 - `planner/` — Produce sequenced implementation plan; output to `thoughts/shared/plans/`
-- `subagent-driven-development/` — Execute plan task-by-task via subagents; also contains `implementer-prompt.md`, `spec-reviewer-prompt.md`, `code-quality-reviewer-prompt.md`
+- `implement/` — Execute plan task-by-task via subagents; also contains `implementer-prompt.md`, `spec-reviewer-prompt.md`, `code-quality-reviewer-prompt.md`
 
 **Quality skills:**
 - `clean-code/` — Language-agnostic code quality review; contains `references/` subdirectory

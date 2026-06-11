@@ -1,6 +1,6 @@
 ---
-name: subagent-driven-development
-description: Execute an implementation plan task-by-task via fresh subagents with spec-compliance and code-quality review after each task. Replaces /implement. Use after /planner has produced a plan in thoughts/shared/plans/.
+name: implement
+description: Execute an implementation plan task-by-task via fresh subagents with spec-compliance and code-quality review after each task. Use after /planner has produced a plan in thoughts/shared/plans/.
 ---
 
 # Subagent-Driven Development

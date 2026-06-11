@@ -10,17 +10,17 @@ This project uses a structured agentic workflow for software development. Workfl
 
 **Greenfield (new project):**
 ```
-/mission-architect → /specifier → /epic-planner → /researcher → /planner → /subagent-driven-development
+/mission-architect → /specifier → /epic-planner → /researcher → /planner → /implement
 ```
 
 **Brownfield (new feature in existing system):**
 ```
-/feature-architect → /epic-planner → /researcher → /planner → /subagent-driven-development
+/feature-architect → /epic-planner → /researcher → /planner → /implement
 ```
 
 **Small change or bug fix:**
 ```
-/researcher → /planner → /subagent-driven-development
+/researcher → /planner → /implement
 ```
 
 Each stage produces artifacts written to `thoughts/shared/`:
@@ -33,7 +33,7 @@ Each stage produces artifacts written to `thoughts/shared/`:
 | Epics | `/epic-planner` | `thoughts/shared/epics/` |
 | Research | `/researcher` | `thoughts/shared/research/` or `thoughts/shared/qa/` |
 | Plan | `/planner` | `thoughts/shared/plans/` |
-| Execution | `/subagent-driven-development` | Git commits per task |
+| Execution | `/implement` | Git commits per task |
 
 ## Workflow Skills
 
@@ -47,7 +47,7 @@ All workflow orchestration is done via Skills (invoked with `/skill-name` or pro
 | `/epic-planner` | Decompose a spec into epics and user stories |
 | `/researcher` | Map the codebase relevant to a spec or question |
 | `/planner` | Produce a sequenced, evidence-based implementation plan |
-| `/subagent-driven-development` | Execute a plan task-by-task via subagents, with spec + quality review per task |
+| `/implement` | Execute a plan task-by-task via subagents, with spec + quality review per task |
 
 ## Quality Skills
 
@@ -132,7 +132,7 @@ tool/             # Original opencode tool source files (crawl4ai.ts, searxng-se
 ### agents/ vs skills/
 
 - **`agents/`** — Worker agents, never invoked directly. Skills embed their path in `Agent` tool `subagent_type` parameters. Each file defines a specialized read-only or search role (Explore type) or a web researcher (general-purpose type). Context isolation comes from the Agent tool call, not from file type.
-- **`skills/`** — Skills loaded via the `Skill` tool. Workflow orchestrators (`/mission-architect` through `/subagent-driven-development`) plus quality tools. The `/subagent-driven-development` skill directory also contains three prompt template files used to build implementer and reviewer prompts.
+- **`skills/`** — Skills loaded via the `Skill` tool. Workflow orchestrators (`/mission-architect` through `/implement`) plus quality tools. The `/implement` skill directory also contains three prompt template files used to build implementer and reviewer prompts.
 
 ## Plan File Format
 
@@ -164,7 +164,7 @@ Plans produced by `/planner` follow this structure:
 - context: Why this change is needed
 ```
 
-`/subagent-driven-development` reads the plan and dispatches one implementer subagent per PLAN-XXX task.
+`/implement` reads the plan and dispatches one implementer subagent per PLAN-XXX task.
 
 ## DOX Protocol
 
