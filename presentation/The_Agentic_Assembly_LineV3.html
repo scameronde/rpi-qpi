@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ORBIT — The Agentic Assembly Line V3</title>
+<style>
+  :root {
+    --bg: #ece7d5;
+    --navy: #1b2745;
+    --terra: #b3501f;
+    --blue-mid: #4b6180;
+    --white: #fff;
+    --border: #c5ba9a;
+    --grid: rgba(80,70,50,0.10);
+    --light-terra: rgba(179,80,31,0.10);
+    --light-navy: rgba(27,39,69,0.06);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Georgia', serif;
+    background: #111;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    overflow: hidden;
+  }
+
+  .presentation {
+    position: relative;
+    width: 1200px;
+    height: 675px;
+    overflow: hidden;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.6);
+  }
+
+  .slide {
+    display: none;
+    position: absolute;
+    inset: 0;
+    background-color: var(--bg);
+    background-image:
+      linear-gradient(var(--grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 36px 36px;
+    padding: 36px 56px 52px;
+    overflow: hidden;
+  }
+  .slide.active { display: block; }
+
+  /* Typography */
+  .h1 { font-size: 2.4rem; font-weight: 900; color: var(--navy); letter-spacing: -0.5px; line-height: 1.1; }
+  .h2 { font-size: 1.75rem; font-weight: 800; color: var(--navy); line-height: 1.15; }
+  .h3 { font-size: 1.05rem; font-weight: 700; color: var(--navy); margin-bottom: 3px; }
+  .p  { font-size: 0.85rem; color: var(--navy); line-height: 1.5; }
+  .mono { font-family: 'Courier New', monospace; }
+  .terra { color: var(--terra); }
+  .blue  { color: var(--blue-mid); }
+
+  /* Layout */
+  .cols-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  .cols-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+  .flex-row { display: flex; align-items: center; gap: 10px; }
+  .mt8  { margin-top: 8px; }
+  .mt12 { margin-top: 12px; }
+  .mt16 { margin-top: 16px; }
+  .mt20 { margin-top: 20px; }
+
+  /* Boxes */
+  .box       { border: 1.5px solid var(--navy);   background: var(--white); padding: 10px 14px; }
+  .box-terra { border: 2px   solid var(--terra);  background: var(--white); padding: 10px 14px; }
+  .box-navy  { border: 2px   solid var(--navy);   background: var(--navy);  color: white; padding: 10px 14px; }
+  .box-light { border: 1.5px solid var(--border); background: rgba(255,255,255,0.55); padding: 10px 14px; }
+
+  /* Dividers */
+  .divider      { height: 3px; background: var(--terra); margin: 10px 0; }
+  .divider-thin { height: 1px; background: var(--border); margin: 8px 0; }
+
+  /* ── TITLE SLIDE ── */
+  .title-orbit { font-size: 5rem; font-weight: 900; color: var(--navy); letter-spacing: -2px; text-align: center; line-height: 1; }
+  .title-sub   { font-size: 1.25rem; color: var(--blue-mid); text-align: center; margin-top: 4px; font-style: italic; }
+  .title-tag   { font-size: 0.82rem; color: var(--blue-mid); text-align: center; margin-top: 6px; font-style: italic; }
+
+  .station { border: 2px solid var(--navy); padding: 12px 14px; background: rgba(255,255,255,0.45); }
+  .station-title { font-size: 0.65rem; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; color: var(--blue-mid); border-bottom: 2px solid var(--terra); padding-bottom: 5px; margin-bottom: 10px; }
+  .station-item  { font-size: 0.8rem; font-weight: 700; color: var(--navy); padding-left: 10px; border-left: 3px solid var(--terra); margin-bottom: 2px; }
+  .station-desc  { font-size: 0.72rem; color: var(--blue-mid); padding-left: 13px; margin-bottom: 7px; }
+
+  /* ── ARTIFACT CHAIN ── */
+  .chain-wrap { display: flex; align-items: flex-start; justify-content: center; }
+  .chain-item { display: flex; flex-direction: column; align-items: center; }
+  .chain-node { background: var(--navy); color: white; padding: 7px 11px; font-family: 'Courier New', monospace; font-size: 0.76rem; font-weight: 700; text-align: center; white-space: nowrap; }
+  .chain-node.src { background: var(--terra); }
+  .chain-sub  { font-size: 0.64rem; color: var(--blue-mid); text-align: center; margin-top: 4px; font-style: italic; }
+  .chain-arr  { color: var(--terra); font-size: 1.6rem; line-height: 1; padding: 0 3px; padding-top: 5px; font-weight: 900; }
+
+  /* ── CHAOS / ORDER ── */
+  .chaos-side { border: 2px solid var(--terra); background: var(--light-terra); padding: 14px; }
+  .order-side { border: 2px solid var(--navy);  background: var(--light-navy);  padding: 14px; }
+  .side-title { font-size: 0.7rem; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; padding: 3px 8px; display: inline-block; margin-bottom: 10px; }
+  .badge-chaos { background: var(--terra); color: white; }
+  .badge-order { background: var(--navy);  color: white; }
+  .chaos-tag { background: var(--terra); color: white; font-weight: 700; padding: 3px 9px; font-size: 0.82rem; display: inline-block; margin-bottom: 3px; }
+  .stair-item { background: var(--navy); color: white; padding: 5px 10px; font-size: 0.82rem; font-weight: 700; margin-bottom: 3px; display: block; }
+  .stair-desc { font-size: 0.7rem; color: var(--blue-mid); padding-left: 4px; margin-bottom: 7px; display: block; }
+
+  /* ── ENTRY POINTS ── */
+  .entry-row  { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
+  .entry-box  { border: 2px solid var(--navy); background: white; padding: 8px 16px; font-weight: 700; font-size: 0.88rem; min-width: 155px; text-align: center; }
+  .entry-box small { display: block; font-weight: 400; font-size: 0.72rem; color: var(--blue-mid); margin-top: 2px; }
+  .cmd-box    { border: 1.5px solid var(--blue-mid); background: rgba(255,255,255,0.7); padding: 5px 13px; font-family: 'Courier New', monospace; font-size: 0.86rem; color: var(--navy); position: relative; }
+  .cmd-box::after { content: '↗'; position: absolute; top: 1px; right: 4px; font-size: 0.65rem; color: var(--blue-mid); }
+  .result-box { border: 2.5px solid var(--navy); background: var(--navy); color: white; padding: 6px 14px; font-weight: 800; font-size: 0.82rem; }
+  .arr { color: var(--terra); font-size: 1.3rem; font-weight: 900; }
+
+  /* ── IO ROW ── */
+  .io-row { display: flex; align-items: center; gap: 9px; margin: 5px 0; font-size: 0.84rem; }
+  .io-in  { background: var(--blue-mid); color: white; padding: 2px 9px; font-size: 0.68rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; min-width: 66px; text-align: center; }
+  .io-out { background: var(--terra);    color: white; padding: 2px 9px; font-size: 0.68rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; min-width: 66px; text-align: center; }
+  .io-val { font-family: 'Courier New', monospace; font-size: 0.8rem; color: var(--navy); }
+
+  /* ── PHASE CARDS ── */
+  .phase-card       { border: 2px solid var(--navy);  background: white; padding: 13px; }
+  .phase-card-terra { border: 2px solid var(--terra); background: white; padding: 13px; }
+  .phase-label      { font-size: 0.68rem; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; color: var(--terra); margin-bottom: 4px; }
+  .phase-label-blue { font-size: 0.68rem; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; color: var(--blue-mid); margin-bottom: 4px; }
+
+  /* ── CYCLE STEPS ── */
+  .cycle-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 12px 0; }
+  .cycle-step { border: 1.5px solid var(--navy); padding: 7px 9px; background: white; text-align: center; }
+  .cycle-step.accent { border-color: var(--terra); background: var(--light-terra); }
+  .cycle-step.end    { background: var(--terra); border-color: var(--terra); }
+  .step-num  { font-size: 0.62rem; color: var(--terra); font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
+  .step-num-end { font-size: 0.62rem; color: rgba(255,255,255,0.7); font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
+  .step-name { font-size: 0.88rem; font-weight: 700; color: var(--navy); }
+  .step-name-end { font-size: 0.88rem; font-weight: 700; color: white; }
+  .step-sub  { font-size: 0.68rem; color: var(--blue-mid); margin-top: 2px; }
+  .step-sub-end { font-size: 0.68rem; color: rgba(255,255,255,0.8); margin-top: 2px; }
+
+  /* ── QA TABLE ── */
+  .qa-table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+  .qa-table th { background: var(--navy); color: white; padding: 8px 14px; text-align: left; font-size: 0.86rem; }
+  .qa-table td { padding: 8px 14px; border-bottom: 1px solid var(--border); font-size: 0.83rem; vertical-align: top; }
+  .qa-table tr:nth-child(even) td { background: rgba(0,0,0,0.025); }
+
+  /* ── FLEET ── */
+  .fleet-group { border: 1.5px solid var(--navy); background: white; padding: 11px; }
+  .fleet-title { font-size: 0.86rem; font-weight: 800; color: var(--navy); border-bottom: 2px solid var(--terra); padding-bottom: 4px; margin-bottom: 8px; }
+  .fleet-title small { font-weight: 400; font-size: 0.72rem; color: var(--blue-mid); }
+  .fleet-item { margin: 5px 0; font-size: 0.78rem; }
+  .fleet-item code { color: var(--terra); font-weight: 700; font-family: 'Courier New', monospace; }
+
+  /* ── MCP CARDS ── */
+  .mcp-card { border: 1.5px solid var(--blue-mid); background: white; padding: 13px; }
+  .mcp-name { font-family: 'Courier New', monospace; font-size: 0.98rem; font-weight: 700; color: var(--navy); margin-bottom: 5px; }
+  .mcp-desc { font-size: 0.78rem; color: var(--blue-mid); line-height: 1.4; }
+
+  /* ── TERMINAL ── */
+  .terminal { background: #1e2030; border-radius: 5px; padding: 18px 22px; margin-top: 14px; }
+  .terminal-bar { display: flex; gap: 6px; margin-bottom: 13px; }
+  .dot { width: 11px; height: 11px; border-radius: 50%; }
+  .dot-r { background: #e05555; } .dot-y { background: #e0b055; } .dot-g { background: #55b87a; }
+  .term-row { display: flex; align-items: baseline; gap: 10px; margin: 7px 0; }
+  .term-prompt { color: #5b7a9a; font-family: 'Courier New', monospace; font-size: 0.92rem; }
+  .term-cmd    { font-family: 'Courier New', monospace; font-size: 0.92rem; color: #e8a070; font-weight: 700; min-width: 210px; }
+  .term-desc   { font-size: 0.82rem; color: #9ab0c8; }
+
+  /* ── STAMP ── */
+  .stamp-outer { position: absolute; right: 70px; top: 185px; transform: rotate(-11deg); border: 5px solid var(--terra); padding: 8px 14px; opacity: 0.88; }
+  .stamp-text  { font-size: 1.5rem; font-weight: 900; color: var(--terra); letter-spacing: 3px; text-transform: uppercase; text-align: center; line-height: 1.2; }
+
+  /* ── GOLDEN RULE ── */
+  .golden-rule { background: var(--navy); color: white; text-align: center; padding: 11px 20px; font-size: 0.95rem; font-weight: 700; margin-top: 12px; letter-spacing: 0.3px; }
+
+  /* ── CLOSING ── */
+  .big-quote { border: 3px solid var(--navy); background: white; padding: 18px 26px; font-size: 1.18rem; font-weight: 700; color: var(--navy); text-align: center; line-height: 1.5; margin: 12px 0; }
+  .pillar     { flex: 1; text-align: center; }
+  .pillar-key { font-size: 1.1rem; font-weight: 800; color: var(--terra); margin-bottom: 3px; }
+  .pillar-val { font-size: 0.82rem; color: var(--navy); }
+
+  /* ── NAV ── */
+  .nav-bar { position: fixed; bottom: 14px; left: 50%; transform: translateX(-50%); display: flex; gap: 10px; z-index: 999; }
+  .nav-btn { background: var(--navy); color: white; border: none; padding: 6px 18px; cursor: pointer; font-size: 0.88rem; font-family: 'Georgia', serif; }
+  .nav-btn:hover { background: var(--terra); }
+  .counter { position: fixed; bottom: 18px; right: 48px; font-size: 0.72rem; color: #888; font-family: monospace; z-index: 999; }
+
+  /* ── BRAND ── */
+  .brand { position: absolute; bottom: 12px; right: 18px; font-size: 0.62rem; color: var(--blue-mid); opacity: 0.45; font-style: italic; }
+</style>
+</head>
+<body>
+
+<div class="presentation">
+
+  <!-- ════════════════════════════════════════════════════ -->
+  <!-- SLIDE 1 · Title / Overview                          -->
+  <!-- ════════════════════════════════════════════════════ -->
+  <div class="slide active" id="s1">
+    <div style="text-align:center; margin-top:6px;">
+      <div class="title-orbit">ORBIT</div>
+      <div class="title-sub">The Agentic Software Engineering Framework</div>
+      <div class="title-tag">The Agentic Assembly Line &mdash; V3</div>
+    </div>
+    <div class="divider mt12"></div>
+    <div class="cols-2 mt12">
+      <div class="station">
+        <div class="station-title">Station 01 &mdash; Analysis &amp; Architectural Planning</div>
+        <div class="station-item">Mission &amp; Feature Definition</div>
+        <div class="station-desc">Establishes the project's value and scope without mentioning specific technologies to avoid premature implementation.</div>
+        <div class="station-item">Technical Specification</div>
+        <div class="station-desc">Translates the vision into concrete architecture, data flows, and entity relationship diagrams.</div>
+        <div class="station-item">Epic Decomposition</div>
+        <div class="station-desc">Breaks specifications into user-facing "Epics" that deliver meaningful capabilities through 5–7 specific user stories.</div>
+      </div>
+      <div class="station">
+        <div class="station-title">Station 02 &mdash; Research &amp; Automated Execution</div>
+        <div class="station-item">Evidence-Based Research</div>
+        <div class="station-desc">Orchestrates subagents to map codebase topology and verify every technical claim before planning begins.</div>
+        <div class="station-item">Blueprint-Driven Planning</div>
+        <div class="station-desc">Converts research findings into detailed implementation tasks that cite specific code evidence and line numbers.</div>
+        <div class="station-item">Managed Implementation &amp; QA</div>
+        <div class="station-desc">The Controller orchestrates coding subagents to execute tasks, verify results, and commit production-ready code.</div>
+      </div>
+    </div>
+    <div style="text-align:center; margin-top:10px; font-size:0.8rem; color:var(--blue-mid); font-style:italic;">
+      From raw vision to deployed source code through structured, traceable AI pipelines.
+    </div>
+    <div class="brand">ORBIT V3</div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════ -->
+  <!-- SLIDE 2 · Engineering Requires Order, Not Chaos     -->
+  <!-- ════════════════════════════════════════════════════ -->
+  <div class="slide" id="s2">
+    <div class="h1" style="font-size:1.9rem;">Engineering Requires Order, Not Chaos</div>
+    <div style="font-size:0.78rem; color:var(--blue-mid); margin-top:3px; margin-bottom:8px;">
+      To contrast the failures of unstructured AI development ('Vibe Coding') with the disciplined, stage-gated success of the <strong>ORBIT agentic</strong> framework.
+    </div>
+    <div class="box-navy" style="font-size:0.76rem; padding:7px 12px; margin-bottom:10px; font-weight:400; line-height:1.5;">
+      <strong>Context Summary:</strong> Agentic Software Engineering replaces unstructured AI prompting with a pipeline of specialized agents. By enforcing a 'Golden Rule' where no agent skips ahead, the ORBIT framework ensures every line of code is traceable to a specific vision and verified technical plan.
+    </div>
+    <div class="cols-2" style="gap:14px;">
+      <div class="chaos-side">
+        <div class="side-title badge-chaos">Vibe Coding (The Chaos)</div>
+        <div class="chaos-tag">Hallucinations</div>
+        <div style="font-size:0.75rem; color:var(--navy); margin-bottom:9px; padding-left:2px;">Jumping straight to implementation without constraints leads to incorrect or imaginary AI logic.</div>
+        <div class="chaos-tag">Scope Creep</div>
+        <div style="font-size:0.75rem; color:var(--navy); margin-bottom:9px; padding-left:2px;">Failing to define boundaries allows projects to expand uncontrollably without solving the core problem.</div>
+        <div class="chaos-tag">Lost Context</div>
+        <div style="font-size:0.75rem; color:var(--navy); padding-left:2px;">Disconnected prompts cause AI to lose track of original requirements and design rationale.</div>
+      </div>
+      <div class="order-side">
+        <div class="side-title badge-order">ORBIT Architecture (The Order)</div>
+        <div style="margin-top:6px;">
+          <span class="stair-item" style="margin-left:0;">EXECUTION</span>
+          <span class="stair-desc">Implementing the verified plan.</span>
+          <span class="stair-item" style="margin-left:20px;">PLANNING</span>
+          <span class="stair-desc">Mapping the codebase first to ensure every task is backed by verified findings.</span>
+          <span class="stair-item" style="margin-left:40px;">SPECIFICATION</span>
+          <span class="stair-desc">Defining the technical architecture before choosing any technology.</span>
+          <span class="stair-item" style="margin-left:60px;">VISION</span>
+          <span class="stair-desc">Defining the 'Why' before choosing any technology or framework.</span>
+        </div>
+      </div>
+    </div>
+    <div class="golden-rule">
+      The Golden Rule: No agent skips ahead. Every stage requires the previous stage's artifact.
+    </div>
+    <div class="brand">ORBIT V3</div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════ -->
+  <!-- SLIDE 3 (NEW) · The Artifact Chain                  -->
+  <!-- ════════════════════════════════════════════════════ -->
+  <div class="slide" id="s3">
+    <div class="h2" style="margin-bottom:2px;">Das Herzstück von ORBIT: Die Artefakt-Kette</div>
+    <div style="font-size:0.84rem; color:var(--terra); font-weight:700; font-style:italic; margin-bottom:9px;">
+      ORBIT ist keine Sammlung von Befehlen — ORBIT ist eine Kette von Dokumenten.
+    </div>
+    <div class="divider"></div>
+
+    <div class="cols-2 mt12">
+      <div>
+        <div class="h3">Jeder Skill ist eine Transformation</div>
+        <div class="p mt8" style="line-height:1.55;">
+          Jeder Skill <strong>liest</strong> das Artefakt der vorherigen Phase und <strong>erzeugt</strong> das Artefakt für die nächste. Die Informationsdichte steigt mit jedem Schritt: von abstrakter Vision zu konkretem, ausführbarem Quellcode.
+        </div>
+        <div class="box-terra mt12" style="font-size:0.8rem;">
+          <strong>Alle Artefakte leben in:</strong> <code class="mono">thoughts/shared/</code><br>
+          Jedes Artefakt referenziert seinen Vorgänger — ein lückenloses Audit-Log von der User Story bis zum Git-Commit.
+        </div>
+      </div>
+      <div>
+        <div class="h3">Die Ausnahmeregel</div>
+        <div class="p mt8" style="line-height:1.55;">
+          Die <span class="terra">/mission-architect</span> und <span class="terra">/feature-architect</span> Skills lesen kein Artefakt — sie <strong>starten die Kette</strong> aus einem Gespräch mit dem Nutzer.
+        </div>
+        <div class="box mt12" style="font-size:0.8rem;">
+          Alle anderen Skills folgen der Regel: <strong>Ein Eingabe-Artefakt rein, ein Ausgabe-Artefakt raus.</strong> Kein Skill überspringt einen Schritt. Das Ende der Kette ist kein Dokument — es ist <span class="terra"><strong>ausführbarer Code</strong></span>.
+        </div>
+      </div>
+    </div>
+
+    <div style="background:rgba(27,39,69,0.05); border:1.5px solid var(--border); padding:14px; margin-top:14px;">
+      <div style="font-size:0.66rem; font-weight:800; letter-spacing:2px; text-transform:uppercase; color:var(--blue-mid); text-align:center; margin-bottom:11px;">Die vollständige Artefakt-Kette</div>
+      <div class="chain-wrap" style="gap:0;">
+        <div class="chain-item">
+          <div class="chain-node">missions/</div>
+          <div class="chain-sub">Das Warum</div>
+        </div>
+        <div class="chain-arr">→</div>
+        <div class="chain-item">
+          <div class="chain-node">specs/</div>
+          <div class="chain-sub">Das Was</div>
+        </div>
+        <div class="chain-arr">→</div>
+        <div class="chain-item">
+          <div class="chain-node">epics/</div>
+          <div class="chain-sub">Die Workflows</div>
+        </div>
+        <div class="chain-arr">→</div>
+        <div class="chain-item">
+          <div class="chain-node">research/</div>
+          <div class="chain-sub">Die Fakten</div>
+        </div>
+        <div class="chain-arr">→</div>
+        <div class="chain-item">
+          <div class="chain-node">plans/</div>
+          <div class="chain-sub">Die Aufgaben</div>
+        </div>
+        <div class="chain-arr">→</div>
+        <div class="chain-item">
+          <div class="chain-node src">Source Code</div>
+          <div class="chain-sub">Git-Commits</div>
+        </div>
+      </div>
+      <div style="text-align:center; font-size:0.68rem; color:var(--blue-mid); margin-top:7px; font-style:italic;">
+        Von der User Story bis zum finalen Git-Commit — jede Zeile Code ist bis zur ursprünglichen Vision rückverfolgbar.
+      </div>
+    </div>
+    <div class="brand">ORBIT V3</div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════ -->
+  <!-- SLIDE 4 · Entry Points                              -->
+  <!-- ════════════════════════════════════════════════════ -->
+  <div class="slide" id="s4">
+    <div class="h2" style="margin-bottom:5px;">Die Wahl des richtigen Startpunkts entscheidet über den Projekterfolg</div>
+    <div class="divider"></div>
+    <div style="margin-top:24px;">
+      <div class="entry-row">
+        <div style="font-size:0.8rem; color:var(--blue-mid); font-weight:700; min-width:44px;">Start</div>
+        <div class="arr">→</div>
+        <div class="entry-box">Neues Projekt<small>Komplett neue Codebasis</small></div>
+        <div class="arr">→</div>
+        <div class="cmd-box">/mission-architect</div>
+        <div class="arr">→</div>
+        <div class="result-box">Greenfield Pipeline</div>
+      </div>
+      <div class="entry-row">
+        <div style="font-size:0.8rem; color:var(--blue-mid); font-weight:700; min-width:44px;">Start</div>
+        <div class="arr">→</div>
+        <div class="entry-box">Neues Feature<small>Erweiterung eines bestehenden Systems</small></div>
+        <div class="arr">→</div>
+        <div class="cmd-box">/feature-architect</div>
+        <div class="arr">→</div>
+        <div class="result-box">Brownfield Pipeline</div>
+      </div>
+      <div class="entry-row">
+        <div style="font-size:0.8rem; color:var(--blue-mid); font-weight:700; min-width:44px;">Start</div>
+        <div class="arr">→</div>
+        <div class="entry-box">Kleine Änderung / Bug / QA<small>Lokalisierte Anpassung</small></div>
+        <div class="arr">→</div>
+        <div class="cmd-box">/researcher</div>
+      </div>
+    </div>
+    <div class="box-light mt20" style="font-size:0.8rem;">
+      <strong>Hinweis zur Kette:</strong> Jeder Einstiegspunkt bestimmt, an welchem Glied der Kette die Arbeit beginnt.
+      Die Architekten erzeugen das erste Artefakt ohne Eingabe — alle nachgelagerten Skills lesen dieses Artefakt als Startpunkt ihrer Transformation.
+    </div>
+    <div class="brand">ORBIT V3</div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════ -->
+  <!-- SLIDE 5 · Phase 1 — Architects                      -->
+  <!-- ════════════════════════════════════════════════════ -->
+  <div class="slide" id="s5">
+    <div class="h2" style="margin-bottom:2px;">Phase 1: Die Architekten definieren das Warum und Was</div>
+    <div style="font-size:0.8rem; font-style:italic; color:var(--terra); font-weight:700; margin-bottom:9px;">
+      Die einzige Phase ohne Eingabe-Artefakt — sie starten die Kette.
+    </div>
+    <div class="divider"></div>
+
+    <div class="cols-2 mt14">
+      <div class="phase-card-terra">
+        <div class="phase-label">/mission-architect</div>
+        <div class="io-row mt8"><span class="io-in">Reads</span><span class="io-val" style="font-style:italic; color:var(--blue-mid);">[Gespräch mit Nutzer]</span></div>
+        <div class="io-row"><span class="io-out">Produces</span><span class="io-val">thoughts/shared/missions/</span></div>
+        <div class="divider-thin"></div>
+        <div class="h3">Fokus:</div>
+        <div class="p">Wert, Problem, Grenzen.</div>
+        <div class="h3 mt8">Regel:</div>
+        <div class="p">Strenges Verbot von Technologienamen (kein React oder PostgreSQL).</div>
+      </div>
+      <div class="phase-card">
+        <div class="phase-label-blue">/feature-architect</div>
+        <div class="io-row mt8"><span class="io-in">Reads</span><span class="io-val" style="font-style:italic; color:var(--blue-mid);">[Gespräch + Codebasis]</span></div>
+        <div class="io-row"><span class="io-out">Produces</span><span class="io-val">thoughts/shared/features/</span></div>
+        <div class="divider-thin"></div>
+        <div class="h3">Fokus:</div>
+        <div class="p">Systemkontext und Integration.</div>
+        <div class="h3 mt8">Regel:</div>
+        <div class="p">Übernimmt bestehende Architekturbeschränkungen aus der Codebasis ohne Diskussion.</div>
+      </div>
+    </div>
+
+    <div class="chain-wrap mt20" style="gap:0;">
+      <div class="chain-item">
+        <div class="chain-node src" style="font-size:0.7rem; padding:5px 9px;">Gespräch</div>
+        <div class="chain-sub">Kein Artefakt-Input</div>
+      </div>
+      <div class="chain-arr">→</div>
+      <div class="chain-item">
+        <div class="chain-node src">missions/ / features/</div>
+        <div class="chain-sub">Erstes Artefakt der Kette</div>
+      </div>
+      <div class="chain-arr" style="color:var(--navy);">→</div>
+      <div class="chain-item">
+        <div class="chain-node">specs/</div>
+        <div class="chain-sub">Nächste Phase</div>
+      </div>
+      <div style="color:var(--blue-mid); font-size:1.3rem; font-weight:900; padding-top:5px; padding-left:4px;">→ ···</div>
+    </div>
+    <div class="brand">ORBIT V3</div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════ -->
+  <!-- SLIDE 6 · Phase 2 — Specifier                       -->
+  <!-- ════════════════════════════════════════════════════ -->
+  <div class="slide" id="s6">
+    <div class="h2" style="margin-bottom:4px;">Phase 2: Der Specifier übersetzt Visionen in technologieneutrale Spezifikationen</div>
+    <div class="divider"></div>
+
+    <div class="flex-row mt12" style="gap:14px; font-size:0.85rem;">
+      <span class="io-in">Reads</span>
+      <span class="io-val">thoughts/shared/missions/ <em style="color:var(--blue-mid);">(Mission-Artefakt)</em></span>
+      <span style="color:var(--terra); font-size:1.2rem; font-weight:900;">→</span>
+      <span class="io-out">Produces</span>
+      <span class="io-val">thoughts/shared/specs/ <em style="color:var(--blue-mid);">(Spec-Artefakt)</em></span>
+    </div>
+
+    <div class="cols-3 mt16">
+      <div class="phase-card-terra">
+        <div class="phase-label">Graph TD</div>
+        <div class="h3">Systemarchitektur und Grenzen</div>
+        <div class="p mt8">Zeigt Systemkomponenten, ihre Beziehungen und Systemgrenzen in einem gerichteten Graphen.</div>
+      </div>
+      <div class="phase-card-terra">
+        <div class="phase-label">SequenceDiagram</div>
+        <div class="h3">Datenflüsse pro Kernfunktion</div>
+        <div class="p mt8">Beschreibt, wie Daten zwischen Akteuren und Systemkomponenten für jede kritische Funktion fließen.</div>
+      </div>
+      <div class="phase-card-terra">
+        <div class="phase-label">erDiagram</div>
+        <div class="h3">Abstraktes Datenmodell</div>
+        <div class="p mt8">Definiert Entitäten und Beziehungen, technologieneutral — ohne Festlegung auf eine Datenbankimplementierung.</div>
+      </div>
+    </div>
+
+    <div class="box-light mt16" style="font-size:0.78rem;">
+      <strong>Schlüsselprinzip:</strong> Entscheidungen über spezifische Stacks werden bewusst auf spätere Phasen verschoben. Das Spec-Artefakt beschreibt <em>was</em> das System tun soll, nicht <em>wie</em>. Generiert <code class="mono">thoughts/shared/specs/[Project-Name].md</code>.
+    </div>
+    <div class="brand">ORBIT V3</div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════ -->
+  <!-- SLIDE 7 · Phase 3 — Epic Planner                    -->
+  <!-- ════════════════════════════════════════════════════ -->
+  <div class="slide" id="s7">
+    <div class="h2" style="margin-bottom:4px;">Phase 3: Der Epic Planner zerlegt Spezifikationen in Nutzer-Workflows</div>
+    <div class="divider"></div>
+
+    <div class="flex-row mt12" style="gap:14px; font-size:0.85rem;">
+      <span class="io-in">Reads</span>
+      <span class="io-val">thoughts/shared/specs/ <em style="color:var(--blue-mid);">(Spec-Artefakt)</em></span>
+      <span style="color:var(--terra); font-size:1.2rem; font-weight:900;">→</span>
+      <span class="io-out">Produces</span>
+      <span class="io-val">thoughts/shared/epics/ <em style="color:var(--blue-mid);">(Epics-Artefakte)</em></span>
+    </div>
+
+    <div class="cols-2 mt16">
+      <div>
+        <div class="box" style="text-align:center; font-size:1.3rem; font-weight:900; color:var(--navy); margin-bottom:8px;">Spec</div>
+        <div style="text-align:center; color:var(--terra); font-size:1.8rem; font-weight:900; margin-bottom:8px;">↓</div>
+        <div style="display:flex; flex-direction:column; gap:6px;">
+          <div class="box-navy" style="text-align:center; font-size:0.88rem;">Epic 1</div>
+          <div class="box-navy" style="text-align:center; font-size:0.88rem; opacity:0.82;">Epic 2</div>
+          <div class="box-navy" style="text-align:center; font-size:0.88rem; opacity:0.65;">Epic 3</div>
+        </div>
+      </div>
+      <div>
+        <div class="h3">Jedes Epic enthält:</div>
+        <div class="box mt8" style="margin-bottom:7px;">
+          <strong>User Stories</strong>
+          <div class="p">Nutzerorientierte Fähigkeiten (z.B. "User Authentication System", nicht "Database Schema Creation").</div>
+        </div>
+        <div class="box" style="margin-bottom:7px;">
+          <strong>Abhängigkeiten</strong>
+          <div class="p">Identifizierte Abhängigkeiten zwischen Epics, generiert als Mermaid-Diagramme.</div>
+        </div>
+        <div class="box">
+          <strong>Forschungsfragen</strong>
+          <div class="p">Zwingende Fragen für den Researcher — unbeantwortet bleiben sie eine offene Gefahr.</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="position:absolute; top:80px; right:56px; border:2.5px solid var(--terra); padding:7px 12px; background:white;">
+      <div style="font-weight:700; font-size:0.82rem; color:var(--navy);">Stories, keine Tasks.</div>
+      <div style="font-size:0.72rem; color:var(--blue-mid);">(z.B. User Authentication System,<br>nicht Database Schema Creation).</div>
+    </div>
+    <div class="brand">ORBIT V3</div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════ -->
+  <!-- SLIDE 8 · Phase 4 — Researcher                      -->
+  <!-- ════════════════════════════════════════════════════ -->
+  <div class="slide" id="s8">
+    <div class="h2" style="margin-bottom:4px;">Phase 4: Der Researcher bildet das faktenbasierte Fundament</div>
+    <div class="divider"></div>
+
+    <div class="flex-row mt12" style="gap:14px; font-size:0.85rem;">
+      <span class="io-in">Reads</span>
+      <span class="io-val">thoughts/shared/epics/ <em style="color:var(--blue-mid);">(Epics-Artefakt)</em></span>
+      <span style="color:var(--terra); font-size:1.2rem; font-weight:900;">→</span>
+      <span class="io-out">Produces</span>
+      <span class="io-val">thoughts/shared/research/ <em style="color:var(--blue-mid);">(Research-Artefakt)</em></span>
+    </div>
+
+    <div class="cols-2 mt16" style="gap:20px; position:relative;">
+      <div>
+        <div class="box-terra" style="margin-bottom:10px;">
+          <strong>Die oberste Direktive:</strong><br>
+          Keine Meinungen, keine Annahmen.<br>Nur <strong>verifizierte Beweise</strong>.
+        </div>
+        <div class="box" style="font-size:0.82rem;">
+          <div style="margin-bottom:6px;">▪ Kartografiert die Codebasis-Topologie.</div>
+          <div style="margin-bottom:6px;">▪ Verfolgt Ausführungspfade durch komplexe Funktionen.</div>
+          <div style="margin-bottom:6px;">▪ Verifizierte Daten speisen den Planner.</div>
+          <div>▪ Unbestätigtes bleibt eine Offene Frage.</div>
+        </div>
+      </div>
+      <div style="display:flex; align-items:center; justify-content:center;">
+        <div style="position:relative; display:inline-block;">
+          <div class="box-navy" style="padding:28px 38px; font-size:1.15rem; font-family:monospace;">/researcher</div>
+          <div class="stamp-outer">
+            <div class="stamp-text">BEWEIS<br>ERFORDERLICH</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:16px; font-size:0.78rem; color:var(--blue-mid); font-style:italic; text-align:center;">
+      /researcher &nbsp;→&nbsp; thoughts/shared/research/
+    </div>
+    <div class="brand">ORBIT V3</div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════ -->
+  <!-- SLIDE 9 · Phase 5 — Planner                         -->
+  <!-- ════════════════════════════════════════════════════ -->
+  <div class="slide" id="s9">
+    <div class="h2" style="margin-bottom:4px;">Phase 5: Der Planner erstellt den evidenzbasierten Bauplan</div>
+    <div class="divider"></div>
+
+    <div class="flex-row mt12" style="gap:14px; font-size:0.85rem;">
+      <span class="io-in">Reads</span>
+      <span class="io-val">thoughts/shared/research/ <em style="color:var(--blue-mid);">(Research-Artefakt)</em></span>
+      <span style="color:var(--terra); font-size:1.2rem; font-weight:900;">→</span>
+      <span class="io-out">Produces</span>
+      <span class="io-val">thoughts/shared/plans/ <em style="color:var(--blue-mid);">(Plan-Artefakt)</em></span>
+    </div>
+
+    <div class="cols-2 mt16">
+      <div style="display:flex; align-items:center; justify-content:center;">
+        <div style="text-align:center;">
+          <div style="font-size:3rem; color:var(--blue-mid); margin-bottom:8px;">📐</div>
+          <div class="arr" style="font-size:2rem;">→</div>
+          <div class="box-navy mt8" style="font-size:1rem; font-family:monospace; padding:10px 20px;">STATE.md</div>
+        </div>
+      </div>
+      <div>
+        <div class="box mt8" style="margin-bottom:8px;">
+          <strong class="terra">PLAN-XXX Tasks:</strong>
+          <div class="p">Konkrete Umsetzungsschritte mit Pseudocode und Interfaces. Jeder Task ist eine atomare Einheit.</div>
+        </div>
+        <div class="box" style="margin-bottom:8px;">
+          <strong class="terra">Beweispflicht (File:Line-Line):</strong>
+          <div class="p">Jede Dateiänderung muss mit Pfad:Zeile-Zeile belegt werden. Keine unbelegte Annahme überlebt.</div>
+        </div>
+        <div class="box">
+          <strong class="terra">Resume Checkpoint:</strong>
+          <div class="p">Speichert den exakten Fortschritt. Bei Abbruch weiß das System genau, wo es weiterarbeiten muss.</div>
+        </div>
+      </div>
+    </div>
+    <div class="brand">ORBIT V3</div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════ -->
+  <!-- SLIDE 10 · Phase 6 — /implement                     -->
+  <!-- ════════════════════════════════════════════════════ -->
+  <div class="slide" id="s10">
+    <div style="display:flex; align-items:baseline; gap:16px; margin-bottom:3px;">
+      <div class="h2">Phase 6: <span class="mono">/implement</span> transformiert den Plan in ausführbaren Code</div>
+      <div class="box-terra" style="font-size:0.75rem; padding:3px 10px; white-space:nowrap;">Kommando: /implement</div>
+    </div>
+    <div class="divider"></div>
+
+    <div class="flex-row mt10" style="gap:12px; font-size:0.84rem;">
+      <span class="io-in">Reads</span>
+      <span class="io-val">thoughts/shared/plans/ <em style="color:var(--blue-mid);">(Plan-Artefakt)</em></span>
+      <span style="color:var(--terra); font-size:1.3rem; font-weight:900;">→</span>
+      <span class="io-out">Produces</span>
+      <span class="io-val" style="font-weight:700; color:var(--terra);">Produktionsbereiter, commitierter Quellcode ← Das Ende der Kette</span>
+    </div>
+
+    <div class="cycle-grid mt14">
+      <div class="cycle-step">
+        <div class="step-num">1</div>
+        <div class="step-name">Extract</div>
+        <div class="step-sub">Task aus dem Plan laden</div>
+      </div>
+      <div class="cycle-step accent">
+        <div class="step-num">2</div>
+        <div class="step-name">Delegate</div>
+        <div class="step-sub">An Coder-Subagent (Controller schreibt keinen Code!)</div>
+      </div>
+      <div class="cycle-step accent">
+        <div class="step-num">3</div>
+        <div class="step-name">Parse</div>
+        <div class="step-sub">Status auswerten (SUCCESS / BLOCKED)</div>
+      </div>
+      <div class="cycle-step">
+        <div class="step-num">4</div>
+        <div class="step-name">Verify</div>
+        <div class="step-sub">Done When-Kriterien prüfen</div>
+      </div>
+      <div class="cycle-step">
+        <div class="step-num">5</div>
+        <div class="step-name">Update</div>
+        <div class="step-sub">STATE.md aktualisieren</div>
+      </div>
+      <div class="cycle-step accent">
+        <div class="step-num">6</div>
+        <div class="step-name">Commit</div>
+        <div class="step-sub">Sauber in Git sichern</div>
+      </div>
+      <div class="cycle-step">
+        <div class="step-num">7</div>
+        <div class="step-name">Report</div>
+        <div class="step-sub">Nutzerfreigabe einholen</div>
+      </div>
+      <div class="cycle-step end">
+        <div class="step-num-end">Ende</div>
+        <div class="step-name-end">Source Code</div>
+        <div class="step-sub-end">Kette vollständig</div>
+      </div>
+    </div>
+
+    <div class="box-terra mt14" style="font-size:0.8rem; text-align:center;">
+      Das letzte Artefakt der Kette ist kein Dokument — es ist <strong>ausführbarer Code im Git-Repository</strong>, rückverfolgbar bis zur ursprünglichen Vision.
+    </div>
+    <div class="brand">ORBIT V3</div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════ -->
+  <!-- SLIDE 11 · Parallel QA Workflow                     -->
+  <!-- ════════════════════════════════════════════════════ -->
+  <div class="slide" id="s11">
+    <div style="position:absolute; top:36px; right:56px;" >
+      <div class="box-terra" style="font-size:0.75rem; padding:5px 11px;">Trigger: /researcher<br>mit <strong>QA-Keywords</strong></div>
+    </div>
+    <div class="h2" style="margin-bottom:4px;">Der parallele QA-Workflow läuft ohne Entwicklungsblockade</div>
+    <div class="divider"></div>
+    <table class="qa-table">
+      <thead>
+        <tr>
+          <th>Domäne / Skill</th>
+          <th>Tools &amp; Fokus</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code class="mono terra">Python (python-qa)</code></td>
+          <td><code class="mono">ruff</code> (Style), <code class="mono">pyright</code> (Types), <code class="mono">bandit</code> (Security)</td>
+        </tr>
+        <tr>
+          <td><code class="mono terra">TypeScript (typescript-qa)</code></td>
+          <td><code class="mono">tsc</code> (Compilation), <code class="mono">eslint</code> (Quality), <code class="mono">knip</code> (Dead Code)</td>
+        </tr>
+        <tr>
+          <td><code class="mono terra">Logik (logic-bugs-qa)</code></td>
+          <td>Ausführungsverfolgung für Control Flow &amp; Edge Cases (keine einfachen Linter)</td>
+        </tr>
+        <tr>
+          <td><code class="mono terra">Design (clean-code)</code></td>
+          <td>Zyklomatische Komplexität (<code class="mono">lizard</code>), Duplizierung (<code class="mono">jscpd</code>)</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="brand">ORBIT V3</div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════ -->
+  <!-- SLIDE 12 · Sub-Agent Fleet                          -->
+  <!-- ════════════════════════════════════════════════════ -->
+  <div class="slide" id="s12">
+    <div class="h2" style="margin-bottom:4px;">Die unsichtbare Flotte: Programmatische Sub-Agenten</div>
+    <div class="divider"></div>
+    <div style="text-align:center; margin:10px 0 14px;">
+      <div class="box-navy" style="display:inline-block; padding:7px 22px; font-size:0.88rem;">Orchestrator</div>
+    </div>
+    <div class="cols-3">
+      <div class="fleet-group">
+        <div class="fleet-title">Die Kartografen <small>(Codebase)</small></div>
+        <div class="fleet-item"><code>codebase-locator</code><br>Findet Dateien nach Zweck und Topologie.</div>
+        <div class="fleet-item" style="margin-top:7px;"><code>codebase-pattern-finder</code><br>Extrahiert dominante Implementierungsmuster.</div>
+        <div class="fleet-item" style="margin-top:7px;"><code>codebase-analyzer</code><br>Verfolgt Logik und Datenflüsse in spezifischen Dateien.</div>
+      </div>
+      <div class="fleet-group">
+        <div class="fleet-title">Die Archivare <small>(Historie)</small></div>
+        <div class="fleet-item"><code>thoughts-locator</code><br>Sucht historische Entscheidungsdokumente.</div>
+        <div class="fleet-item" style="margin-top:7px;"><code>thoughts-analyzer</code><br>Extrahiert reine Signale (Entscheidungen, Einschränkungen, Specs).</div>
+      </div>
+      <div class="fleet-group">
+        <div class="fleet-title">Die Pfadfinder <small>(Extern)</small></div>
+        <div class="fleet-item"><code>web-search-researcher</code><br>Recherchiert externe APIs, Bibliotheken und Best Practices.</div>
+      </div>
+    </div>
+    <div style="text-align:center; margin-top:14px; font-size:0.76rem; color:var(--blue-mid); font-style:italic;">
+      Diese Agenten kommunizieren nur mit dem Orchestrator, niemals direkt mit dem Nutzer.
+    </div>
+    <div class="brand">ORBIT V3</div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════ -->
+  <!-- SLIDE 13 · MCP Servers                              -->
+  <!-- ════════════════════════════════════════════════════ -->
+  <div class="slide" id="s13">
+    <div class="h2" style="margin-bottom:4px;">MCP Server: Erweiterte Logik und Web-Zugriff</div>
+    <div class="divider"></div>
+    <div class="cols-2 mt16" style="gap:18px;">
+      <div class="mcp-card">
+        <div class="mcp-name">crawl4ai</div>
+        <div class="mcp-desc">Extrahiert Web-Inhalte (inklusive BM25/LLM-Filterung für Token-Reduktion). Unterstützt <code>crawl</code>, <code>markdown</code> und <code>screenshot</code> Modi.</div>
+      </div>
+      <div class="mcp-card">
+        <div class="mcp-name">searxng</div>
+        <div class="mcp-desc">Self-hosted Web-Suche für externe Dokumentationen und Bibliotheksreferenzen. Keine Abhängigkeit von kommerziellen Suchdiensten.</div>
+      </div>
+      <div class="mcp-card">
+        <div class="mcp-name">context7</div>
+        <div class="mcp-desc">Direkter Abruf von tagesaktuellen API-Referenzen und Bibliotheks-Dokumentationen. Kein veraltetes Trainingswissen.</div>
+      </div>
+      <div class="mcp-card">
+        <div class="mcp-name">sequential-thinking</div>
+        <div class="mcp-desc">Ein Multi-Step-Reasoning-Workspace für komplexe Architekturentscheidungen und Abhängigkeitsanalysen.</div>
+      </div>
+    </div>
+    <div class="brand">ORBIT V3</div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════ -->
+  <!-- SLIDE 14 · Quick-Start Reference                    -->
+  <!-- ════════════════════════════════════════════════════ -->
+  <div class="slide" id="s14">
+    <div class="h2" style="text-align:center; margin-bottom:18px;">Quick-Start Command Reference</div>
+    <div class="terminal">
+      <div class="terminal-bar">
+        <div class="dot dot-r"></div>
+        <div class="dot dot-y"></div>
+        <div class="dot dot-g"></div>
+      </div>
+      <div class="term-row">
+        <span class="term-prompt">&gt;</span>
+        <span class="term-cmd">/mission-architect</span>
+        <span class="term-desc">Startet ein komplett neues Projekt (Greenfield)</span>
+      </div>
+      <div class="term-row">
+        <span class="term-prompt">&gt;</span>
+        <span class="term-cmd">/feature-architect</span>
+        <span class="term-desc">Integriert ein neues Feature in bestehenden Code (Brownfield)</span>
+      </div>
+      <div class="term-row">
+        <span class="term-prompt">&gt;</span>
+        <span class="term-cmd">/researcher QA</span>
+        <span class="term-desc">Startet den parallelen Code-Quality-Review</span>
+      </div>
+      <div class="term-row">
+        <span class="term-prompt">&gt;</span>
+        <span class="term-cmd">/implement</span>
+        <span class="term-desc">Führt den Plan aus oder setzt nach Abbruch fort</span>
+      </div>
+      <div class="term-row">
+        <span class="term-prompt">&gt;</span>
+        <span class="term-cmd">STATUS / RETRY</span>
+        <span class="term-desc">Laufzeitkontrolle während der Implementierung</span>
+      </div>
+    </div>
+    <div class="brand">ORBIT V3</div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════ -->
+  <!-- SLIDE 15 · Closing                                  -->
+  <!-- ════════════════════════════════════════════════════ -->
+  <div class="slide" id="s15">
+    <div class="h2" style="text-align:center; margin-bottom:10px;">KI-Erfolg durch Methodik, nicht durch Magie</div>
+
+    <div style="font-size:0.75rem; color:var(--blue-mid); text-align:center; margin-bottom:8px; font-family:monospace;">
+      missions/ → specs/ → epics/ → research/ → plans/ → <strong style="color:var(--terra);">Source Code</strong>
+    </div>
+
+    <div class="big-quote">
+      Erfolgreiche KI-gestützte Entwicklung basiert nicht auf besseren Coding-Modellen, sondern auf rigoroser Planung, erzwungenen Systemgrenzen und verifizierbarer Orchestrierung.
+    </div>
+
+    <div style="display:flex; gap:20px; margin-top:16px; align-items:stretch;">
+      <div class="pillar">
+        <div class="pillar-key">Fakten</div>
+        <div class="pillar-val">ersetzen Annahmen.</div>
+      </div>
+      <div style="width:1px; background:var(--border);"></div>
+      <div class="pillar">
+        <div class="pillar-key">Spezifikationen</div>
+        <div class="pillar-val">gehen der Ausführung voraus.</div>
+      </div>
+      <div style="width:1px; background:var(--border);"></div>
+      <div class="pillar">
+        <div class="pillar-key">Transparenz</div>
+        <div class="pillar-val">bei jedem Git-Commit.</div>
+      </div>
+    </div>
+
+    <div class="golden-rule mt16" style="font-size:0.88rem;">
+      Von der Vision bis zum ausführbaren Code — jeder Schritt hinterlässt ein Artefakt. Kein Schritt überspringt den vorherigen.
+    </div>
+    <div class="brand">ORBIT V3</div>
+  </div>
+
+</div><!-- /.presentation -->
+
+<div class="nav-bar">
+  <button class="nav-btn" onclick="go(-1)">◀ Zurück</button>
+  <button class="nav-btn" onclick="go(1)">Weiter ▶</button>
+</div>
+<div class="counter" id="ctr">1 / 15</div>
+
+<script>
+  var cur = 1, tot = 15;
+  function go(d) {
+    document.getElementById('s' + cur).classList.remove('active');
+    cur = Math.max(1, Math.min(tot, cur + d));
+    document.getElementById('s' + cur).classList.add('active');
+    document.getElementById('ctr').textContent = cur + ' / ' + tot;
+  }
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') go(1);
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')                    go(-1);
+  });
+</script>
+</body>
+</html>
