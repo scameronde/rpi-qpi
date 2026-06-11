@@ -677,9 +677,61 @@
   </div>
 
   <!-- ════════════════════════════════════════════════════ -->
-  <!-- SLIDE 11 · Parallel QA Workflow                     -->
+  <!-- SLIDE 11 · DOX Framework                            -->
   <!-- ════════════════════════════════════════════════════ -->
   <div class="slide" id="s11">
+    <div class="h2" style="margin-bottom:2px;">Das DOX-Framework: Jedes Verzeichnis hat einen Vertrag</div>
+    <div style="font-size:0.82rem; color:var(--terra); font-weight:700; font-style:italic; margin-bottom:9px;">
+      Kein Installations-Paket. Keine Abhängigkeiten. Nur AGENTS.md-Dateien — direkt dort, wo die Arbeit stattfindet.
+    </div>
+    <div class="divider"></div>
+
+    <div class="cols-2 mt12">
+      <div>
+        <div class="h3">Was sind AGENTS.md-Dateien?</div>
+        <div class="p mt8" style="line-height:1.55;">
+          Hierarchische Governance-Verträge für Verzeichnis-Teilbäume. Die <strong>Root-AGENTS.md</strong> setzt projektweite Regeln; jede <strong>Child-AGENTS.md</strong> konkretisiert sie für ihre Domäne. Je näher eine AGENTS.md an der bearbeiteten Datei liegt, desto stärker gilt sie.
+        </div>
+        <div class="box-terra mt12" style="font-size:0.8rem; line-height:1.5;">
+          <strong>Nähe-Regel:</strong> Die nächste AGENTS.md zur Zieldatei ist der lokale Vertrag. Eltern-AGENTS.md liefern übergeordnete Regeln. Keine AGENTS.md darf CLAUDE.md überschreiben.
+        </div>
+      </div>
+      <div>
+        <div class="h3">Das Protokoll: Zwei Pflichten</div>
+        <div class="box-terra mt8" style="margin-bottom:8px;">
+          <strong>Vor jeder Dateiänderung — Lesen:</strong>
+          <div class="p mt8">Vom Repository-Root bis zur Zieldatei jeden Verzeichnisebene prüfen und vorhandene AGENTS.md einlesen.</div>
+        </div>
+        <div class="box" style="margin-bottom:0;">
+          <strong>Nach einer bedeutsamen Änderung — Schreiben:</strong>
+          <div class="p mt8">Wenn Zweck, Struktur, Ownership oder Konventionen eines Verzeichnisses betroffen sind, die nächste AGENTS.md aktualisieren.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cols-2 mt14" style="gap:14px;">
+      <div class="phase-card-terra">
+        <div class="phase-label">/dox-init</div>
+        <div class="h3" style="margin-bottom:4px;">Governance-Baum bootstrappen</div>
+        <div class="p">Einmalig bei Projektstart. Erzeugt Root-AGENTS.md und eine Child-AGENTS.md für jedes bedeutungsvolle Verzeichnis. Idempotent — überschreibt nie bestehende Dateien.</div>
+      </div>
+      <div class="phase-card">
+        <div class="phase-label-blue">/dox-update</div>
+        <div class="h3" style="margin-bottom:4px;">Veraltete Verträge reparieren</div>
+        <div class="p">Nach größeren Codeänderungen. Prüft jede AGENTS.md gegen den aktuellen Verzeichnisinhalt — veraltete Dateien werden regeneriert, aktuelle bleiben unberührt.</div>
+      </div>
+    </div>
+
+    <div class="box-light mt12" style="font-size:0.78rem; text-align:center;">
+      DOX ist kein Pipeline-Schritt — es ist die <strong>Governance-Schicht, die alle Pipeline-Schritte umhüllt</strong>. Aktiv bei jedem Datei-Edit, besonders während <code class="mono">/implement</code>.
+    </div>
+    <div class="brand">ORBIT V3</div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════ -->
+  <!-- SLIDE 12 · Parallel QA Workflow                     -->
+  <!-- ════════════════════════════════════════════════════ -->
+  <div class="slide" id="s12">
     <div style="position:absolute; top:36px; right:56px;" >
       <div class="box-terra" style="font-size:0.75rem; padding:5px 11px;">Trigger: /researcher<br>mit <strong>QA-Keywords</strong></div>
     </div>
@@ -717,7 +769,7 @@
   <!-- ════════════════════════════════════════════════════ -->
   <!-- SLIDE 12 · Sub-Agent Fleet                          -->
   <!-- ════════════════════════════════════════════════════ -->
-  <div class="slide" id="s12">
+  <div class="slide" id="s13">
     <div class="h2" style="margin-bottom:4px;">Die unsichtbare Flotte: Programmatische Sub-Agenten</div>
     <div class="divider"></div>
     <div style="text-align:center; margin:10px 0 14px;">
@@ -749,7 +801,7 @@
   <!-- ════════════════════════════════════════════════════ -->
   <!-- SLIDE 13 · MCP Servers                              -->
   <!-- ════════════════════════════════════════════════════ -->
-  <div class="slide" id="s13">
+  <div class="slide" id="s14">
     <div class="h2" style="margin-bottom:4px;">MCP Server: Erweiterte Logik und Web-Zugriff</div>
     <div class="divider"></div>
     <div class="cols-2 mt16" style="gap:18px;">
@@ -776,7 +828,7 @@
   <!-- ════════════════════════════════════════════════════ -->
   <!-- SLIDE 14 · Quick-Start Reference                    -->
   <!-- ════════════════════════════════════════════════════ -->
-  <div class="slide" id="s14">
+  <div class="slide" id="s15">
     <div class="h2" style="text-align:center; margin-bottom:18px;">Quick-Start Command Reference</div>
     <div class="terminal">
       <div class="terminal-bar">
@@ -809,6 +861,17 @@
         <span class="term-cmd">STATUS / RETRY</span>
         <span class="term-desc">Laufzeitkontrolle während der Implementierung</span>
       </div>
+      <div style="height:1px; background:rgba(255,255,255,0.1); margin:8px 0;"></div>
+      <div class="term-row">
+        <span class="term-prompt">&gt;</span>
+        <span class="term-cmd">/dox-init</span>
+        <span class="term-desc">Governance-Baum bootstrappen (einmalig bei Projektstart)</span>
+      </div>
+      <div class="term-row">
+        <span class="term-prompt">&gt;</span>
+        <span class="term-cmd">/dox-update</span>
+        <span class="term-desc">Veraltete AGENTS.md-Dateien nach Codeänderungen reparieren</span>
+      </div>
     </div>
     <div class="brand">ORBIT V3</div>
   </div>
@@ -816,7 +879,7 @@
   <!-- ════════════════════════════════════════════════════ -->
   <!-- SLIDE 15 · Closing                                  -->
   <!-- ════════════════════════════════════════════════════ -->
-  <div class="slide" id="s15">
+  <div class="slide" id="s16">
     <div class="h2" style="text-align:center; margin-bottom:10px;">KI-Erfolg durch Methodik, nicht durch Magie</div>
 
     <div style="font-size:0.75rem; color:var(--blue-mid); text-align:center; margin-bottom:8px; font-family:monospace;">
@@ -856,10 +919,10 @@
   <button class="nav-btn" onclick="go(-1)">◀ Zurück</button>
   <button class="nav-btn" onclick="go(1)">Weiter ▶</button>
 </div>
-<div class="counter" id="ctr">1 / 15</div>
+<div class="counter" id="ctr">1 / 16</div>
 
 <script>
-  var cur = 1, tot = 15;
+  var cur = 1, tot = 16;
   function go(d) {
     document.getElementById('s' + cur).classList.remove('active');
     cur = Math.max(1, Math.min(tot, cur + d));
