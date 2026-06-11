@@ -2,12 +2,12 @@
 
 ## Purpose
 
-Stores sequenced implementation plans produced by `/planner` and STATE files maintained by `/subagent-driven-development` during execution.
+Stores sequenced implementation plans produced by `/planner` and STATE files maintained by `/implement` during execution.
 
 ## Ownership
 
 - `/planner` creates plan files (write-once)
-- `/subagent-driven-development` creates and updates `*-STATE.md` files during execution
+- `/implement` creates and updates `*-STATE.md` files during execution
 
 ## Local Contracts
 
@@ -53,7 +53,7 @@ Status: pending|in_progress|completed|blocked
 
 - Do not manually edit plan files while SDD is mid-execution — STATE tracking will diverge
 - STATE files are the only files in this directory that change after creation
-- To resume an interrupted plan: tell `/subagent-driven-development` the plan path; it reads the STATE file to find the next task
+- To resume an interrupted plan: tell `/implement` the plan path; it reads the STATE file to find the next task
 
 ## Verification
 
