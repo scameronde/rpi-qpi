@@ -18,7 +18,7 @@ Framework maintainer. Changes here affect every workflow run.
 
 ## Work Guidance
 
-- Do not modify skill or agent files while `/subagent-driven-development` is mid-execution on a plan
+- Do not modify skill or agent files while `/implement` is mid-execution on a plan
 - New skills: create `skills/<name>/SKILL.md`, update `skills/AGENTS.md` Child DOX Index, update `CLAUDE.md` tables
 - New agents: add YAML frontmatter (`name`, `description`, `tools`) to the agent file, update `agents/AGENTS.md`
 - New MCP servers: add to `mcp/`, register in `settings.json`, build before use
