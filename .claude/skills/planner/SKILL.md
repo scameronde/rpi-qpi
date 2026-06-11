@@ -1,6 +1,6 @@
 ---
 name: planner
-description: Write a sequenced, evidence-based implementation plan from a research report. Spawns codebase agents to verify evidence. Outputs plan + state files to thoughts/shared/plans/. Use after /researcher and before /subagent-driven-development.
+description: Write a sequenced, evidence-based implementation plan from a research report. Spawns codebase agents to verify evidence. Outputs plan + state files to thoughts/shared/plans/. Use after /researcher and before /implement.
 ---
 
 # Implementation Architect: Technical Planning & Specification
@@ -409,7 +409,7 @@ Write TWO files:
 1. **Plan**: `thoughts/shared/plans/YYYY-MM-DD-[Ticket].md` (The blueprint)
 2. **State**: `thoughts/shared/plans/YYYY-MM-DD-[Ticket]-STATE.md` (Progress tracker)
 
-**Target Audience**: Claude running the /subagent-driven-development skill.
+**Target Audience**: Claude running the /implement skill.
 
 ## Response Format (Structured Output)
 
