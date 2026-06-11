@@ -6,7 +6,7 @@ Read-only specialist agents spawned by skills via the `Agent` tool. Each agent i
 
 ## Ownership
 
-Agents are consumed by skills. The `researcher` skill uses all five codebase/web agents. The `planner` skill may call codebase agents to verify evidence. `subagent-driven-development` uses the implementer and reviewer prompts (which live in `skills/subagent-driven-development/`, not here).
+Agents are consumed by skills. The `researcher` skill uses all five codebase/web agents. The `planner` skill may call codebase agents to verify evidence. `implement` uses the implementer and reviewer prompts (which live in `skills/implement/`, not here).
 
 ## Local Contracts
 
