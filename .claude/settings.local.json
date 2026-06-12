@@ -23,7 +23,8 @@
       "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\('session-start:', d['hookSpecificOutput']['hookEventName']\\)\")",
       "Read(//home/eichens/.claude/skills/**)",
       "Read(//home/eichens/.local/share/omarchy/default/omarchy-skill/**)",
-      "Bash(awk '{print $2}')"
+      "Bash(awk '{print $2}')",
+      "mcp__context7__resolve-library-id"
     ]
   }
 }

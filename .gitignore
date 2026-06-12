@@ -39,7 +39,8 @@ logs/
 .cache/
 
 # Build outputs (if tools are compiled)
-dist/
+dist/*
+!dist/orbit/
 build/
 *.js.map
 

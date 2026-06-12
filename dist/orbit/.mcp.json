@@ -1,0 +1,23 @@
+{
+  "mcpServers": {
+    "crawl4ai": {
+      "type": "streamable-http",
+      "url": "https://mcp.vier.services/crawl4ai-mcp/mcp"
+    },
+    "searxng": {
+      "type": "streamable-http",
+      "url": "https://mcp.vier.services/searxng-mcp/mcp"
+    },
+    "context7": {
+      "type": "http",
+      "url": "https://mcp.context7.com/mcp",
+      "headers": {
+        "CONTEXT7_API_KEY": "<your key here>"
+      }
+    },
+    "sequential-thinking": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"]
+    }
+  }
+}

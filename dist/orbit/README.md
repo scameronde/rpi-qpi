@@ -38,12 +38,10 @@ Each stage produces artifacts in `thoughts/shared/`:
 - [Claude Code](https://claude.ai/code) CLI installed
 - Node.js 20+
 
-### Installing the plugin
-
-The distributable plugin lives in `dist/orbit/`. Install it into any project:
+### Installation
 
 ```bash
-claude plugin install ./dist/orbit
+claude plugin install ./orbit
 ```
 
 ### Configuration
@@ -89,30 +87,23 @@ The crawl4ai and searxng MCP servers connect to hosted VIER instances and requir
 ## Architecture
 
 ```
-.claude/
+orbit/
+  .claude-plugin/
+    plugin.json        # Plugin manifest
   agents/              # Subagent prompts — embedded by orchestrators via Agent tool
   skills/              # Workflow orchestrators and code quality skills
   hooks/
     hooks.json         # SessionStart hook definition
+  hooks-handlers/
     session-start      # Injects workflow context at session start
-  settings.json        # enableAllProjectMcpServers: true
-  settings.local.json  # Tool permissions
-
-.mcp.json              # MCP server configs (crawl4ai, searxng, context7, sequential-thinking)
-
-dist/
-  orbit/               # Distributable Claude Code plugin (built from .claude/)
+  .mcp.json            # MCP server configs (crawl4ai, searxng, context7, sequential-thinking)
 
 thoughts/shared/       # Workflow artifacts (missions, features, specs, epics, research, plans)
-
-agent/                 # Original OpenCode agent definitions (reference)
-skills/                # Original OpenCode skill definitions (reference)
-tool/                  # Original OpenCode tool source files (reference)
 ```
 
 **`agents/` vs `skills/`:**
 - **agents/** — Subagent prompts that orchestrators embed in `Agent` tool calls; never invoked directly
-- **skills/** — Workflow orchestrators and code quality skills invoked via `/skill-name`
+- **skills/** — Workflow orchestrators and quality review skills invoked via `/skill-name`
 
 ## Plan File Format
 
@@ -137,10 +128,6 @@ Status: pending|in_progress|completed|blocked
 ```
 
 `/implement` reads the STATE block to resume interrupted plans.
-
-## Background
-
-This toolkit was converted from an OpenCode workflow. See [ANALYSIS.md](ANALYSIS.md) for a detailed mapping of every agent, skill, and tool — including what was preserved, what was rewritten, and what could not be ported.
 
 ## License
 

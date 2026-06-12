@@ -54,9 +54,9 @@ Closeout checklist:
 
 *(Record durable behavior changes requested by the user here.)*
 
-## Project: Claude Code Workflow Toolkit
+## Project: ORBIT — Claude Code Workflow Toolkit
 
-An agentic engineering framework for Claude Code. Provides a full pipeline from project vision to code implementation via specialized skills, subagents, and MCP servers.
+An agentic engineering framework for Claude Code. Provides a full pipeline from project vision to code implementation via specialized skills, subagents, and MCP servers. The distributable plugin lives in `dist/orbit/`.
 
 **Workflow pipeline:**
 - Greenfield: `/mission-architect` → `/specifier` → `/epic-planner` → `/researcher` → `/planner` → `/implement`

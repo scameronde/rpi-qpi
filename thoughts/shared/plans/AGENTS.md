@@ -51,7 +51,7 @@ Status: pending|in_progress|completed|blocked
 
 ## Work Guidance
 
-- Do not manually edit plan files while SDD is mid-execution — STATE tracking will diverge
+- Do not manually edit plan files while `/implement` is mid-execution — STATE tracking will diverge
 - STATE files are the only files in this directory that change after creation
 - To resume an interrupted plan: tell `/implement` the plan path; it reads the STATE file to find the next task
 
