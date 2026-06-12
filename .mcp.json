@@ -1,16 +1,12 @@
 {
   "mcpServers": {
     "crawl4ai": {
-      "command": "node",
-      "args": [
-        ".claude/mcp/crawl4ai/dist/index.js"
-      ]
+      "type": "streamable-http",
+      "url": "https://mcp.vier.services/crawl4ai-mcp/mcp"
     },
     "searxng": {
-      "command": "node",
-      "args": [
-        ".claude/mcp/searxng/dist/index.js"
-      ]
+      "type": "streamable-http",
+      "url": "https://mcp.vier.services/searxng-mcp/mcp"
     },
     "context7": {
       "type": "http",
