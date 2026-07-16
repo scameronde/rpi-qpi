@@ -6,17 +6,17 @@ A structured agentic development workflow for [Claude Code](https://claude.ai/co
 
 **Greenfield (new project):**
 ```
-/mission-architect → /specifier → /epic-planner → /researcher → /planner → /implement
+/mission-architect → /specifier → /epic-planner → /fact-finder → /planner → /implement
 ```
 
 **Brownfield (new feature in existing system):**
 ```
-/feature-architect → /epic-planner → /researcher → /planner → /implement
+/feature-architect → /epic-planner → /fact-finder → /planner → /implement
 ```
 
 **Small change or bug fix:**
 ```
-/researcher → /planner → /implement
+/fact-finder → /planner → /implement
 ```
 
 Each stage produces artifacts in `thoughts/shared/`:
@@ -27,7 +27,7 @@ Each stage produces artifacts in `thoughts/shared/`:
 | Feature brief (brownfield) | `/feature-architect` | `thoughts/shared/features/` |
 | Specification | `/specifier` | `thoughts/shared/specs/` |
 | Epics | `/epic-planner` | `thoughts/shared/epics/` |
-| Research | `/researcher` | `thoughts/shared/research/` |
+| Facts | `/fact-finder` | `thoughts/shared/facts/` |
 | Plan | `/planner` | `thoughts/shared/plans/` |
 | Execution | `/implement` | Commits per task, updates STATE |
 
@@ -72,7 +72,7 @@ The crawl4ai and searxng MCP servers connect to hosted VIER instances and requir
 | `/feature-architect` | Define a new feature within an existing system — brownfield |
 | `/specifier` | Translate a mission statement into a technical specification |
 | `/epic-planner` | Decompose a spec into epics and user stories |
-| `/researcher` | Map the codebase or investigate a topic before planning |
+| `/fact-finder` | Map the codebase or investigate a topic before planning |
 | `/planner` | Produce a sequenced, evidence-based implementation plan |
 | `/implement` | Execute a plan task-by-task via subagents, committing after each |
 
@@ -103,7 +103,7 @@ The crawl4ai and searxng MCP servers connect to hosted VIER instances and requir
 dist/
   orbit/               # Distributable Claude Code plugin (built from .claude/)
 
-thoughts/shared/       # Workflow artifacts (missions, features, specs, epics, research, plans)
+thoughts/shared/       # Workflow artifacts (missions, features, specs, epics, facts, plans)
 
 agent/                 # Original OpenCode agent definitions (reference)
 skills/                # Original OpenCode skill definitions (reference)
