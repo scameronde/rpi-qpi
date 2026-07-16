@@ -16,7 +16,7 @@ Stores factual codebase fact reports produced by `/fact-finder`. Each report map
 ```yaml
 ---
 date: YYYY-MM-DD
-researcher: [identifier]
+fact-finder: [identifier]
 topic: "[Topic]"
 status: complete
 coverage:
@@ -29,7 +29,7 @@ coverage:
 2. `## Coverage Map` — what was actually inspected
 3. `## Critical Findings` — planner-attention items with evidence
 4. `## Detailed Technical Analysis` — per-component verified facts
-5. `## Verification Log` — files personally read by the researcher
+5. `## Verification Log` — files personally read by the fact-finder
 6. `## Open Questions` — unverified claims and what was tried
 7. `## References` — codebase citations (file:line) and web citations (URL + date + type)
 
