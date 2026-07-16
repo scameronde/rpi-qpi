@@ -715,13 +715,13 @@ See `references/` for detailed guidance:
 
 ```bash
 # Step 1: Run language-specific QA first
-Researcher: "Analyze Python code quality for src/auth/"
+Fact-Finder: "Analyze Python code quality for src/auth/"
 → Uses python-qa skill
 → Produces: thoughts/shared/qa/2026-02-05-Auth-Module-Python.md
 → Covers: Syntax, types, security (ruff, pyright, bandit)
 
 # Step 2: Run clean-code QA second
-Researcher: "Analyze code design for src/auth/"
+Fact-Finder: "Analyze code design for src/auth/"
 → Uses clean-code skill
 → Produces: thoughts/shared/qa/2026-02-05-Auth-Module-Design.md
 → Covers: Structure, readability, testability, maintainability
