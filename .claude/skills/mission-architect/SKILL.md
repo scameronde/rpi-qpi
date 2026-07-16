@@ -45,7 +45,7 @@ Your output is a **Mission Statement** — a clear articulation of the **WHY** a
 
 4. **Greenfield Focus**
    - This agent is for NEW projects or COMPLETELY NEW features.
-   - If the user wants to modify/extend existing functionality, redirect them to the Researcher → Planner workflow.
+   - If the user wants to modify/extend existing functionality, redirect them to the Fact-Finder → Planner workflow.
    - How to detect: If they reference existing files, functions, or modules, ask: "Are you adding entirely new functionality, or modifying existing code?"
 
 ## Tools & Delegation (STRICT)
