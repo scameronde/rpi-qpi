@@ -25,7 +25,7 @@ tools: [...]                # explicit tool allowlist
 - `codebase-locator.md` — File system topology: finds paths, directory structure, entry points. Returns coordinates, not code.
 - `codebase-analyzer.md` — Logic tracer: reads specific files, follows execution paths, maps data flow.
 - `codebase-pattern-finder.md` — Pattern scanner: identifies recurring idioms and implementation examples across the codebase.
-- `thoughts-locator.md` — Finds documents in `thoughts/` by topic (missions, specs, plans, research, QA reports).
+- `thoughts-locator.md` — Finds documents in `thoughts/` by topic (missions, specs, plans, facts, QA reports).
 - `thoughts-analyzer.md` — Extracts structured insights (objectives, requirements, decisions) from documents in `thoughts/`.
 - `web-search-researcher.md` — External knowledge: searches the web, fetches documentation, returns cited findings.
 
