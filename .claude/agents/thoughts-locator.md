@@ -1,6 +1,6 @@
 ---
 name: thoughts-locator
-description: Locates documentation, tickets, and notes in the 'thoughts/' directory. Handles path sanitization and categorization. Use when you need to find historical documents, specs, plans, research, or decisions related to a topic.
+description: Locates documentation, tickets, and notes in the 'thoughts/' directory. Handles path sanitization and categorization. Use when you need to find historical documents, specs, plans, facts, or decisions related to a topic.
 tools:
   - Bash
   - Read
@@ -20,15 +20,15 @@ The `search_scope` parameter controls which sections of the output you receive. 
 **Valid Values:**
 
 1. **`paths_only`** (~180 tokens, 28% savings)
-   - **Use Case:** Researcher needs only one document type (e.g., only specs)
+   - **Use Case:** Fact-Finder needs only one document type (e.g., only specs)
    - **Sections Returned:** Only the single most relevant category
 
 2. **`focused`** (~220 tokens, 15% savings)
-   - **Use Case:** Researcher needs 2-3 document types (e.g., specs + plans)
+   - **Use Case:** Fact-Finder needs 2-3 document types (e.g., specs + plans)
    - **Sections Returned:** 2-3 most relevant categories
 
 3. **`comprehensive`** (~280 tokens, complete results)
-   - **Use Case:** Researcher exploring all historical context
+   - **Use Case:** Fact-Finder exploring all historical context
    - **Sections Returned:** All 8 categories
 
 **Default Behavior:** If `search_scope` is not specified, defaults to `comprehensive`.
@@ -39,8 +39,8 @@ The `search_scope` parameter controls which sections of the output you receive. 
 
 **CRITICAL**: The `thoughts/` directory uses a symlinked index called `searchable`.
 **Rule**: NEVER report a path containing `/searchable/`. You must strip it.
-*   Bad: `thoughts/searchable/shared/research/api.md`
-*   Good: `thoughts/shared/research/api.md`
+*   Bad: `thoughts/searchable/shared/facts/api.md`
+*   Good: `thoughts/shared/facts/api.md`
 *   **Validation**: In <thinking> section, document how many paths contained /searchable/ and sanitization actions taken
 *   **Envelope**: In YAML frontmatter, report paths_sanitized: N (count of sanitized paths)
 
@@ -51,7 +51,7 @@ The `search_scope` parameter controls which sections of the output you receive. 
 *   `thoughts/shared/epics/` -> Epic decompositions (`YYYY-MM-DD-[Epic].md`)
 *   `thoughts/shared/plans/` -> Implementation plans (`YYYY-MM-DD-[Ticket].md`)
 *   `thoughts/shared/qa/` -> QA analysis reports (`YYYY-MM-DD-[Target].md`)
-*   `thoughts/shared/research/` -> Research reports (`YYYY-MM-DD-[Topic].md`)
+*   `thoughts/shared/facts/` -> Fact reports (`YYYY-MM-DD-[Topic].md`)
 *   `thoughts/decisions/` -> ADRs (Architecture Decision Records)
 *   `thoughts/[username]/` -> Personal notes (Don't ignore these!)
 
@@ -110,8 +110,8 @@ paths_sanitized: [count]
 ### QA Reports
 - `thoughts/shared/qa/2025-12-18-auth-module.md` - **Auth Module QA Analysis**
 
-### Research Reports
-- `thoughts/shared/research/2025-11-20-oauth.md` - **OAuth Analysis**
+### Fact Reports
+- `thoughts/shared/facts/2025-11-20-oauth.md` - **OAuth Analysis**
 
 ### Decisions (ADRs)
 - `thoughts/decisions/005-jwt-tokens.md` - **Use JWT for Session**
