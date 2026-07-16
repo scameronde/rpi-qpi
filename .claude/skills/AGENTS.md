@@ -17,7 +17,7 @@ Each skill lives in its own subdirectory with a `SKILL.md` entry point:
 - `feature-architect/` — Define brownfield feature; output to `thoughts/shared/features/`
 - `specifier/` — Translate mission to technical spec; output to `thoughts/shared/specs/`
 - `epic-planner/` — Decompose spec to epics; output to `thoughts/shared/epics/`
-- `researcher/` — Map codebase or research topic; output to `thoughts/shared/research/` or `thoughts/shared/qa/`
+- `fact-finder/` — Map codebase or research topic; output to `thoughts/shared/facts/` or `thoughts/shared/qa/`
 - `planner/` — Produce sequenced implementation plan; output to `thoughts/shared/plans/`
 - `implement/` — Execute plan task-by-task via subagents; also contains `implementer-prompt.md`, `spec-reviewer-prompt.md`, `code-quality-reviewer-prompt.md`
 
@@ -35,7 +35,7 @@ Each skill lives in its own subdirectory with a `SKILL.md` entry point:
 ## Work Guidance
 
 - Skills spawn agents via the `Agent` tool — never invoke agents directly
-- Workflow ordering is enforced: researcher must precede planner; planner must precede /implement
+- Workflow ordering is enforced: fact-finder must precede planner; planner must precede /implement
 - Prompt templates in `implement/` are embedded verbatim into agent calls — they are not skills themselves
 
 ## Verification
