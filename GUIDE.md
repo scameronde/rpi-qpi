@@ -13,7 +13,7 @@ This guide explains the full agentic software engineering workflow: a structured
    - [Feature Architect](#1b-feature-architect-brownfield-only)
    - [Specifier](#2-specifier-greenfield-only)
    - [Epic Planner](#3-epic-planner)
-   - [Researcher](#4-researcher)
+   - [Fact-Finder](#4-fact-finder)
    - [Planner](#5-planner)
    - [Implementation Controller](#6-implementation-controller)
 4. [Parallel Path: QA Workflow](#parallel-path-qa-workflow)
@@ -33,16 +33,16 @@ The key design principle: **vision before specification, specification before pl
 
 ```
 GREENFIELD:
-  /mission-architect  →  /specifier  →  /epic-planner  →  /researcher  →  /planner  →  /implement
+  /mission-architect  →  /specifier  →  /epic-planner  →  /fact-finder  →  /planner  →  /implement
 
 BROWNFIELD (new feature in existing system):
-  /feature-architect  →  /epic-planner  →  /researcher  →  /planner  →  /implement
+  /feature-architect  →  /epic-planner  →  /fact-finder  →  /planner  →  /implement
 
 SMALL CHANGE:
-  /researcher  →  /planner  →  /implement
+  /fact-finder  →  /planner  →  /implement
 
 QA (runs in parallel):
-  /researcher (QA mode)  →  /planner (QA mode)  →  /implement
+  /fact-finder (QA mode)  →  /planner (QA mode)  →  /implement
 ```
 
 Every stage writes its output to `thoughts/shared/`, creating a permanent, searchable record of all decisions and rationale.
@@ -55,14 +55,14 @@ Every stage writes its output to `thoughts/shared/`, creating a permanent, searc
 Use when building an entirely new project or a completely new feature from scratch.
 
 ```
-/mission-architect → /specifier → /epic-planner → /researcher → /planner → /implement
+/mission-architect → /specifier → /epic-planner → /fact-finder → /planner → /implement
 ```
 
 ### Brownfield Pipeline
 Use when adding a significant feature to an existing system.
 
 ```
-/feature-architect → /epic-planner → /researcher → /planner → /implement
+/feature-architect → /epic-planner → /fact-finder → /planner → /implement
 ```
 
 **Rule of thumb:**
@@ -70,8 +70,8 @@ Use when adding a significant feature to an existing system.
 |---|---|
 | Entirely new project | `/mission-architect` |
 | Significant new feature in existing system | `/feature-architect` |
-| Small change, bug fix, or extension | `/researcher` directly |
-| Code quality review | `/researcher` (QA mode) |
+| Small change, bug fix, or extension | `/fact-finder` directly |
+| Code quality review | `/fact-finder` (QA mode) |
 
 ---
 
@@ -135,12 +135,12 @@ Feature Architect **reads the existing mission and spec first**, before asking y
 - Inherited constraints (the technology stack is already fixed — no discussion)
 - Integration points (which existing components this feature connects to)
 - Success criteria
-- Open questions for the Researcher
+- Open questions for the Fact-Finder
 
 #### Rules
 - Requires an existing mission AND spec. If neither exists, the agent redirects to `/mission-architect`.
 - Technology stack is not up for discussion — it's already determined by the codebase.
-- For small changes that don't need a full feature brief, skip to `/researcher` directly.
+- For small changes that don't need a full feature brief, skip to `/fact-finder` directly.
 
 ---
 
@@ -203,7 +203,7 @@ The agent chooses one based on the spec structure:
 - Specification reference and traceability
 - Epic summary (what it delivers, value statement, in/out scope)
 - 3-7 user stories in "As a / I want to / So that" format
-- **Research questions for the Researcher** (codebase context, external knowledge, risks)
+- **Research questions for the Fact-Finder** (codebase context, external knowledge, risks)
 - **Acceptance criteria for the Planner** (functional, technical, quality/testing)
 - Dependencies on other epics (with Mermaid dependency diagram)
 - Data model requirements (which entities this epic creates/modifies)
@@ -217,12 +217,12 @@ The agent chooses one based on the spec structure:
 
 ---
 
-### 4. Researcher
+### 4. Fact-Finder
 
-**Command:** `/researcher`
-**Output:** `thoughts/shared/research/YYYY-MM-DD-[Topic].md`
+**Command:** `/fact-finder`
+**Output:** `thoughts/shared/facts/YYYY-MM-DD-[Topic].md`
 
-The Researcher maps the codebase to create the factual foundation the Planner needs. It operates as an **orchestrator** — it delegates to specialized subagents and personally verifies every finding before including it in the report.
+The Fact-Finder maps the codebase to create the factual foundation the Planner needs. It operates as an **orchestrator** — it delegates to specialized subagents and personally verifies every finding before including it in the report.
 
 #### Prime directive
 The output is written for the **Planner Agent**, not just a human. Every claim requires evidence. No recommendations, no opinions, no "this could be improved." Only verified observations and their direct consequences.
@@ -230,7 +230,7 @@ The output is written for the **Planner Agent**, not just a human. Every claim r
 Forbidden terms: *recommend, should, prefer, improve, fix, refactor, good, bad, issue, smell, bug, standardize.*
 
 #### What it investigates
-Driven by the epic's research questions, the Researcher will:
+Driven by the epic's research questions, the Fact-Finder will:
 - Map the codebase topology (which files contain what)
 - Trace execution paths through complex functions
 - Identify recurring patterns and conventions
@@ -252,7 +252,7 @@ https://docs.example.com/api (Type: official_docs, Date: 2025-12, Authority: hig
 
 Any claim that cannot be verified moves to the "Open Questions / Unverified Claims" section — it never becomes a false finding.
 
-#### Subagents the Researcher delegates to
+#### Subagents the Fact-Finder delegates to
 | Task | Subagent |
 |---|---|
 | Find files by purpose/pattern | codebase-locator |
@@ -274,10 +274,10 @@ References
 ```
 
 #### QA Mode
-The Researcher also runs in QA mode, triggered by keywords like "QA", "code review", "test coverage", "type safety", "linting". In QA mode:
+The Fact-Finder also runs in QA mode, triggered by keywords like "QA", "code review", "test coverage", "type safety", "linting". In QA mode:
 - It loads the appropriate QA skill (python-qa, typescript-qa, clean-code, or logic-bugs-qa)
 - Runs automated analysis tools
-- Outputs to `thoughts/shared/qa/` instead of `thoughts/shared/research/`
+- Outputs to `thoughts/shared/qa/` instead of `thoughts/shared/facts/`
 
 ---
 
@@ -379,18 +379,18 @@ If execution was interrupted, simply run `/implement` again. The controller read
 The QA workflow runs in parallel with the main pipeline. It does not block feature development — it produces its own implementation plan that can be executed separately.
 
 ```
-/researcher (QA mode)  →  /planner (QA mode)  →  /implement
+/fact-finder (QA mode)  →  /planner (QA mode)  →  /implement
 ```
 
 **Triggering QA mode:**
-Run `/researcher` with any QA-related keywords:
+Run `/fact-finder` with any QA-related keywords:
 - "QA", "quality analysis", "code review"
 - "test coverage", "linting", "type safety"
 - Specific file paths with quality-focused language
 
-The Researcher detects the QA intent and loads the appropriate skill.
+The Fact-Finder detects the QA intent and loads the appropriate skill.
 
-**QA output path:** `thoughts/shared/qa/` (not `thoughts/shared/research/`)
+**QA output path:** `thoughts/shared/qa/` (not `thoughts/shared/facts/`)
 
 **QA skill selection:**
 | Language / Focus | Skill |
@@ -406,7 +406,7 @@ Run language-specific skills first, then `clean-code` for design review.
 
 ## QA Skills
 
-Skills are loaded by the Researcher during QA mode. They provide automated tool configurations, analysis checklists, and report templates.
+Skills are loaded by the Fact-Finder during QA mode. They provide automated tool configurations, analysis checklists, and report templates.
 
 ---
 
@@ -501,7 +501,7 @@ Run this **after** language-specific QA passes.
 
 ## Supporting Subagents
 
-These agents are **not user-facing**. They are invoked programmatically by the orchestrators (Researcher, Planner, QA skills) via the `Agent` tool. You never call them directly.
+These agents are **not user-facing**. They are invoked programmatically by the orchestrators (Fact-Finder, Planner, QA skills) via the `Agent` tool. You never call them directly.
 
 ---
 
@@ -547,7 +547,7 @@ Searches `thoughts/shared/` by keyword and returns file paths grouped by categor
 
 **Scope levels:** `paths_only`, `focused`, `comprehensive`
 
-Note: Only used by the Researcher. The Planner skips this and goes directly to thoughts-analyzer with a known path.
+Note: Only used by the Fact-Finder. The Planner skips this and goes directly to thoughts-analyzer with a known path.
 
 ---
 
@@ -666,7 +666,7 @@ Provides a structured multi-step reasoning workspace. Agents use this for decisi
 | **mission-architect** | Complex vision trade-offs and scope conflicts |
 | **specifier** | Architectural decisions ("event-driven vs. request-driven?", component boundary analysis) |
 | **epic-planner** | Decomposition strategy, dependency analysis, sequencing logic |
-| **researcher** | Decomposing a research topic into investigation vectors |
+| **fact-finder** | Decomposing a research topic into investigation vectors |
 | **planner** | Complex planning decisions with multiple dependencies |
 | **codebase-analyzer** | Functions >50 lines with 3+ branching paths; recursive call chains; state mutations across multiple functions |
 | **codebase-pattern-finder** | Planning keyword strategy and variation identification before searching |
@@ -688,8 +688,8 @@ thoughts/
     features/    # /feature-architect output   — YYYY-MM-DD-[Feature].md
     specs/       # /specifier output           — YYYY-MM-DD-[Project].md
     epics/       # /epic-planner output        — YYYY-MM-DD-[Epic].md (one per epic)
-    research/    # /researcher output          — YYYY-MM-DD-[Topic].md
-    qa/          # /researcher QA mode output  — YYYY-MM-DD-[Target].md
+    facts/       # /fact-finder output         — YYYY-MM-DD-[Topic].md
+    qa/          # /fact-finder QA mode output — YYYY-MM-DD-[Target].md
     plans/       # /planner output             — YYYY-MM-DD-[Ticket].md + STATE.md
   decisions/     # Architecture decision records (ADRs)
   [username]/    # Personal notes
@@ -713,7 +713,7 @@ Each artifact references the previous stage's file path, creating a complete aud
 1. /mission-architect   — explore the vision (interactive conversation)
 2. /specifier           — translate mission to abstract architecture
 3. /epic-planner        — decompose spec into user-facing epics
-4. /researcher          — map codebase for epic N's research questions
+4. /fact-finder         — map codebase for epic N's research questions
 5. /planner             — create implementation plan from research
 6. /implement           — execute plan task-by-task
    (repeat 4-6 for each epic)
@@ -723,21 +723,21 @@ Each artifact references the previous stage's file path, creating a complete aud
 ```
 1. /feature-architect   — define feature with existing constraints in mind
 2. /epic-planner        — decompose feature brief into epics
-3. /researcher          — map codebase for epic N's research questions
+3. /fact-finder         — map codebase for epic N's research questions
 4. /planner             — create implementation plan from research
 5. /implement           — execute plan task-by-task
 ```
 
 ### Fixing a bug or making a small change
 ```
-1. /researcher          — understand the relevant code
+1. /fact-finder         — understand the relevant code
 2. /planner             — create a focused implementation plan
 3. /implement           — execute
 ```
 
 ### Running a code quality review
 ```
-1. /researcher          — use QA mode ("review the auth module", "check test coverage for...")
+1. /fact-finder         — use QA mode ("review the auth module", "check test coverage for...")
 2. /planner             — creates prioritized QA fix plan
 3. /implement           — execute fixes in priority order
 ```
