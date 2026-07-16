@@ -10,17 +10,17 @@ This project uses a structured agentic workflow for software development. Workfl
 
 **Greenfield (new project):**
 ```
-/mission-architect → /specifier → /epic-planner → /researcher → /planner → /implement
+/mission-architect → /specifier → /epic-planner → /fact-finder → /planner → /implement
 ```
 
 **Brownfield (new feature in existing system):**
 ```
-/feature-architect → /epic-planner → /researcher → /planner → /implement
+/feature-architect → /epic-planner → /fact-finder → /planner → /implement
 ```
 
 **Small change or bug fix:**
 ```
-/researcher → /planner → /implement
+/fact-finder → /planner → /implement
 ```
 
 Each stage produces artifacts written to `thoughts/shared/`:
@@ -31,7 +31,7 @@ Each stage produces artifacts written to `thoughts/shared/`:
 | Feature brief (brownfield) | `/feature-architect` | `thoughts/shared/features/` |
 | Spec | `/specifier` | `thoughts/shared/specs/` |
 | Epics | `/epic-planner` | `thoughts/shared/epics/` |
-| Research | `/researcher` | `thoughts/shared/research/` or `thoughts/shared/qa/` |
+| Facts | `/fact-finder` | `thoughts/shared/facts/` or `thoughts/shared/qa/` |
 | Plan | `/planner` | `thoughts/shared/plans/` |
 | Execution | `/implement` | Git commits per task |
 
@@ -45,7 +45,7 @@ All workflow orchestration is done via Skills (invoked with `/skill-name` or pro
 | `/feature-architect` | Define a new feature within an existing system (brownfield) |
 | `/specifier` | Translate a mission into a technical specification |
 | `/epic-planner` | Decompose a spec into epics and user stories |
-| `/researcher` | Map the codebase relevant to a spec or question |
+| `/fact-finder` | Map the codebase relevant to a spec or question |
 | `/planner` | Produce a sequenced, evidence-based implementation plan |
 | `/implement` | Execute a plan task-by-task via subagents, with spec + quality review per task |
 
@@ -120,8 +120,8 @@ thoughts/
     features/     # Feature briefs from /feature-architect
     specs/        # Technical specs from /specifier
     epics/        # Epics from /epic-planner
-    research/     # Codebase research from /researcher
-    qa/           # QA research from /researcher
+    facts/        # Codebase facts from /fact-finder
+    qa/           # QA research from /fact-finder
     plans/        # Plans + STATE files from /planner
 
 agent/            # Original opencode agent definitions (reference only)
@@ -142,7 +142,7 @@ Plans produced by `/planner` follow this structure:
 # Plan: <title>
 
 ## Inputs
-- Research report(s) used: thoughts/shared/research/...
+- Research report(s) used: thoughts/shared/facts/...
 
 ## Verified Current State
 - **Fact:** ...
