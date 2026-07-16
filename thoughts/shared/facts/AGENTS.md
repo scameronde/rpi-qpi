@@ -1,12 +1,12 @@
-# research/ — Codebase Research Reports
+# facts/ — Codebase Fact Reports
 
 ## Purpose
 
-Stores factual codebase research reports produced by `/researcher`. Each report maps the code relevant to a spec, question, or implementation task — providing verified evidence for the `/planner` to design against.
+Stores factual codebase fact reports produced by `/fact-finder`. Each report maps the code relevant to a spec, question, or implementation task — providing verified evidence for the `/planner` to design against.
 
 ## Ownership
 
-`/researcher` writes; `/planner` reads. Reports are write-once after creation.
+`/fact-finder` writes; `/planner` reads. Reports are write-once after creation.
 
 ## Local Contracts
 
