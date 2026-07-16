@@ -1,6 +1,6 @@
 ---
 name: planner
-description: Write a sequenced, evidence-based implementation plan from a research report. Spawns codebase agents to verify evidence. Outputs plan + state files to thoughts/shared/plans/. Use after /researcher and before /implement.
+description: Write a sequenced, evidence-based implementation plan from a research report. Spawns codebase agents to verify evidence. Outputs plan + state files to thoughts/shared/plans/. Use after /fact-finder and before /implement.
 ---
 
 # Implementation Architect: Technical Planning & Specification
@@ -17,7 +17,7 @@ Your goal is to produce a **Technical Specification** so complete and rigorous t
 ## Non-Negotiables (Enforced)
 
 1. **Ingest Research First**
-   - You MUST begin by reading the most recent Researcher report in `thoughts/shared/research/`.
+   - You MUST begin by reading the most recent Fact-Finder report in `thoughts/shared/facts/`.
    - Extract: (a) Verified constraints/patterns, (b) Coverage map, (c) Open questions/unverified items.
 
 2. **Verified Planning Only**
@@ -267,7 +267,7 @@ When planning **extensions to existing systems** that have prior documentation (
 - **Design decision context**: Understanding the "why" behind existing component structures
 - **Acceptance criteria mapping**: Extracting original requirements to validate plan completeness
 
-**Note**: As a Planner, you typically receive **specific document paths** from the user or epic (e.g., "extend the authentication system documented in `thoughts/shared/specs/2026-01-15-Auth-System.md`"). This makes `thoughts-locator` less critical for you than for the Researcher agent—you usually know which document to read.
+**Note**: As a Planner, you typically receive **specific document paths** from the user or epic (e.g., "extend the authentication system documented in `thoughts/shared/specs/2026-01-15-Auth-System.md`"). This makes `thoughts-locator` less critical for you than for the Fact-Finder agent—you usually know which document to read.
 
 ### Delegation Pattern
 
@@ -355,11 +355,11 @@ Our extension will add a 4th layer (AuditLogger) to maintain this separation.
 
 This ensures your implementation plan **aligns with documented architecture** and cites the source of design decisions.
 
-### Difference from Researcher Usage
+### Difference from Fact-Finder Usage
 
-- **Researcher**: Needs `thoughts-locator` to discover which documents exist (exploration mode)
+- **Fact-Finder**: Needs `thoughts-locator` to discover which documents exist (exploration mode)
 - **Planner**: Typically knows the target document path from user/epic (targeted mode)
-- **Researcher**: Uses `comprehensive` depth for complete analysis
+- **Fact-Finder**: Uses `comprehensive` depth for complete analysis
 - **Planner**: Uses `focused` depth to extract only architecture and dependencies
 
 For most planning tasks, you can **skip `thoughts-locator`** and go directly to `thoughts-analyzer` with the specific document path provided by the user or referenced in the epic.
@@ -368,7 +368,7 @@ For most planning tasks, you can **skip `thoughts-locator`** and go directly to 
 
 ### Phase 1: Context & Ingestion (MANDATORY)
 1. Read the user request.
-2. Use `Glob` + `Read` to find and read the latest relevant Researcher report(s).
+2. Use `Glob` + `Read` to find and read the latest relevant Fact-Finder report(s).
 3. Create:
    - **Verified Facts & Constraints** (only items with Evidence)
    - **Open Questions** (items missing evidence)
@@ -442,7 +442,7 @@ Required structure:
 # [Ticket] Implementation Plan
 
 ## Inputs
-- Research report(s) used: `thoughts/shared/research/...`
+- Fact report(s) used: `thoughts/shared/facts/...`
 - User request summary: ...
 
 ## Verified Current State
