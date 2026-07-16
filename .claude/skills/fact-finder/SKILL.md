@@ -317,7 +317,7 @@ Search strategy for authentication documentation:
 - Searched thoughts/shared/epics/ for auth epics
 - Searched thoughts/shared/plans/ for auth implementation plans
 - Searched thoughts/shared/qa/ for auth QA reports
-- Searched thoughts/shared/research/ for auth research reports
+- Searched thoughts/shared/facts/ for auth research reports
 - Found 8 total documents
 - Paths sanitized: 0 (all paths valid)
 </thinking>
@@ -342,7 +342,7 @@ Search strategy for authentication documentation:
 - `thoughts/shared/qa/2025-12-25-Auth-Module.md`
 
 ### Research Reports
-- `thoughts/shared/research/2025-11-30-JWT-Libraries.md`
+- `thoughts/shared/facts/2025-11-30-JWT-Libraries.md`
 
 ### STATE Files
 - `thoughts/shared/plans/2025-12-15-AUTH-001-STATE.md`
