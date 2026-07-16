@@ -6,7 +6,7 @@ Stores quality analysis reports produced by `/researcher` when operating in QA m
 
 ## Ownership
 
-`/researcher` writes (QA mode only). Reports are write-once after creation.
+`/fact-finder` writes (QA mode only). Reports are write-once after creation.
 
 ## Local Contracts
 
