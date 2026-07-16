@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Stores quality analysis reports produced by `/researcher` when operating in QA mode. Reports cover automated tool findings (linters, type checkers, test runners) combined with manual code quality analysis.
+Stores quality analysis reports produced by `/fact-finder` when operating in QA mode. Reports cover automated tool findings (linters, type checkers, test runners) combined with manual code quality analysis.
 
 ## Ownership
 
