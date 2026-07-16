@@ -44,7 +44,7 @@ The `search_scope` parameter controls which sections of the output you receive. 
    - **Sections Returned:** Primary Implementation + Related Configuration
 
 4. **`comprehensive`** (~320 tokens, complete atlas)
-   - **Use Case:** Researcher agents needing full topology (default)
+   - **Use Case:** Fact-Finder agents needing full topology (default)
    - **Sections Returned:** Primary Implementation, Related Configuration, Testing Coordinates, Directory Structure
 
 **Default Behavior:** If `search_scope` is not specified, defaults to `comprehensive`.
