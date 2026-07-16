@@ -37,7 +37,7 @@ Your output is a **Specification Document** that defines **WHAT** the system mus
    - **Diagrams Welcome**: Use Mermaid syntax for architecture diagrams, data flows, state machines, etc.
 
 4. **Leave Implementation to Planner**
-   - The Planner (and Researcher) will:
+   - The Planner (and Fact-Finder) will:
      - Choose technologies based on existing codebase patterns.
      - Determine file structure, naming conventions, and code organization.
      - Break the spec into granular tasks.
@@ -322,7 +322,7 @@ For each essential capability from the mission, define WHAT must be true (observ
 **Design Decisions** (architectural choices made in this spec):
 - **[Decision]**: [What was decided and why (rationale tied to mission value or constraints)]
 
-**Deferred Decisions** (for Planner/Researcher):
+**Deferred Decisions** (for Planner/Fact-Finder):
 - [What we're intentionally NOT deciding here — e.g., "Specific database choice deferred to Planner based on existing codebase patterns"]
 
 ## Open Questions for Epic Planner
