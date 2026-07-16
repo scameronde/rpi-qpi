@@ -59,13 +59,13 @@ Closeout checklist:
 An agentic engineering framework for Claude Code. Provides a full pipeline from project vision to code implementation via specialized skills, subagents, and MCP servers. The distributable plugin lives in `dist/orbit/`.
 
 **Workflow pipeline:**
-- Greenfield: `/mission-architect` → `/specifier` → `/epic-planner` → `/researcher` → `/planner` → `/implement`
-- Brownfield: `/feature-architect` → `/epic-planner` → `/researcher` → `/planner` → `/implement`
-- Small fix: `/researcher` → `/planner` → `/implement`
+- Greenfield: `/mission-architect` → `/specifier` → `/epic-planner` → `/fact-finder` → `/planner` → `/implement`
+- Brownfield: `/feature-architect` → `/epic-planner` → `/fact-finder` → `/planner` → `/implement`
+- Small fix: `/fact-finder` → `/planner` → `/implement`
 
-**Key rule:** `/researcher` must precede `/planner`; `/planner` must precede `/implement`. See `CLAUDE.md` for full documentation.
+**Key rule:** `/fact-finder` must precede `/planner`; `/planner` must precede `/implement`. See `CLAUDE.md` for full documentation.
 
 ## Child DOX Index
 
 - [.claude/](.claude/AGENTS.md) — Framework infrastructure: skills, agents, hooks, MCP servers
-- [thoughts/shared/](thoughts/shared/AGENTS.md) — Workflow artifact store: research, plans, QA, and more
+- [thoughts/shared/](thoughts/shared/AGENTS.md) — Workflow artifact store: facts, plans, QA, and more
