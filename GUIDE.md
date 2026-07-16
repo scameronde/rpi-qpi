@@ -543,7 +543,7 @@ Always reads the actual file before posting a snippet (grep output alone is not 
 ### thoughts-locator ("The Archivist")
 Answers: *Where are the historical documents for this topic?*
 
-Searches `thoughts/shared/` by keyword and returns file paths grouped by category (missions, specs, epics, plans, QA reports, research, ADRs, personal notes).
+Searches `thoughts/shared/` by keyword and returns file paths grouped by category (missions, specs, epics, plans, QA reports, facts, ADRs, personal notes).
 
 **Scope levels:** `paths_only`, `focused`, `comprehensive`
 
@@ -697,7 +697,7 @@ thoughts/
 
 **Traceability chain:**
 ```
-mission → spec → epic → research → plan → (committed code)
+mission → spec → epic → facts → plan → (committed code)
                   ↑
          feature-brief (brownfield)
 ```
