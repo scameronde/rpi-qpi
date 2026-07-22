@@ -21,8 +21,19 @@ Before dispatching any subagent:
 
 1. Read the plan file in full.
 2. Extract ALL task IDs and names upfront — do not read task-by-task.
-3. Create a TodoWrite item per task for tracking.
-4. If anything in the plan is ambiguous, ask now before starting.
+3. Locate the STATE file: same path as the plan file with `.md` replaced by `-STATE.md`
+   (per `thoughts/shared/plans/AGENTS.md` naming convention). Read it.
+   - If `**Current Task**` is `Complete`: all tasks are already done. Report this to
+     the user and stop — do not dispatch anything.
+   - If `**Completed Tasks**` lists any PLAN-XXX ids: this is a resumed run. Skip
+     dispatching implementers for those tasks; start the Per-Task Loop at whatever
+     task `**Current Task**` names.
+   - If no STATE file exists (plan predates STATE tracking): create one now using the
+     template in `.claude/skills/planner/SKILL.md` (Current Task = first task ID,
+     Completed Tasks = none, checklist populated from the plan's tasks), commit it.
+4. Create a TodoWrite item per task for tracking (pre-mark items already in
+   **Completed Tasks** as done).
+5. If anything in the plan is ambiguous, ask now before starting.
 
 ## Per-Task Loop (sequential — never parallelize implementation)
 
@@ -92,7 +103,22 @@ Agent tool:
 git log --oneline -1
 ```
 
-Confirm the commit includes the PLAN-XXX ID. Mark the task done in your todo list. Move to the next task.
+Confirm the commit includes the PLAN-XXX ID.
+
+**Update the STATE file now, before moving on:**
+1. Open the plan's STATE file.
+2. Find the checklist line matching this task's ID exactly (`- [ ] PLAN-XXX: ...`) and
+   check it: `- [x] PLAN-XXX: ...`. Do not check any other line.
+3. Append PLAN-XXX to `**Completed Tasks**`.
+4. Set `**Current Task**` to the next task's ID, or `Complete` if this was the last one.
+5. Commit the STATE file in its own commit — do not fold it into the implementer's commit:
+   ```bash
+   git add [STATE file path]
+   git commit -m "STATE: mark PLAN-XXX complete, advance to PLAN-YYY"
+   ```
+   (Use `STATE: all tasks complete` when this was the final task.)
+
+Mark the task done in your todo list. Move to the next task.
 
 ## Model Selection
 
@@ -122,3 +148,5 @@ When unsure: omit the model parameter.
 - **Never** proceed past an unresolved BLOCKED status
 - **Never** start on main/master without explicit user consent
 - **Never** commit on behalf of the implementer — the implementer commits its own work
+- **Never** advance to the next task before the STATE file is updated and committed —
+  TodoWrite alone does not survive a session interruption

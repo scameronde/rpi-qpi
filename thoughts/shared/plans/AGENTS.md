@@ -40,10 +40,23 @@ Stores sequenced implementation plans produced by `/planner` and STATE files mai
 
 **STATE file format** (`<plan-name>-STATE.md`):
 ```markdown
-## STATE
-Current: PLAN-001
-Status: pending|in_progress|completed|blocked
+# State: [Ticket Name]
+
+**Plan**: thoughts/shared/plans/YYYY-MM-DD-[Ticket].md
+**Current Task**: PLAN-001
+**Completed Tasks**: (none yet)
+
+## Task Checklist
+- [ ] PLAN-001: [One-line task description]
+- [ ] PLAN-002: [One-line task description]
+
+## Quick Verification
+<list verification commands from the plan>
+
+## Notes
+- Plan created: YYYY-MM-DD
 ```
+`**Current Task**` becomes `Complete` once every task is checked off.
 
 **File naming:**
 - Plans: `YYYY-MM-DD-<Topic>.md`

@@ -7,7 +7,7 @@ Persistent artifact store for all workflow pipeline outputs. Every stage of the 
 ## Ownership
 
 - Skills write artifacts here; they do not delete or overwrite existing files
-- Implementer subagents (via `/implement`) update STATE files in `plans/`
+- The `/implement` orchestrator updates STATE files in `plans/` after each task's reviews pass (implementer subagents never touch STATE files directly)
 - All other files are write-once after creation
 
 ## Local Contracts
