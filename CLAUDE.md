@@ -23,6 +23,11 @@ This project uses a structured agentic workflow for software development. Workfl
 /fact-finder → /planner → /implement
 ```
 
+**Explore first (optional):**
+```
+/prototype → (feature-architect | fact-finder)
+```
+
 Each stage produces artifacts written to `thoughts/shared/`:
 
 | Stage | Skill | Output directory |
@@ -34,6 +39,7 @@ Each stage produces artifacts written to `thoughts/shared/`:
 | Facts | `/fact-finder` | `thoughts/shared/facts/` or `thoughts/shared/qa/` |
 | Plan | `/planner` | `thoughts/shared/plans/` |
 | Execution | `/implement` | Git commits per task |
+| Prototype (optional) | `/prototype` | `thoughts/shared/prototypes/` |
 
 ## Workflow Skills
 
@@ -48,6 +54,7 @@ All workflow orchestration is done via Skills (invoked with `/skill-name` or pro
 | `/fact-finder` | Map the codebase relevant to a spec or question |
 | `/planner` | Produce a sequenced, evidence-based implementation plan |
 | `/implement` | Execute a plan task-by-task via subagents, with spec + quality review per task |
+| `/prototype` | Spike a rough idea into disposable, isolated code and reach a go/no-go/iterate decision (optional, before mission-architect/feature-architect/fact-finder) |
 
 ## Quality Skills
 
@@ -123,6 +130,7 @@ thoughts/
     facts/        # Codebase facts from /fact-finder
     qa/           # QA research from /fact-finder
     plans/        # Plans + STATE files from /planner
+    prototypes/   # Prototype learnings notes from /prototype
 
 agent/            # Original opencode agent definitions (reference only)
 skills/           # Original opencode skill definitions (reference only)
