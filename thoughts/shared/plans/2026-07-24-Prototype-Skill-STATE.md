@@ -1,8 +1,8 @@
 # State: Prototype Skill
 
 **Plan**: thoughts/shared/plans/2026-07-24-Prototype-Skill.md
-**Current Task**: PLAN-007
-**Completed Tasks**: PLAN-001, PLAN-002, PLAN-003, PLAN-004, PLAN-005, PLAN-006
+**Current Task**: Complete
+**Completed Tasks**: PLAN-001, PLAN-002, PLAN-003, PLAN-004, PLAN-005, PLAN-006, PLAN-007
 
 ## Task Checklist
 
@@ -12,7 +12,7 @@
 - [x] PLAN-004: Add `prototype/` bullet to `.claude/skills/AGENTS.md` Workflow skills list
 - [x] PLAN-005: Document `/prototype` in `CLAUDE.md` (pipeline flow, stage table, skills table, dir structure)
 - [x] PLAN-006: Add "Prototype Learnings" category to `.claude/agents/thoughts-locator.md`
-- [ ] PLAN-007: Add `thoughts/shared/prototypes/*.md` Glob line to `feature-architect/SKILL.md` Phase 1
+- [x] PLAN-007: Add `thoughts/shared/prototypes/*.md` Glob line to `feature-architect/SKILL.md` Phase 1
 
 ## Quick Verification
 
