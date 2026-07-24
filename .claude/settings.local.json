@@ -43,5 +43,9 @@
       "Bash(python3 -m json.tool)",
       "Bash(python3 -m json.tool /home/eichens/workspaces/experiment-ai/opencode/rpiqr/.claude/settings.local.json)"
     ]
+  },
+  "sandbox": {
+    "enabled": true,
+    "autoAllowBashIfSandboxed": true
   }
 }
