@@ -69,6 +69,7 @@ Unlike greenfield projects, brownfield feature additions are constrained by real
    - `thoughts/shared/missions/*.md` — load the most recent or relevant mission
    - `thoughts/shared/specs/*.md` — load the corresponding spec
    - `thoughts/shared/epics/*.md` — skim titles to understand what's already planned/built
+   - `thoughts/shared/prototypes/*.md` — check for a prototype learnings note relevant to this feature; if found, treat its problem/outcome/decision as additional context (informational only — not a substitute for the mission or spec)
 
 2. Use Grep for a light codebase scan to identify:
    - Technology stack (e.g., `package.json`, `requirements.txt`, `go.mod`)
