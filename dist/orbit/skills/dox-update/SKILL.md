@@ -51,6 +51,7 @@ Run:
 ```bash
 find . -name "AGENTS.md" \
   -not -path './.git*' \
+  -not -path '*/.claude*' \
   -not -path '*/node_modules*' \
   -not -path '*/dist*' \
   -not -path '*/build*' \
