@@ -1,15 +1,15 @@
 # State: Prototype Skill
 
 **Plan**: thoughts/shared/plans/2026-07-24-Prototype-Skill.md
-**Current Task**: PLAN-004
-**Completed Tasks**: PLAN-001, PLAN-002, PLAN-003
+**Current Task**: PLAN-005
+**Completed Tasks**: PLAN-001, PLAN-002, PLAN-003, PLAN-004
 
 ## Task Checklist
 
 - [x] PLAN-001: Create `.claude/skills/prototype/SKILL.md` implementing the full build/demonstrate/decide/cleanup lifecycle
 - [x] PLAN-002: Add `prototypes/` row + Child DOX Index entry to `thoughts/shared/AGENTS.md`
 - [x] PLAN-003: Create `thoughts/shared/prototypes/AGENTS.md` (mirrors `qa/AGENTS.md` low-rigor pattern)
-- [ ] PLAN-004: Add `prototype/` bullet to `.claude/skills/AGENTS.md` Workflow skills list
+- [x] PLAN-004: Add `prototype/` bullet to `.claude/skills/AGENTS.md` Workflow skills list
 - [ ] PLAN-005: Document `/prototype` in `CLAUDE.md` (pipeline flow, stage table, skills table, dir structure)
 - [ ] PLAN-006: Add "Prototype Learnings" category to `.claude/agents/thoughts-locator.md`
 - [ ] PLAN-007: Add `thoughts/shared/prototypes/*.md` Glob line to `feature-architect/SKILL.md` Phase 1
