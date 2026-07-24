@@ -1,13 +1,13 @@
 # State: DOX Claude-Directory-Exclusion
 
 **Plan**: thoughts/shared/plans/2026-07-24-DOX-Claude-Exclusion.md
-**Current Task**: PLAN-002
-**Completed Tasks**: PLAN-001
+**Current Task**: PLAN-003
+**Completed Tasks**: PLAN-001, PLAN-002
 
 ## Task Checklist
 
 - [x] PLAN-001: Add `.claude` exclusion to dox-init/SKILL.md Phase 1 find command
-- [ ] PLAN-002: Add `.claude` exclusion to dox-update/SKILL.md Phase 1 find command
+- [x] PLAN-002: Add `.claude` exclusion to dox-update/SKILL.md Phase 1 find command
 - [ ] PLAN-003: Apply identical edit to dist/orbit/skills/dox-init/SKILL.md mirror
 - [ ] PLAN-004: Apply identical edit to dist/orbit/skills/dox-update/SKILL.md mirror
 
