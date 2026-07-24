@@ -13,6 +13,7 @@ Skills are invoked by the user (via `/skill-name`) or by Claude proactively when
 Each skill lives in its own subdirectory with a `SKILL.md` entry point:
 
 **Workflow skills (pipeline order):**
+- `prototype/` — Spike an idea into disposable, isolated code and reach a go/no-go/iterate decision; optional entry point before mission-architect/feature-architect/fact-finder; output to `thoughts/shared/prototypes/`
 - `mission-architect/` — Elicit project vision; output to `thoughts/shared/missions/`
 - `feature-architect/` — Define brownfield feature; output to `thoughts/shared/features/`
 - `specifier/` — Translate mission to technical spec; output to `thoughts/shared/specs/`
