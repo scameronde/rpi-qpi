@@ -29,7 +29,7 @@ The `search_scope` parameter controls which sections of the output you receive. 
 
 3. **`comprehensive`** (~280 tokens, complete results)
    - **Use Case:** Fact-Finder exploring all historical context
-   - **Sections Returned:** All 8 categories
+   - **Sections Returned:** All 9 categories
 
 **Default Behavior:** If `search_scope` is not specified, defaults to `comprehensive`.
 
@@ -52,6 +52,7 @@ The `search_scope` parameter controls which sections of the output you receive. 
 *   `thoughts/shared/plans/` -> Implementation plans (`YYYY-MM-DD-[Ticket].md`)
 *   `thoughts/shared/qa/` -> QA analysis reports (`YYYY-MM-DD-[Target].md`)
 *   `thoughts/shared/facts/` -> Fact reports (`YYYY-MM-DD-[Topic].md`)
+*   `thoughts/shared/prototypes/` -> Prototype learnings notes (`YYYY-MM-DD-[Name].md`)
 *   `thoughts/decisions/` -> ADRs (Architecture Decision Records)
 *   `thoughts/[username]/` -> Personal notes (Don't ignore these!)
 
@@ -63,6 +64,7 @@ The `search_scope` parameter controls which sections of the output you receive. 
     *   *Epics*: `find thoughts/shared/epics/ -name "*User-Auth*"`
     *   *Plans*: `find thoughts/shared/plans/ -name "*AUTH-001*"`
     *   *QA Reports*: `find thoughts/shared/qa/ -name "*auth*"`
+    *   *Prototype Notes*: `find thoughts/shared/prototypes/ -name "*csv*"`
     *   *Topics*: `grep -r "auth" thoughts/ --exclude-dir=searchable -l`
 2.  **Verify**: Use `Read` with a limit of 5 lines to check title/metadata.
 3.  **Sanitize**: Remove `/searchable/` from any paths.
@@ -113,6 +115,9 @@ paths_sanitized: [count]
 ### Fact Reports
 - `thoughts/shared/facts/2025-11-20-oauth.md` - **OAuth Analysis**
 
+### Prototype Learnings
+- `thoughts/shared/prototypes/2026-01-20-csv-converter.md` - **CSV Converter Spike** (go)
+
 ### Decisions (ADRs)
 - `thoughts/decisions/005-jwt-tokens.md` - **Use JWT for Session**
 
@@ -152,7 +157,7 @@ Wrap your categorized results in answer tags. The sections included depend on `s
 
 **For scope = focused:** Return 2-3 most relevant categories.
 
-**For scope = comprehensive (default):** Return all 8 categories (omitting empty ones).
+**For scope = comprehensive (default):** Return all 9 categories (omitting empty ones).
 
 ## Tips
 
