@@ -171,6 +171,7 @@ Run this exact command:
 ```bash
 find . -type d \
   -not -path './.git*' \
+  -not -path '*/.claude*' \
   -not -path '*/node_modules*' \
   -not -path '*/dist*' \
   -not -path '*/build*' \
