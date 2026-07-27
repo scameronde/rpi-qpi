@@ -13,7 +13,7 @@ Skills are invoked by the user (via `/skill-name`) or by Claude proactively when
 Each skill lives in its own subdirectory with a `SKILL.md` entry point:
 
 **Workflow skills (pipeline order):**
-- `prototype/` — Spike an idea into disposable, isolated code and reach a go/no-go/iterate decision; optional entry point before mission-architect/feature-architect/fact-finder; output to `thoughts/shared/prototypes/`
+- `prototype/` — Spike an idea into disposable, isolated code and reach a go/no-go/iterate decision; optional entry point before mission-architect/feature-architect/fact-finder; output to `thoughts/shared/prototypes/`. Pinned to `model: opus` — it works without a spec, and its durable outputs are the go/no-go call and the learnings note, both pure judgment. Never add `context: fork`: the skill is interactive (AskUserQuestion) and owns a worktree lifecycle, neither of which survives running in a subagent
 - `mission-architect/` — Elicit project vision; output to `thoughts/shared/missions/`
 - `feature-architect/` — Define brownfield feature; output to `thoughts/shared/features/`
 - `specifier/` — Translate mission to technical spec; output to `thoughts/shared/specs/`
@@ -39,6 +39,7 @@ Each skill lives in its own subdirectory with a `SKILL.md` entry point:
 - Workflow ordering is enforced: fact-finder must precede planner; planner must precede /implement
 - Prompt templates in `implement/` are embedded verbatim into agent calls — they are not skills themselves
 - `/implement` subagents never run `git commit`; the orchestrator owns all commits so concurrent implementers cannot corrupt each other's work
+- `/prototype` must never invoke `/implement` — its Phase 5 deletes the worktree unconditionally, so a real plan executed there is destroyed and its STATE file left un-advanced
 - Plan tasks carry `Wave:`, `Model:`, `Verify:`, and `allowedAdjacentEdits` fields set by `/planner`; `/implement` reads all four. Changing any field's contract requires updating both skills, both `implement/` prompt templates, and `CLAUDE.md`
 - `Wave:` groups are only as safe as `File(s)` is exhaustive — an omitted path can put two concurrent implementers in one file
 - STATE files track `**Current Wave**` and are updated once per wave, not per task

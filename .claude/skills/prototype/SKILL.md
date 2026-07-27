@@ -1,6 +1,7 @@
 ---
 name: prototype
 description: Spike a rough idea into working, disposable code inside an isolated git worktree, demonstrate it, and reach an explicit go/no-go/iterate decision — no spec/plan/QA gates. Writes a learnings note to thoughts/shared/prototypes/ regardless of outcome; code is always discarded. Optional entry point before mission-architect/feature-architect/fact-finder.
+model: opus
 ---
 
 # Prototype: Fast, Disposable Spikes Before Real Commitment
@@ -18,7 +19,9 @@ Your job is narrow and complete in one session: spin up an isolated git worktree
    If `EnterWorktree` errors because a worktree session is already active, do not force a nested worktree and do not fall back to any other isolation mechanism. Tell the user plainly that a worktree session is already open, explain that they may need to resolve or `ExitWorktree` it themselves, and stop.
 
 3. **No pipeline gates once inside the worktree.**
-   While working inside the prototype worktree, never call `fact-finder`, `planner`, `epic-planner`, `feature-architect`, `specifier`, `mission-architect`, `clean-code`, `python-qa`, `typescript-qa`, `logic-bugs-qa`, `dox-init`, or `dox-update`. Full coding freedom, no gates — that is the entire point of this skill.
+   While working inside the prototype worktree, never call `fact-finder`, `planner`, `implement`, `epic-planner`, `feature-architect`, `specifier`, `mission-architect`, `clean-code`, `python-qa`, `typescript-qa`, `logic-bugs-qa`, `dox-init`, or `dox-update`. Full coding freedom, no gates — that is the entire point of this skill.
+
+   `implement` carries a consequence the others do not. Running it here would execute a real plan's tasks inside this worktree and commit them to the prototype branch — which Phase 5 then deletes unconditionally, discarding genuine work and leaving the plan's STATE file silently un-advanced. Never invoke it from a prototype session, including against a plan that already exists in `thoughts/shared/plans/`. Prototype code is disposable; a real plan's execution is not.
 
 4. **DOX governance is suspended for prototype code.**
    Do not seek out, read, or honor any `AGENTS.md` file encountered while working inside the prototype worktree. This is a deliberate exemption for this skill's own code-writing, not an oversight — per the feature brief's Explicit Non-Goals.
