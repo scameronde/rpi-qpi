@@ -20,7 +20,7 @@ Each skill lives in its own subdirectory with a `SKILL.md` entry point:
 - `epic-planner/` — Decompose spec to epics; output to `thoughts/shared/epics/`
 - `fact-finder/` — Map codebase or research topic; output to `thoughts/shared/facts/` or `thoughts/shared/qa/`
 - `planner/` — Produce sequenced implementation plan; output to `thoughts/shared/plans/`
-- `implement/` — Execute plan task-by-task via subagents; also contains `implementer-prompt.md`, `spec-reviewer-prompt.md`, `code-quality-reviewer-prompt.md`
+- `implement/` — Execute plan wave-by-wave via concurrent subagents; also contains `implementer-prompt.md` and `reviewer-prompt.md` (one combined spec + quality reviewer)
 
 **Quality skills:**
 - `clean-code/` — Language-agnostic code quality review; contains `references/` subdirectory
@@ -38,6 +38,10 @@ Each skill lives in its own subdirectory with a `SKILL.md` entry point:
 - Skills spawn agents via the `Agent` tool — never invoke agents directly
 - Workflow ordering is enforced: fact-finder must precede planner; planner must precede /implement
 - Prompt templates in `implement/` are embedded verbatim into agent calls — they are not skills themselves
+- `/implement` subagents never run `git commit`; the orchestrator owns all commits so concurrent implementers cannot corrupt each other's work
+- Plan tasks carry `Wave:`, `Model:`, `Verify:`, and `allowedAdjacentEdits` fields set by `/planner`; `/implement` reads all four. Changing any field's contract requires updating both skills, both `implement/` prompt templates, and `CLAUDE.md`
+- `Wave:` groups are only as safe as `File(s)` is exhaustive — an omitted path can put two concurrent implementers in one file
+- STATE files track `**Current Wave**` and are updated once per wave, not per task
 
 ## Verification
 

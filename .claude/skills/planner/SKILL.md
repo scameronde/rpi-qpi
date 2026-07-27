@@ -123,8 +123,8 @@ Search strategy for user authentication system:
 1. **Frontmatter**: Use `correlation_id` to track which planning task this responds to; `files_found` validates completeness
 2. **Thinking**: Review search strategy to ensure coverage aligns with your planning needs
 3. **Answer - Primary Implementation**: These files go in PLAN-XXX "File(s)" fields for modification tasks
-4. **Answer - Related Configuration**: Add config files to PLAN-XXX tasks or create separate config update tasks
-5. **Answer - Testing Coordinates**: Create PLAN-XXX tasks for test updates to maintain coverage
+4. **Answer - Related Configuration**: Add config files to the `File(s)` of the task that requires them — a separate config task only when the config change lands independently
+5. **Answer - Testing Coordinates**: Add test files to the `File(s)` of the task whose behavior they cover, so the change and its test are implemented together (see Phase 2b sizing rule). A standalone test task is for backfilling coverage on code this plan does not otherwise touch
 6. **Answer - Directory Structure**: Use to plan new file creation or identify organizational changes needed
 7. **Role metadata**: Use `[entry-point]` tags to prioritize which files need deeper analysis with codebase-analyzer
 
@@ -135,16 +135,22 @@ The comprehensive topology enables you to create complete implementation plans:
 **Example PLAN-XXX task using locator output:**
 ```markdown
 - **Action ID:** PLAN-003
+- **Wave:** 1
+- **Model:** (omit — multi-file integration)
 - **Change Type:** modify
 - **File(s):**
   - `src/features/auth/AuthService.ts`
   - `src/features/auth/TokenManager.ts`
   - `config/auth.yaml`
   - `tests/unit/AuthService.test.ts`
+- **allowedAdjacentEdits:** none
 - **Instruction:** Update token expiry logic in AuthService and TokenManager, configure new timeout in auth.yaml, update tests
 - **Evidence:** `codebase-locator response locator-2026-01-18-001 identified all auth components`
-- **Done When:** All auth files use new expiry constant from config, tests pass
+- **Done When:** AuthService and TokenManager read the expiry from `config/auth.yaml` instead of a literal, and the auth unit tests cover the new value
+- **Verify:** `npm test -- tests/unit/AuthService.test.ts tests/unit/TokenManager.test.ts` → all pass
 ```
+
+Note that the implementation, its config, and its tests are **one** task, not three — they share a concern and one implementer can complete them in a single pass. Listing all four files also makes the wave-disjointness check meaningful: this task owns `config/auth.yaml`, so no other task in wave 1 may touch it.
 
 This ensures your implementation plan accounts for **all** files that need changes, not just the obvious implementation files.
 
@@ -398,6 +404,75 @@ After reading input file(s) in Phase 1, check if input is a QA report:
 - **Crucial Step**: Before planning a change to `File A`, you must `Read` `File A`.
 - Ensure the line numbers and logic in your head match the reality on disk.
 
+### Phase 2b: Task Sizing and Wave Assignment
+
+`/implement` pays a fixed cost per task — a cold subagent context that re-reads `CLAUDE.md`, walks the DOX `AGENTS.md` chain, and re-reads the target files. That cost is per task, not per line. Four one-line edits split across four tasks cost four times as much as the same four edits in one task, for no added safety.
+
+**Sizing rule:** a task is the **largest unit one implementer can complete correctly in a single pass** — not the smallest reviewable unit. Reviewability is the reviewer's job, not the task boundary's.
+
+Merge into one task when the changes are:
+- **Several edits to the same file** — see the same-file rule below. This is the most common and most costly miss
+- The same edit applied across several files (a rename, a flag added to N call sites, a mirrored `dist/` copy)
+- A change plus its own test
+- A change plus the `AGENTS.md` or doc update it forces
+
+Keep separate tasks when:
+- One task's output is another's input
+- They touch genuinely different concerns **in different files** and could land independently
+- One is risky and one is trivial — do not drag a mechanical edit through a heavyweight review
+
+**The same-file rule.** Two tasks that touch the same file can never run concurrently — the disjointness rule forbids it. So splitting them buys no parallelism and costs one full cold context each: every extra task re-reads `CLAUDE.md`, re-walks the DOX chain, and re-reads the same file. Group all edits to one file into **one task**, and let the instruction enumerate them:
+
+```
+- **File(s):** `agent/codebase-locator.md`
+- **Instruction:**
+  1. Remove unused tool permissions (webfetch, searxng-search, context7) from frontmatter
+  2. Consolidate the duplicated exclusion rules in the Tool Usage section
+  3. Clarify the scope parameter parsing rules
+```
+
+One implementer reads the file once and makes all three edits, instead of three implementers reading it three times.
+
+This matters most for audit-style plans, where a dozen findings often land in a single file. "Different concerns" is not a reason to split when the file is shared — concerns are separated by the numbered instruction, not by the task boundary.
+
+Two limits on merging:
+- **Do not merge across a priority tier.** A Critical security fix and a Low style nit stay separate tasks even in the same file, so the important one lands first and is not held up by review churn on the trivial one.
+- **Keep the merged task's `Verify:` complete** — it must check every numbered edit, not just the last. If one command cannot cover them all, list several.
+
+**Wave assignment:** every task gets a `Wave:` number. Tasks in the same wave run **concurrently**, so they must have **disjoint `File(s)` sets** — counting `allowedAdjacentEdits` too — and no dependency on each other. A task that consumes an earlier task's output belongs in a later wave. Number waves from 1; a plan where everything is independent is a single wave.
+
+When you cannot tell whether two tasks overlap, **put them in separate waves**. A wrongly-split wave costs a little latency. A wrongly-merged wave puts two implementers in the same file at the same time and corrupts the working tree.
+
+**`File(s)` is now safety-critical.** It used to be a scope hint; under concurrent execution it is the input to the disjointness check. A path you omit is a path the wave planner cannot protect. List every file the task will touch — implementation, tests, config, and the `AGENTS.md` or docs the change forces. If a task might need to touch a file you are not certain about, either list it or give the task its own wave.
+
+**Wave self-check — run this before writing the plan.** For each wave, write out every path from every task's `File(s)` and `allowedAdjacentEdits`. If any path appears twice, the wave is wrong: merge the two tasks, or move one to a later wave. Do not resolve it by deleting a path from a `File(s)` list.
+
+**Model assignment:** every task gets a `Model:` field.
+- `haiku` — 1–2 files, mechanical, unambiguous spec, docs/config/prompt text
+- omit — multi-file, integration work, judgment calls
+- `opus` — architecture, complex refactors, design decisions
+
+Most tasks in a typical plan are `haiku`. Assign it deliberately rather than defaulting everything to the session model.
+
+### Phase 2c: Writing a Checkable `Done When`
+
+`/implement` has a **fast path**: when a change is mechanical and its `Done When` can be checked by running a command, the orchestrator verifies it directly instead of spending a review subagent. That path only fires if you write `Done When` as something executable. A prose condition — "the auth files use the new constant, tests pass" — cannot be checked without a subagent, so the whole saving is lost.
+
+**Every task gets a `Verify:` field: a literal shell command plus its expected result.**
+
+Good:
+- `Verify:` `diff .claude/skills/dox-init/SKILL.md dist/orbit/skills/dox-init/SKILL.md` → no output, exit 0
+- `Verify:` `grep -c "^\s*-not -path" .claude/skills/dox-init/SKILL.md` → `10`
+- `Verify:` `npm test -- auth` → all pass
+- `Verify:` `test -f thoughts/shared/prototypes/AGENTS.md` → exit 0
+
+Not acceptable as the only check:
+- "The code works correctly"
+- "The refactor is complete"
+- "Tests pass" (which tests? what command?)
+
+Keep `Done When` as the human-readable condition and let `Verify:` carry the command. When a task genuinely has no mechanical check — a judgment-heavy refactor, a prose rewrite — write `Verify: none — requires review` and the orchestrator will route it to a reviewer. Say so explicitly rather than leaving the field off; a missing `Verify` is indistinguishable from an oversight.
+
 ### Phase 3: Decision Gates (NO DEADLOCK)
 - Always write the full plan artifact.
 - Include an **Approval Gate** section:
@@ -458,15 +533,28 @@ For each claim:
 ## Design Overview
 - Data flow / control flow bullets (no code)
 
+## Execution Waves
+
+| Wave | Tasks | Files touched | Rationale |
+|---|---|---|---|
+| 1 | PLAN-001, PLAN-002 | `a.ts`, `b.ts` | Independent, disjoint |
+| 2 | PLAN-003 | `c.ts` | Consumes PLAN-001's export |
+
+Tasks in the same wave run concurrently. No path may appear twice within a wave.
+
 ## Implementation Instructions (For Implementor)
 For each action:
 - **Action ID:** PLAN-001
+- **Wave:** 1
+- **Model:** haiku | (omit) | opus
 - **Change Type:** create/modify/remove
-- **File(s):** `path/...`
+- **File(s):** `path/...` (exhaustive — impl, tests, config, docs)
+- **allowedAdjacentEdits:** `path/...` or none
 - **Instruction:** exact steps
 - **Interfaces / Pseudocode:** minimal
 - **Evidence:** `path:line-line` (why this file / why this approach)
 - **Done When:** concrete observable condition
+- **Verify:** `command` → expected result (or `none — requires review`)
 
 ## Verification Tasks (If Assumptions Exist)
 For each assumption:
@@ -478,8 +566,11 @@ For each assumption:
 - Bullet list of externally observable results.
 
 ## Implementor Checklist
+### Wave 1
 - [ ] PLAN-001 ...
 - [ ] PLAN-002 ...
+### Wave 2
+- [ ] PLAN-003 ...
 ```
 
 **For QA Implementation Plans (when input is QA report):**
@@ -503,7 +594,7 @@ Quality issues identified:
 - High: [N] items (Phase 2)
 - Medium: [N] items (Phase 3)
 - Low: [N] items (Phase 4)
-- **Total**: [N] items
+- **Total**: [N] items → [M] tasks after same-file merging
 
 ## Verified Current State
 
@@ -532,13 +623,26 @@ Quality improvements across identified categories:
 
 ## Implementation Instructions (For Implementor)
 
+**Phases, waves, and merging.** Phases are priority tiers (fix Critical before Low). Waves are concurrency groups. In QA plans the phase's real job is to be a **merge boundary**, not a wave boundary.
+
+A QA audit almost always targets one component, so most or all findings land in **the same file**. That has three consequences, and getting them in the right order matters:
+
+1. **Merge first.** Apply the same-file rule from Phase 2b: all findings in one file *within one phase* become **one task** with a numbered instruction. A 9-finding audit of a single file is 3 tasks (one per phase present), not 9.
+2. **Do not merge across phases.** This is what keeps the priority tiers meaningful — Critical fixes land and commit before Low ones, and a style nit cannot hold up a security fix in review.
+3. **Waves fall out of what remains.** Because the surviving tasks mostly share a file, disjointness already serializes them: typically one task per wave. Number waves continuously across the plan (Phase 1 → wave 1, Phase 2 → wave 2, …). Only when a phase's findings genuinely span *different* files do you get a wave with more than one task in it.
+
+Do not expect waves to speed up a single-file audit — they cannot, by construction. The saving there comes entirely from step 1.
+
 ### Phase 1: Critical Issues (Security + Blocking Errors)
 
-#### PLAN-001: [Issue Title] (was QA-001)
+#### PLAN-001: [Issue Title] (covers QA-001, QA-003)
 - **Priority**: Critical
 - **Category**: [Security/Types/etc]
+- **Wave:** 1
+- **Model:** haiku | (omit) | opus
 - **Change Type**: modify/create/remove
-- **File(s)**: `path/to/file.ext`
+- **File(s)**: `path/to/file.ext` (exhaustive — impl, tests, config, docs)
+- **allowedAdjacentEdits:** `path/...` or none
 - **Instruction:** [Detailed steps from QA report]
 - **Evidence:** `path:line-line`
 - **Excerpt:**
@@ -546,19 +650,24 @@ Quality improvements across identified categories:
   [Code excerpt]
   ```
 - **Done When:** [Observable condition from QA report]
+- **Verify:** `command` → expected result (or `none — requires review`)
 
 [Repeat for all Critical items]
 
 ### Phase 2: High Priority Issues (Test Coverage + Type Safety)
 
-#### PLAN-XXX: [Issue Title] (was QA-XXX)
+#### PLAN-XXX: [Issue Title] (covers QA-XXX, QA-YYY)
 - **Priority**: High
 - **Category**: [Testability/Types/etc]
+- **Wave:** [N]
+- **Model:** haiku | (omit) | opus
 - **Change Type**: modify/create/remove
-- **File(s)**: `path/to/file.ext`
+- **File(s)**: `path/to/file.ext` (exhaustive — impl, tests, config, docs)
+- **allowedAdjacentEdits:** `path/...` or none
 - **Instruction:** [Detailed steps from QA report]
 - **Evidence:** `path:line-line`
 - **Done When:** [Observable condition from QA report]
+- **Verify:** `command` → expected result (or `none — requires review`)
 
 [Repeat for all High items]
 
@@ -586,18 +695,22 @@ Commands from [language]-qa skill Section 4:
 
 ## Implementor Checklist
 
-### Phase 1 (Critical)
-- [ ] PLAN-001: [Short title] (was QA-001)
-- [ ] PLAN-002: [Short title] (was QA-002)
+Grouped by wave and labelled with its phase, matching the STATE file.
 
-### Phase 2 (High)
-- [ ] PLAN-XXX: [Short title] (was QA-XXX)
+### Wave 1 (Phase 1: Critical)
+- [ ] PLAN-001: [Short title] (covers QA-001, QA-003 — same file)
+- [ ] PLAN-002: [Short title] (was QA-002 — different file, so a separate task in the same wave)
 
-### Phase 3 (Medium)
-- [ ] PLAN-XXX: [Short title] (was QA-XXX)
+### Wave 2 (Phase 2: High)
+- [ ] PLAN-003: [Short title] (covers QA-004, QA-005, QA-007 — same file)
 
-### Phase 4 (Low)
-- [ ] PLAN-XXX: [Short title] (was QA-XXX)
+### Wave 3 (Phase 3: Medium)
+- [ ] PLAN-XXX: [Short title] (covers QA-XXX …)
+
+### Wave 4 (Phase 4: Low)
+- [ ] PLAN-XXX: [Short title] (covers QA-XXX …)
+
+A merged task cites every QA id it resolves, so nothing from the audit is lost when findings collapse into one task.
 
 ## References
 - Source QA report: `thoughts/shared/qa/YYYY-MM-DD-[Target].md`
@@ -607,7 +720,7 @@ Commands from [language]-qa skill Section 4:
 
 ### 2. State File: `thoughts/shared/plans/YYYY-MM-DD-[Ticket]-STATE.md`
 
-This is the progress tracker that Implementor updates after each task.
+This is the progress tracker that Implementor updates **after each wave** — not after each task. A wave's tasks complete together, so their checklist entries are checked together in one commit.
 
 Initial structure (created by Planner):
 
@@ -615,33 +728,36 @@ Initial structure (created by Planner):
 # State: [Ticket Name]
 
 **Plan**: thoughts/shared/plans/YYYY-MM-DD-[Ticket].md
+**Current Wave**: 1
 **Current Task**: PLAN-001
 **Completed Tasks**: (none yet)
 
 ## Task Checklist
 
-[If plan has phases:]
-### Phase 1: [Phase Name]
+Grouped by wave. Tasks within a wave run concurrently and are checked off together.
+
+### Wave 1
 - [ ] PLAN-001: [One-line task description]
 - [ ] PLAN-002: [One-line task description]
 
-### Phase 2: [Phase Name]
+### Wave 2
 - [ ] PLAN-003: [One-line task description]
 
-[If plan has no phases:]
-- [ ] PLAN-001: [One-line task description]
-- [ ] PLAN-002: [One-line task description]
+[If the plan has QA phases, label the wave with its phase:]
+### Wave 3 (Phase 2: High)
+- [ ] PLAN-004: [One-line task description]
 
 ## Quick Verification
-<list verification commands from the plan>
+<list the Verify: commands from the plan>
 
 ## Notes
 - Plan created: YYYY-MM-DD
-- Total tasks: N
-- Phases: [list phase names if applicable]
+- Total tasks: N across M waves
 ```
 
-**Important**: Keep this file minimal (≤40 lines). The Implementor will update it after each task completion.
+`**Current Task**` stays for readability — it names the first unfinished task of the current wave. `**Current Wave**` is what `/implement` advances.
+
+**Important**: Keep this file minimal (≤40 lines). The Implementor updates it once per wave, amended into that wave's final commit.
 
 **Task Description Format:**
 - Extract from the PLAN-XXX "Instruction" field first sentence or action verb phrase
