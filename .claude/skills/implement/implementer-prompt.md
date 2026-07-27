@@ -2,31 +2,33 @@
 
 You are implementing a single task from an implementation plan. Implement exactly this task — nothing more, nothing less.
 
+Other implementers may be running concurrently on other files. Stay inside your assigned files.
+
 ## Task
 
 **[PLAN-XXX]: [Task Name]**
 
 [PASTE FULL TASK CONTENT HERE — include: instruction, File(s), evidence, doneWhen, context, allowedAdjacentEdits if any]
 
-## Files Changed by Earlier Tasks
+## Files Changed by Earlier Waves
 
-These files were modified by earlier tasks in this plan. Read them before starting if your task touches them.
+These files were modified by earlier waves in this plan. Read them before starting if your task touches them.
 
-[LIST FILES FROM PRIOR TASKS, or "None — this is the first task"]
+[LIST FILES FROM PRIOR WAVES, or "None — this is the first wave"]
 
 ## Your Responsibilities
 
 1. **Check local governance**: For each path in the task's **File(s)** field, walk from the repository root to that file's directory and read any `AGENTS.md` files found along the route. The nearest `AGENTS.md` is your local contract; parents supply broader rules.
-2. Read each file in the task's **File(s)** field to understand current state
-4. Implement exactly what the task specifies
-5. Write tests for your changes — write the failing test first when possible
-6. Run tests to verify they pass
-7. Commit your work:
-   ```bash
-   git add [specific files only — not git add -A]
-   git commit -m "[PLAN-XXX]: [brief description of what you implemented]"
-   ```
-8. Self-review against the checklist below
+2. Read each file in the task's **File(s)** field to understand current state.
+3. Implement exactly what the task specifies.
+4. Run the task's **`Verify:`** command and confirm it produces the expected result. If the task has no `Verify:` field, derive a check from its `Done When` and report which you ran.
+5. **Tests** — apply judgment, do not write tests reflexively:
+   - Behavior change in executable code → write a test, failing test first when possible, then run it.
+   - Documentation, prompt text, config values, or markdown → no test. The `Verify:` command is the check.
+   - If an existing test suite covers the files you touched, run it either way.
+6. Self-review against the checklist below.
+
+**Do not commit.** The orchestrator commits your work. Leave your changes in the working tree — do not run `git add`, `git commit`, `git stash`, or `git checkout`. Concurrent implementers share this working tree, and a commit from you would sweep up their half-finished work.
 
 ## Constraints
 
@@ -40,10 +42,12 @@ These files were modified by earlier tasks in this plan. Read them before starti
 
 Before reporting:
 - [ ] Everything in the task instruction is implemented
-- [ ] Tests verify real behavior (not just existence or mocks)
+- [ ] The task's `Verify:` command was run and produced the expected result — verified, not assumed
+- [ ] The task's `Done When` condition actually holds
+- [ ] Tests (where applicable) verify real behavior, not just existence or mocks
 - [ ] No unrequested features or refactors added
+- [ ] No files outside the task's **File(s)** field were touched
 - [ ] Code matches conventions in the surrounding file
-- [ ] Commit made with PLAN-XXX in the message
 - [ ] If the change affects a directory's purpose, scope, structure, or file-format contracts: nearest `AGENTS.md` updated (or created if none existed)
 
 Fix any issues before reporting.
@@ -52,9 +56,9 @@ Fix any issues before reporting.
 
 Start with one of:
 
-**DONE** — implementation complete, tests pass, committed.
+**DONE** — implementation complete, `Verify:` command run and passing.
 
-**DONE_WITH_CONCERNS** — complete and committed, but with observations:
+**DONE_WITH_CONCERNS** — complete, but with observations:
 > [list concerns — things that surprised you, edge cases you noticed, things worth the orchestrator knowing]
 
 **NEEDS_CONTEXT** — I need this information before I can proceed:
@@ -66,6 +70,6 @@ Start with one of:
 
 Then provide:
 - **Files changed**: path + one-line description of change
-- **Tests written**: test names + pass/fail result
-- **Commit**: hash + message
+- **Verify**: the command you ran + its actual output
+- **Tests written**: test names + pass/fail result, or "N/A — [reason]"
 - **Adaptations** (if any): what differed from the task's evidence and how you handled it
