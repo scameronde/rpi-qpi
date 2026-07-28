@@ -32,11 +32,13 @@ Comprehensive reference for extending Claude Code with Skills, Subagents, and MC
 
 | Scope | Path | Applies to |
 |---|---|---|
+| Enterprise | managed location, set by an administrator | Every project on the machine |
 | Personal | `~/.claude/skills/<name>/SKILL.md` | All your projects |
 | Project | `.claude/skills/<name>/SKILL.md` | This project only |
+| Plugin | shipped inside an installed plugin | Namespaced, so it never collides |
 | Legacy | `.claude/commands/<name>.md` | Same as project skill |
 
-Skills override by name: personal > project. A `.claude/skills/` skill wins over `.claude/commands/` if names match.
+Skills override by name: **enterprise > personal > project**, with plugin skills lowest because they are namespaced. Within one scope, a `.claude/skills/` skill wins over a `.claude/commands/` file of the same name.
 
 ### SKILL.md structure
 
@@ -57,6 +59,8 @@ Skill content here...
 ```
 
 **All frontmatter fields are optional.** Only `description` is recommended.
+
+This is a quick reference, not the full field list. Others exist — among them `when_to_use`, `arguments`, `disallowed-tools`, `effort`, `background`, `hooks`, `paths` and `shell`. Check the official skills documentation before concluding a field does not exist.
 
 ### Invocation control
 
@@ -168,6 +172,9 @@ mcpServers:                   # MCP servers available to this subagent
 memory: user                  # user | project | local — enables cross-session memory
 background: false             # true = always run as background task
 isolation: worktree           # worktree = isolated git worktree copy
+# Also available: hooks, effort, color, initialPrompt. This is a quick
+# reference — check the official subagent docs before concluding a field
+# does not exist.
 ---
 
 System prompt / instructions for this subagent.
