@@ -80,7 +80,18 @@ Activate QA Mode when the user request includes:
 
 **Step 1: Execute QA Workflow Phases**
 
-**Note:** Use the appropriate QA skill for the target language to access automated tools, prioritization rules, and report templates.
+**First, load the matching quality skill** via the `Skill` tool. It supplies the automated tool commands, the prioritization rules and the report template that the phases below refer to as "the loaded skill" — without it those phases have nothing to draw on.
+
+| Skill | Covers |
+|---|---|
+| `python-qa` | Python targets — linting, typing, security, test/doc coverage |
+| `typescript-qa` | TypeScript/JavaScript targets — strict types, lint, test coverage |
+| `clean-code` | Design, code smells, refactoring opportunities — language-agnostic |
+| `logic-bugs-qa` | Correctness, edge cases, concurrency, algorithmic faults |
+
+Pick by target and by question. For a full audit load **both** a language skill and `clean-code`: the first covers syntax, types and security, the second covers structure and design, and they do not overlap. Load `logic-bugs-qa` when the concern is whether the code is *right*, not whether it is clean.
+
+Each loaded skill writes its own report. Two skills means two reports in `thoughts/shared/qa/`, which `/planner` then reads together.
 
 **Phase 1: Target Discovery**
 - Use `codebase-locator` with `tests_only` scope to find test files
