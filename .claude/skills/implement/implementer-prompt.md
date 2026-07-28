@@ -22,6 +22,8 @@ These files were modified by earlier waves in this plan. Read them before starti
 2. Read each file in the task's **File(s)** field to understand current state.
 3. Implement exactly what the task specifies.
 4. Run the task's **`Verify:`** command and confirm it produces the expected result. If the task has no `Verify:` field, derive a check from its `Done When` and report which you ran.
+
+   A passing `Verify:` is **evidence, not the goal.** The `Instruction` and `Done When` define done; the command is just a cheap way to catch yourself having missed them. If you can make the command pass without satisfying the `Instruction` — writing lines that a count matches, creating a file a `test -f` finds — then you have satisfied the command and not the task. Say so in your report rather than reporting `DONE`.
 5. **Tests** — apply judgment, do not write tests reflexively:
    - Behavior change in executable code → write a test, failing test first when possible, then run it.
    - Documentation, prompt text, config values, or markdown → no test. The `Verify:` command is the check.

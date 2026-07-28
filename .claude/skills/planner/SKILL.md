@@ -461,13 +461,24 @@ Treat a task you cannot confidently mark `haiku` as a signal about the plan, not
 
 **Every task gets a `Verify:` field: a literal shell command plus its expected result.**
 
-Good:
-- `Verify:` `diff .claude/skills/dox-init/SKILL.md dist/orbit/skills/dox-init/SKILL.md` → no output, exit 0
-- `Verify:` `grep -c "^\s*-not -path" .claude/skills/dox-init/SKILL.md` → `10`
-- `Verify:` `npm test -- auth` → all pass
-- `Verify:` `test -f thoughts/shared/prototypes/AGENTS.md` → exit 0
+A `Verify:` command is only worth having if it can **fail**. Apply this test to every one you write:
 
-Not acceptable as the only check:
+> Can I imagine a change that makes this command pass while `Done When` is still false?
+
+If yes, the command is too weak — it asserts *quantity* or *existence* where it needs to assert *content*. This matters more than it used to: implementers run on `haiku` and are handed the command, so a command that is easy to satisfy is a command that gets satisfied instead of the task getting done.
+
+**Strong — asserts content:**
+- `Verify:` `diff .claude/skills/dox-init/SKILL.md dist/orbit/skills/dox-init/SKILL.md` → no output, exit 0
+- `Verify:` `npm test -- auth` → all pass
+- `Verify:` `grep -q "expiry = config.authTimeout" src/auth/TokenManager.ts` → exit 0
+
+**Too weak on its own — passes for the wrong content:**
+- `grep -c "^\s*-not -path" file.md` → `10` — any ten matching lines satisfy it, anywhere in the file, in any order, in any context
+- `test -f thoughts/shared/prototypes/AGENTS.md` → exit 0 — an empty file from `touch` passes
+
+An existence check is only sufficient when existence genuinely *is* the requirement and nothing about the contents matters — which is rare. Otherwise pair the weak check with a content check (`test -f X && grep -q "## Purpose" X`), or write `Verify: none — requires review`.
+
+**Not acceptable at all:**
 - "The code works correctly"
 - "The refactor is complete"
 - "Tests pass" (which tests? what command?)

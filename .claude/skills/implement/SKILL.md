@@ -154,9 +154,11 @@ Run `git diff` for the wave's files and classify **each** task:
 **Fast path — you verify, no subagent.** A task qualifies when **all** hold:
 - The diff is under ~20 changed lines, **or** the change is a mechanical mirror/rename of an already-reviewed change.
 - No control flow, no error handling, no security-relevant surface, no public interface change.
-- The task has a `Verify:` command (not `none — requires review`).
+- The task has a `Verify:` command (not `none — requires review`) **that asserts content**. A bare count (`grep -c … → 10`) or existence check (`test -f …`) does not qualify: it passes for the wrong content, so it corroborates nothing and would leave your diff read as the only check the task ever gets.
 
 For these: run the task's `Verify:` command yourself and confirm it produces the expected result, read the diff, and confirm it matches the `Instruction`. Record the command and its output. Do not dispatch anything.
+
+**The diff read is the load-bearing step, not the command.** The implementer was given that command and ran it before reporting, so a passing `Verify:` tells you only that the implementer cleared a bar it could see in advance. Your independent contribution is comparing the diff against the `Instruction` and `Done When`. If a weak `Verify:` is the only mechanical check available, send the task down the review path instead.
 
 A task whose `Verify:` is `none — requires review`, or that has no `Verify:` field at all (older plans), goes to the review path regardless of size.
 
