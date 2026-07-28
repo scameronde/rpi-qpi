@@ -164,7 +164,7 @@ Plans produced by `/planner` follow this structure:
 
 ### PLAN-001: <task name>
 - wave: 1
-- model: haiku|omit|opus
+- model: haiku|opus          # haiku is the default; opus only for architecture/complex refactors
 - changeType: modify|create|remove
 - files: [path/to/file]   # exhaustive — impl, tests, config, docs
 - allowedAdjacentEdits: [optional]
@@ -177,7 +177,7 @@ Plans produced by `/planner` follow this structure:
 
 `files` plus `allowedAdjacentEdits` must be exhaustive: they are the input to the wave-disjointness check, and an omitted path is a path that can be written by two concurrent implementers. `verify` is what lets the orchestrator confirm a mechanical change without spending a review subagent.
 
-`/implement` reads the plan and executes it **wave by wave**. Tasks sharing a `wave` have disjoint `files` and run concurrently — one implementer subagent each. After each wave, mechanical changes are verified by the orchestrator against `doneWhen`; everything else goes to a single reviewer that covers spec compliance and code quality together. The orchestrator — never the subagents — commits each wave, together with the STATE file update.
+`/implement` reads the plan and executes it **wave by wave**. Tasks sharing a `wave` have disjoint `files` and run concurrently — one implementer subagent each. After each wave the orchestrator runs a **Boundary Check**: every path the wave actually changed must appear in the union of its tasks' declared paths, or it is treated as either an incomplete `files` list or scope creep. Then mechanical changes are verified against `doneWhen`; everything else goes to a single reviewer that covers spec compliance and code quality together. The orchestrator — never the subagents — commits each wave, together with the STATE file update.
 
 ## DOX Protocol
 

@@ -136,7 +136,7 @@ The comprehensive topology enables you to create complete implementation plans:
 ```markdown
 - **Action ID:** PLAN-003
 - **Wave:** 1
-- **Model:** (omit — multi-file integration)
+- **Model:** haiku
 - **Change Type:** modify
 - **File(s):**
   - `src/features/auth/AuthService.ts`
@@ -447,12 +447,13 @@ When you cannot tell whether two tasks overlap, **put them in separate waves**. 
 
 **Wave self-check — run this before writing the plan.** For each wave, write out every path from every task's `File(s)` and `allowedAdjacentEdits`. If any path appears twice, the wave is wrong: merge the two tasks, or move one to a later wave. Do not resolve it by deleting a path from a `File(s)` list.
 
-**Model assignment:** every task gets a `Model:` field.
-- `haiku` — 1–2 files, mechanical, unambiguous spec, docs/config/prompt text
-- omit — multi-file, integration work, judgment calls
-- `opus` — architecture, complex refactors, design decisions
+**Model assignment:** every task gets a `Model:` field, and it is `haiku` unless you can name the reason it is not.
+- `haiku` — **the default.** Mechanical work, docs/config/prompt text, and ordinary multi-file edits whose `Instruction` is unambiguous. Implementers run on `haiku`; this is the normal case, not a cost compromise.
+- `opus` — architecture, complex refactors, design decisions. This is the *only* escape hatch from `haiku`, so spend it deliberately.
 
-Most tasks in a typical plan are `haiku`. Assign it deliberately rather than defaulting everything to the session model.
+Do not write `omit` — it is no longer a valid value.
+
+Treat a task you cannot confidently mark `haiku` as a signal about the plan, not about the model: it is usually underspecified. Tighten its `Instruction`, `Evidence`, and `Verify:` until a small model can execute it without inferring intent, or mark it `opus` on purpose. A `haiku` implementer handed a vague task does not report `BLOCKED` — it reports `DONE` on the wrong thing.
 
 ### Phase 2c: Writing a Checkable `Done When`
 
@@ -546,7 +547,7 @@ Tasks in the same wave run concurrently. No path may appear twice within a wave.
 For each action:
 - **Action ID:** PLAN-001
 - **Wave:** 1
-- **Model:** haiku | (omit) | opus
+- **Model:** haiku (default) | opus (architecture/complex refactor only)
 - **Change Type:** create/modify/remove
 - **File(s):** `path/...` (exhaustive — impl, tests, config, docs)
 - **allowedAdjacentEdits:** `path/...` or none
@@ -639,7 +640,7 @@ Do not expect waves to speed up a single-file audit — they cannot, by construc
 - **Priority**: Critical
 - **Category**: [Security/Types/etc]
 - **Wave:** 1
-- **Model:** haiku | (omit) | opus
+- **Model:** haiku (default) | opus (architecture/complex refactor only)
 - **Change Type**: modify/create/remove
 - **File(s)**: `path/to/file.ext` (exhaustive — impl, tests, config, docs)
 - **allowedAdjacentEdits:** `path/...` or none
@@ -660,7 +661,7 @@ Do not expect waves to speed up a single-file audit — they cannot, by construc
 - **Priority**: High
 - **Category**: [Testability/Types/etc]
 - **Wave:** [N]
-- **Model:** haiku | (omit) | opus
+- **Model:** haiku (default) | opus (architecture/complex refactor only)
 - **Change Type**: modify/create/remove
 - **File(s)**: `path/to/file.ext` (exhaustive — impl, tests, config, docs)
 - **allowedAdjacentEdits:** `path/...` or none

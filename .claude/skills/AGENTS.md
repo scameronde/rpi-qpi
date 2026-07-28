@@ -41,7 +41,8 @@ Each skill lives in its own subdirectory with a `SKILL.md` entry point:
 - `/implement` subagents never run `git commit`; the orchestrator owns all commits so concurrent implementers cannot corrupt each other's work
 - `/prototype` must never invoke `/implement` — its Phase 5 deletes the worktree unconditionally, so a real plan executed there is destroyed and its STATE file left un-advanced
 - Plan tasks carry `Wave:`, `Model:`, `Verify:`, and `allowedAdjacentEdits` fields set by `/planner`; `/implement` reads all four. Changing any field's contract requires updating both skills, both `implement/` prompt templates, and `CLAUDE.md`
-- `Wave:` groups are only as safe as `File(s)` is exhaustive — an omitted path can put two concurrent implementers in one file
+- `Model:` accepts `haiku` (the default) or `opus` (architecture/complex refactors only) — `omit` is not a valid value. `/implement` dispatches implementers on `haiku` and honors `opus` when the planner marked it; **reviewers always run on the session default with no `model` parameter**, so the gate never shares the implementer's blind spots. Because implementers are small models, an underspecified `Instruction` fails as a confident wrong `DONE` rather than a `BLOCKED` — plan task precision is what carries this tier
+- `Wave:` groups are only as safe as `File(s)` is exhaustive — an omitted path can put two concurrent implementers in one file. `/implement`'s Boundary Check is what detects this: before committing a wave it compares `git status --porcelain` against the union of the wave's declared paths. Only the orchestrator can run it — implementers see one file list each, and `reviewer-prompt.md` tells reviewers to ignore changes outside theirs, so an undeclared path is otherwise invisible to everyone
 - STATE files track `**Current Wave**` and are updated once per wave, not per task
 
 ## Verification

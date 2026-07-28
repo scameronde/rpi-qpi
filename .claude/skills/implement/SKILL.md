@@ -45,10 +45,20 @@ Before dispatching any subagent:
    - If no STATE file exists (plan predates STATE tracking): create one now using the
      template in `.claude/skills/planner/SKILL.md` (Current Task = first task ID,
      Completed Tasks = none, checklist populated from the plan's tasks), commit it.
-4. **Build the wave list** (see Wave Planning below).
-5. Create a TodoWrite item per task for tracking (pre-mark items already in
+4. **Record a dirty-tree baseline** — the Boundary Check compares against it. Write it
+   outside the repo so it does not become a finding itself:
+   ```bash
+   git status --porcelain | cut -c4- | sort > "$TMPDIR/wave-baseline.txt"
+   ```
+   Repos routinely carry dirty or untracked paths that belong to nobody's task — editor
+   directories, local dotfiles, build output. Without a baseline every one of them is
+   reported on every wave and the check degrades into noise you learn to skip past.
+   Capture this **after** any resume cleanup in step 3, and refresh it each time a wave
+   commits so the next wave measures from a clean start.
+5. **Build the wave list** (see Wave Planning below).
+6. Create a TodoWrite item per task for tracking (pre-mark items already in
    **Completed Tasks** as done).
-6. If anything in the plan is ambiguous, ask now before starting.
+7. If anything in the plan is ambiguous, ask now before starting.
 
 ## Wave Planning
 
@@ -86,14 +96,14 @@ Read `./implementer-prompt.md` **once, in Pre-Flight** — not per task. Fill in
 ```
 Agent tool (one call per task in the wave):
   subagent_type: general-purpose
-  model: [task's Model: field, or see Model Selection]
+  model: haiku — unless the task's Model: field says opus (see Model Selection)
   description: "Implement [PLAN-XXX]: [task name]"
   prompt: [full implementer-prompt.md with all placeholders replaced]
 ```
 
 **Embed** the full task text in the prompt — do NOT tell the subagent to read the plan file itself.
 
-Implementers do **not** commit. You commit the wave in step 4. This is what makes concurrency safe: parallel `git add`/`git commit` calls interleave and produce corrupted or partial commits.
+Implementers do **not** commit. You commit the wave in step 5. This is what makes concurrency safe: parallel `git add`/`git commit` calls interleave and produce corrupted or partial commits.
 
 ### 2. Handle Implementer Statuses
 
@@ -115,7 +125,29 @@ Never re-dispatch a BLOCKED task without providing something new.
 
 If any task in the wave is unresolved, do not commit the wave. Resolve it or drop it to a later wave and commit the rest.
 
-### 3. Review Gate
+### 3. Boundary Check
+
+Confirm the wave touched **only** what it declared — before spending a single reviewer. You are the only party who can do this: each implementer sees just its own file list, and reviewers are told to ignore changes outside theirs, so an undeclared path falls in the gap between them.
+
+```bash
+git status --porcelain | cut -c4- | sort | comm -13 "$TMPDIR/wave-baseline.txt" -
+```
+
+That lists every path this wave touched, with the pre-existing dirty paths from the Pre-Flight baseline filtered out. (`cut -c4-` strips the status columns; a rename appears as `old -> new`, so read both halves.)
+
+Build the wave's **declared set** — the union of every task's `File(s)` and `allowedAdjacentEdits` — and compare. The STATE file is not part of the set: you write it in step 5, so it must not appear yet.
+
+Every changed path that is not in the declared set is a finding. Diagnose each one, because the two causes need opposite responses:
+
+**Cause A — the change was genuinely required, and the plan's `File(s)` was incomplete.** Most often an `AGENTS.md`: the implementer followed the DOX rule and updated a governance file the planner forgot to list. Keep the change. Then check whether that path also belongs to another task in this same wave — if it does, the wave was never file-disjoint, two implementers may have overwritten each other, and you must stop and escalate to the user instead of committing. If it does not collide, commit it and report the plan's omission.
+
+**Cause B — scope creep.** The implementer was told to report `NEEDS_CONTEXT` rather than touch an unlisted file, and did not. **Read the change before you throw it away** — `git diff -- <path>` — then discard it: `git checkout -- <path>` for a tracked file, delete an untracked one. Note it in the wave report.
+
+`git checkout --` is unrecoverable, and it discards the file's *whole* working state, not just the part the implementer added. Never aim it at a path you have not just read. If the diff holds anything you cannot attribute to this wave, stop and ask the user before discarding — the same rule the resume path in Pre-Flight step 3 applies to leftover changes.
+
+Never commit a path that no task declared. And never settle a finding by adding the path to the plan after the fact: the declared set is what made the wave safe to run concurrently, so editing it retroactively destroys the evidence that it was wrong.
+
+### 4. Review Gate
 
 Run `git diff` for the wave's files and classify **each** task:
 
@@ -133,6 +165,7 @@ A task whose `Verify:` is `none — requires review`, or that has no `Verify:` f
 ```
 Agent tool (one call per review-path task):
   subagent_type: general-purpose
+  # no model parameter — reviewers always run on the session default
   description: "Review [PLAN-XXX]"
   prompt: [full reviewer-prompt.md with all placeholders replaced]
 ```
@@ -143,7 +176,7 @@ The reviewer returns spec compliance **and** code quality in one report — ther
 
 **Minor** issues may be noted and deferred.
 
-### 4. Commit the Wave and Advance
+### 5. Commit the Wave and Advance
 
 Commit the wave's work as one commit per task's logical change. When a wave is a set of mechanically identical edits (e.g. the same fix mirrored across four files), commit it as **one** commit listing every task ID:
 
@@ -168,21 +201,27 @@ Otherwise commit each task separately with its own `[PLAN-XXX]:` prefix.
 
 Verify with `git log --oneline -1` that the commit exists and carries the PLAN IDs.
 
+**Refresh the Boundary Check baseline** so the next wave measures from here, not from before this wave:
+
+```bash
+git status --porcelain | cut -c4- | sort > "$TMPDIR/wave-baseline.txt"
+```
+
+Skip this and every later wave inherits this wave's paths as findings.
+
 Mark the wave's tasks done in your todo list. Move to the next wave.
 
 ## Model Selection
 
-Use the task's `Model:` field when the plan supplies one. Otherwise:
+**Implementers run on `haiku`.** This is the baseline, not a per-task judgment call. A plan task arrives pre-specified down to its file list, evidence, `Done When`, and a literal `Verify:` command — that is precisely the shape of work a small model executes reliably.
 
-| Task type | Model parameter |
-|---|---|
-| 1–2 files, mechanical, clear spec, docs-only | `haiku` |
-| Multi-file, integration, judgment calls | omit (inherits session default) |
-| Architecture, complex refactor, design decisions | `opus` |
+**The one exception: pass `opus` when the task's `Model:` field says `opus`.** The planner reserves that for architecture, complex refactors, and design decisions. Honor it. An overwhelmed `haiku` does not reliably report `BLOCKED` — it reports `DONE` with a plausible-looking wrong implementation, which is the failure mode the review gate is weakest against.
 
-Reviewers follow the same tiering: a fast mechanical change that still needs review gets a `haiku` reviewer.
+On plans that predate this contract and carry no `Model:` field, use `haiku` unless the task is architectural.
 
-Do not default to omitting. Most plan tasks are mechanical; picking `haiku` for them is the intended behavior, not a risk.
+**Reviewers run on the session default — omit the `model` parameter entirely.** Do not tier reviewers. A `haiku` reviewer checking `haiku` output shares its blind spots, and the gate is the one place where the whole saving can be given back silently. Cheap implementer, capable checker.
+
+Escalation stays reactive, not anticipatory: a `BLOCKED` task gets more context, then a stronger model, then a split (see Handle Implementer Statuses). Do not pre-emptively upgrade a task because it *looks* hard — that is what the planner's `opus` marking is for.
 
 ## Stop Conditions
 
@@ -198,6 +237,7 @@ Do not default to omitting. Most plan tasks are mechanical; picking `haiku` for 
 ## Red Flags
 
 - **Never** put two tasks in the same wave when their `File(s)` sets overlap
+- **Never** commit a wave without running the Boundary Check — an undeclared path is invisible to both the implementer and the reviewer, so if you do not catch it, nobody does
 - **Never** let a subagent run `git commit` — the orchestrator owns all commits
 - **Never** start a wave before the previous wave is reviewed and committed
 - **Never** skip the review gate for a task that changes logic, interfaces, or error handling — the fast path is for mechanical edits only
