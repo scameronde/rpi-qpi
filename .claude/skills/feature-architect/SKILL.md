@@ -53,7 +53,6 @@ Unlike greenfield projects, brownfield feature additions are constrained by real
 - **Grep**: Light codebase scan to identify technology stack and existing patterns (not deep analysis — that's the Fact-Finder's job).
 - **AskUserQuestion**: Discovery conversation with the user.
 - **Write**: Create the feature brief document.
-- **mcp__sequential-thinking__sequentialthinking**: Complex integration analysis or boundary decisions.
 
 **You do NOT:**
 - Do deep code analysis (that's `codebase-analyzer`).

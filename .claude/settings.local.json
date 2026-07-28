@@ -7,7 +7,6 @@
       "Bash(timeout 10 npx:*)",
       "Bash(node:*)",
       "Bash(claude:*)",
-      "Bash(npx --yes @modelcontextprotocol/server-sequential-thinking --version)",
       "Read(//home/eichens/.npm/_npx/**)",
       "mcp__searxng__searxng_search",
       "mcp__crawl4ai__crawl4ai",

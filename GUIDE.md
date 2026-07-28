@@ -594,8 +594,6 @@ cd .claude/mcp/searxng  && npm install && npm run build
 
 The context7 server requires an API key — replace `<your key here>` in `.mcp.json` with your Context7 API key.
 
-The sequential-thinking server is installed on demand via `npx` and requires no manual setup.
-
 ---
 
 ### crawl4ai
@@ -649,31 +647,6 @@ Provides up-to-date library documentation and API references. Used directly by t
 - **web-search-researcher** — primary tool for library docs, API references, config schemas, official guides
 - **Planner** — direct use for quick API lookups before writing plan tasks (no subagent delegation needed)
 - **codebase-analyzer** and **codebase-pattern-finder** — available for external library context during analysis
-
----
-
-### sequential-thinking
-
-**Tool:** `mcp__sequential-thinking__sequentialthinking`
-**Transport:** stdio (installed via `npx @modelcontextprotocol/server-sequential-thinking`)
-**Requires:** No setup — npx installs on first use
-
-Provides a structured multi-step reasoning workspace. Agents use this for decisions that benefit from explicit, chainable thinking steps rather than single-pass reasoning.
-
-**When agents use it:**
-| Agent | Use cases |
-|---|---|
-| **mission-architect** | Complex vision trade-offs and scope conflicts |
-| **specifier** | Architectural decisions ("event-driven vs. request-driven?", component boundary analysis) |
-| **epic-planner** | Decomposition strategy, dependency analysis, sequencing logic |
-| **fact-finder** | Decomposing a research topic into investigation vectors |
-| **planner** | Complex planning decisions with multiple dependencies |
-| **codebase-analyzer** | Functions >50 lines with 3+ branching paths; recursive call chains; state mutations across multiple functions |
-| **codebase-pattern-finder** | Planning keyword strategy and variation identification before searching |
-| **codebase-locator** | Resolving ambiguous file paths |
-| **thoughts-locator** | Search strategy planning |
-| **thoughts-analyzer** | Signal extraction from complex documents |
-| **web-search-researcher** | Multi-step research planning |
 
 ---
 

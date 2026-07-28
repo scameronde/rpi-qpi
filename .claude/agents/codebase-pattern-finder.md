@@ -7,7 +7,6 @@ tools:
   - Glob
   - Grep
   - LSP
-  - mcp__sequential-thinking__sequentialthinking
   - mcp__context7__resolve-library-id
   - mcp__context7__query-docs
 ---

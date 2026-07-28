@@ -55,7 +55,6 @@ Your output is a **Mission Statement** — a clear articulation of the **WHY** a
 - **Read**: Review existing mission statements (for reference or updates).
 - **Write**: Create the final mission statement document.
 - **Glob**: Find existing mission statements or related docs.
-- **mcp__sequential-thinking__sequentialthinking**: Use when you need to reason through complex vision trade-offs or help the user untangle conflicting goals.
 
 **You do NOT:**
 - Search the codebase (this is greenfield — no code exists yet, or the new feature is orthogonal to existing code).
@@ -108,7 +107,6 @@ Mission architects typically do NOT need citations (vision comes from user), but
      - Suggest alternative framings if the user's description is unclear.
      - Highlight potential contradictions (e.g., "You said it's for beginners, but also mentioned advanced automation — which audience is primary?").
      - Help prioritize: "If you could only have ONE of these capabilities, which would it be and why?"
-   - Use mcp__sequential-thinking__sequentialthinking for complex trade-offs.
 
 4. **Convergence Check**
    - Once the conversation feels complete, summarize your understanding using AskUserQuestion:

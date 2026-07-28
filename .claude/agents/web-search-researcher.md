@@ -5,7 +5,6 @@ tools:
   - WebFetch
   - mcp__crawl4ai__crawl4ai
   - mcp__searxng__searxng_search
-  - mcp__sequential-thinking__sequentialthinking
   - mcp__context7__resolve-library-id
   - mcp__context7__query-docs
 ---

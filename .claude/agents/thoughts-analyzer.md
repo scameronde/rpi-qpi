@@ -5,7 +5,6 @@ tools:
   - Bash
   - Read
   - WebFetch
-  - mcp__sequential-thinking__sequentialthinking
   - mcp__searxng__searxng_search
   - mcp__context7__query-docs
 ---
@@ -63,9 +62,7 @@ Before analysis, prepare message metadata:
 - **Capture timestamp**: ISO 8601 format (YYYY-MM-DDTHH:MM:SSZ)
 - **Document metadata**: Extract date, status from document during analysis
 
-### 3. Signal Extraction (Sequential Thinking)
-
-Use `mcp__sequential-thinking__sequentialthinking` to process the text.
+### 3. Signal Extraction
 
 **Model for Distinction:**
 - **Signal (Keep)**: "We decided to use Redis." / "Max payload is 1MB." / "JWT is required."

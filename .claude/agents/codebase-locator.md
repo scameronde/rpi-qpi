@@ -6,7 +6,6 @@ tools:
   - Read
   - Glob
   - Grep
-  - mcp__sequential-thinking__sequentialthinking
 ---
 
 # Codebase Locator: The Cartographer

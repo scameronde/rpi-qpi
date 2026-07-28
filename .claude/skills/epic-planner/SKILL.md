@@ -48,7 +48,6 @@ Your output is a set of **Epic Documents** that break down the specification int
 - **Write**: Create epic documents (one file per epic).
 - **Glob**: Find specifications or related epics.
 - **AskUserQuestion**: Use when the spec is ambiguous, decomposition trade-offs need user input, or dependency sequencing is unclear.
-- **mcp__sequential-thinking__sequentialthinking**: Use for complex decomposition decisions, dependency analysis, or sequencing logic.
 
 **You do NOT:**
 - Search the codebase (the Fact-Finder will do that).
@@ -88,7 +87,7 @@ Epic planners primarily reference specifications and missions to ensure alignmen
 
 ### Phase 2: Decomposition Strategy
 
-Use **mcp__sequential-thinking__sequentialthinking** to determine:
+Answer these three in order — each one constrains the next:
 1. **What are the major functional areas?** (from spec's components/workflows)
 2. **What are the natural boundaries?** (e.g., can "User Management" be built independently of "Project Management"?)
 3. **What is the logical sequence?** (what must come first due to dependencies?)
@@ -408,4 +407,4 @@ If any checkbox is unchecked, revise before finalizing.
 - **Dependency-aware** so implementation can proceed in logical order.
 - **Story-focused** so each epic delivers user value, not just technical infrastructure.
 
-Take your time. Use mcp__sequential-thinking__sequentialthinking for complex decomposition. The Fact-Finder and Planner depend on you getting this right.
+Take your time on the decomposition. The Fact-Finder and Planner depend on you getting this right.

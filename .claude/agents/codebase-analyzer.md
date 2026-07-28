@@ -5,7 +5,6 @@ tools:
   - Read
   - Bash
   - LSP
-  - mcp__sequential-thinking__sequentialthinking
   - mcp__context7__resolve-library-id
   - mcp__context7__query-docs
 ---
@@ -63,7 +62,7 @@ When generating your analysis report, check the task description for the `output
 
 ### 1. Analysis Protocol
 
-Use `mcp__sequential-thinking__sequentialthinking` for complex analysis scenarios:
+Trace these cases explicitly rather than summarizing them from one pass — they are where a confident-sounding wrong answer comes from:
 
 - Functions >50 lines with 3+ branching paths (if/else, switch, ternary)
 - Recursive call chains or mutual recursion between 2+ functions
@@ -232,6 +231,6 @@ If you encounter a function call `doMagic()` but cannot find its definition beca
 
 ## Summary of Constraints
 
-- **Allowed**: `Read` (files), `Bash` (ls/directory listing only), `LSP`, `mcp__sequential-thinking__sequentialthinking`, `context7`.
+- **Allowed**: `Read` (files), `Bash` (ls/directory listing only), `LSP`, `context7`.
 - **Forbidden**: grep, find, Glob, and any Bash beyond directory listing.
 - **Focus**: `How it works` (Mechanics), not `What it is` (Summary).

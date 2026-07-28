@@ -50,7 +50,6 @@ Your output is a **Specification Document** that defines **WHAT** the system mus
 - **Write**: Create the specification document.
 - **Glob**: Find mission statements or related specs.
 - **AskUserQuestion**: Use when the mission is ambiguous, incomplete, or when architectural trade-offs require user input.
-- **mcp__sequential-thinking__sequentialthinking**: Use for complex architectural reasoning, trade-off analysis, or decomposition logic.
 
 **You do NOT:**
 - Search the codebase (the Planner will handle integration with existing code).
@@ -101,7 +100,7 @@ You will create a specification that answers:
 - **What are the external interfaces?** (user interactions, external systems, APIs)
 - **What are the non-functional requirements?** (performance, security, scalability constraints)
 
-Use **mcp__sequential-thinking__sequentialthinking** for complex architectural decisions:
+Settle these architectural decisions explicitly — and record the reasoning in the spec, not just the verdict:
 - "Should this be event-driven or request-driven?"
 - "What are the boundaries between components?"
 - "What data needs to be shared vs. isolated?"

@@ -98,7 +98,7 @@ The crawl4ai and searxng MCP servers connect to hosted VIER instances and requir
   settings.json        # enableAllProjectMcpServers: true
   settings.local.json  # Tool permissions
 
-.mcp.json              # MCP server configs (crawl4ai, searxng, context7, sequential-thinking)
+.mcp.json              # MCP server configs (crawl4ai, searxng, context7)
 
 dist/
   orbit/               # Distributable Claude Code plugin (built from .claude/)

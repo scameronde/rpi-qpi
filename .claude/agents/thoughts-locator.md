@@ -4,7 +4,6 @@ description: Locates documentation, tickets, and notes in the 'thoughts/' direct
 tools:
   - Bash
   - Read
-  - mcp__sequential-thinking__sequentialthinking
 ---
 
 # Thoughts Librarian: Documentation Discovery
