@@ -563,15 +563,26 @@ When passing findings to downstream agents, strip `<thinking>` section to reduce
 ## Execution Protocol
 
 ### Phase 1: Context & Mapping
-- **Load the upstream artifact first, when one exists.** If the user named a document, read
-  that. Otherwise Glob `thoughts/shared/features/` for a feature brief matching the request:
-  on the brownfield path `/feature-architect` hands its brief straight to you, and three of its
-  sections are written for you specifically — **Open Questions for Fact-Finder** (your starting
-  research vectors), **Integration Points** (where in the existing system to look), and
-  **Inherited Constraints** (what you must treat as fixed rather than investigate).
+
+**Load the upstream artifact before anything else.** You are rarely the first stage. The artifact ahead of you names the questions you are meant to answer, and re-deriving them from the prose request throws that work away.
+
+1. **If the user named a document, read that.** It wins over anything you would find by globbing. This is also how a `/prototype` learnings note reaches you — `/prototype` tells the user to point you at it.
+
+2. **Otherwise glob for the work order**: `thoughts/shared/epics/` on the greenfield path, `thoughts/shared/features/` on the brownfield path. Both contain sections written *for you*:
+
+   | Artifact | Section | What it gives you |
+   |---|---|---|
+   | Epic | **Research Questions for Fact-Finder** | your starting research vectors, already as a checklist |
+   | Epic | **Dependencies** | which epics must exist first |
+   | Feature brief | **Open Questions for Fact-Finder** | your starting research vectors |
+   | Feature brief | **Integration Points** | where in the existing system to look |
+   | Feature brief | **Inherited Constraints** | what to treat as fixed rather than investigate |
+
+3. **Then check `thoughts/shared/prototypes/`** for a learnings note relevant to the target. Treat its problem, outcome and decision as **additional context only** — never as a substitute for the epic or brief, and never as verified evidence. The note records what was learned from code that was then thrown away, so its assumptions may no longer hold.
+
+Then:
 - Read the user request.
-- Decompose into research vectors — seed them from the brief's open questions when you have one,
-  rather than deriving everything from the prose request.
+- Decompose into research vectors — seed them from the artifact's questions when you have one, rather than deriving everything from the prose request.
 - Delegate exploration to sub-agents.
 
 ### Phase 2: Verification & Synthesis (MANDATORY)
