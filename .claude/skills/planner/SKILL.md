@@ -746,7 +746,7 @@ Initial structure (created by Planner):
 
 ## Task Checklist
 
-Grouped by wave. Tasks within a wave run concurrently and are checked off together.
+Grouped by wave. Tasks within a wave run concurrently, but are checked off as each one commits — not together at the end of the wave.
 
 ### Wave 1
 - [ ] PLAN-001: [One-line task description]
@@ -767,9 +767,9 @@ Grouped by wave. Tasks within a wave run concurrently and are checked off togeth
 - Total tasks: N across M waves
 ```
 
-`**Current Task**` stays for readability — it names the first unfinished task of the current wave. `**Current Wave**` is what `/implement` advances.
+`**Current Task**` names the next unfinished task. `**Current Wave**` is what `/implement` advances between waves.
 
-**Important**: Keep this file minimal (≤40 lines). The Implementor updates it once per wave, amended into that wave's final commit.
+**Important**: Keep this file minimal (≤40 lines). The Implementor amends a STATE update into **every** commit it makes, covering exactly that commit's task IDs — so an interrupted run resumes without redoing finished work.
 
 **Task Description Format:**
 - Extract from the PLAN-XXX "Instruction" field first sentence or action verb phrase

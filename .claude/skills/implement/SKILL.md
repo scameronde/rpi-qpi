@@ -13,13 +13,15 @@ After `/planner` has written a plan file to `thoughts/shared/plans/`.
 
 ## Cost Model — Read This First
 
-Every subagent dispatch costs a full cold context: this repo's `CLAUDE.md`, the DOX `AGENTS.md` walk, and a re-read of the target files. That cost is **per dispatch, not per line changed**. A plan of four one-line edits run as four tasks × three dispatches burns twelve cold contexts to produce four lines.
+Every subagent dispatch costs a full cold context: this repo's `CLAUDE.md`, the DOX `AGENTS.md` walk, and a re-read of the target files. That cost is **per dispatch, not per line changed**.
 
-Your job is to minimize dispatches without weakening the gate:
+But the two kinds of dispatch are no longer priced alike. An implementer runs on `haiku`; a reviewer runs on the session model. So the number that drives cost is not how many subagents you spawn — it is **how many tasks need a reviewer**. Counting dispatches, as this section used to, now optimizes mostly the cheap half.
 
-- **Batch** — file-disjoint tasks go in one wave and run concurrently.
-- **Skip** — mechanical changes are verified by you with `git diff`, not by a subagent.
-- **Merge** — spec compliance and code quality are one reviewer, not two.
+That reframes the levers:
+
+- **The fast path is the real saving.** Every task it absorbs removes a session-model dispatch. Whether a task qualifies is decided by the *plan*, not by you: it needs a small diff, no logic change, and a `Verify:` that asserts content. A plan with strong `Verify:` commands is cheap to execute; a plan whose `Done When` conditions are prose is expensive, and you cannot repair that at execution time — you can only report it.
+- **Batching buys wall-clock, not tokens.** File-disjoint tasks in one wave finish sooner; they do not cost less. Never merge tasks that share a file to make a wave look fuller — that trades a corrupted working tree for no saving at all.
+- **Splitting a task is now cheap on the implementer side and dear on the reviewer side.** Two narrow tasks cost two cheap implementers but two expensive reviewers, unless both qualify for the fast path.
 
 Never trade away correctness for speed. Do trade away ceremony.
 
@@ -36,12 +38,15 @@ Before dispatching any subagent:
    - If `**Completed Tasks**` lists any PLAN-XXX ids: this is a resumed run. Skip those
      tasks when building waves; start at whatever `**Current Wave**` names (or, on an
      older STATE file with no wave line, the wave containing `**Current Task**`).
-     STATE only advances at wave boundaries, so a run that died mid-wave leaves no
-     record of which of that wave's tasks finished — and implementers make no commits
-     of their own to reveal it. Re-run the **entire** wave. If the working tree holds
-     leftover uncommitted changes from the dead run, show them to the user with
-     `git status --short` and ask whether to discard them before re-dispatching; do
-     not silently reset their tree.
+     STATE advances with every commit, so `**Completed Tasks**` is accurate to the
+     task even for a run that died mid-wave: re-dispatch only the ids it does not
+     list. (On a STATE file written before that rule the granularity is per-wave —
+     you cannot tell which of that wave's tasks finished, so re-run the entire wave.
+     A file whose `**Completed Tasks**` ends on a wave boundary while `**Current
+     Task**` names that wave's first task is the older kind.)
+     Either way, if the working tree holds leftover uncommitted changes from the dead
+     run, show them to the user with `git status --short` and ask whether to discard
+     them before re-dispatching; do not silently reset their tree.
    - If no STATE file exists (plan predates STATE tracking): create one now using the
      template in `.claude/skills/planner/SKILL.md` (Current Task = first task ID,
      Completed Tasks = none, checklist populated from the plan's tasks), commit it.
@@ -189,19 +194,23 @@ git commit -m "[PLAN-001..PLAN-004]: <what the wave accomplished>"
 
 Otherwise commit each task separately with its own `[PLAN-XXX]:` prefix.
 
-**Then update the STATE file in the same commit as the wave** — one STATE write per wave, not per task:
+**Every commit carries its own STATE update** — for exactly the task IDs in that commit. Do not defer the STATE write to the end of the wave: if the run dies after the second of four commits, STATE must already show those two tasks done, or the resumed run redoes finished work.
+
+For **each** commit you make:
 
 1. Open the plan's STATE file.
-2. Check every checklist line matching this wave's task IDs exactly (`- [ ] PLAN-XXX: ...` → `- [x] PLAN-XXX: ...`). Do not check any other line.
-3. Append all of the wave's IDs to `**Completed Tasks**`.
-4. Set `**Current Wave**` to the next wave's number and `**Current Task**` to its first task — or both to `Complete` if this was the last wave. (Older STATE files have no `**Current Wave**` line; add one.)
-5. Amend it into the wave's **final** commit (when the wave produced several, only the last one is amended — the STATE update covers the whole wave):
+2. Check the checklist lines matching **this commit's** task IDs exactly (`- [ ] PLAN-XXX: ...` → `- [x] PLAN-XXX: ...`). Do not check any other line.
+3. Append this commit's IDs to `**Completed Tasks**`.
+4. Set `**Current Task**` to the next unfinished task. Advance `**Current Wave**` only when the wave's last commit lands — or set both to `Complete` after the plan's final task. (Older STATE files have no `**Current Wave**` line; add one.)
+5. Amend it into the commit you just made:
    ```bash
    git add [STATE file path]
    git commit --amend --no-edit
    ```
 
-Verify with `git log --oneline -1` that the commit exists and carries the PLAN IDs.
+A wave committed as one commit (the mechanically-identical case above) gets one STATE write listing all its IDs. That is the same rule, not an exception.
+
+Verify with `git log --oneline -N` (N = the number of commits this wave produced) that every one of them landed and carries its PLAN IDs. `-1` only proves the last one exists.
 
 **Refresh the Boundary Check baseline** so the next wave measures from here, not from before this wave:
 
@@ -245,5 +254,6 @@ Escalation stays reactive, not anticipatory: a `BLOCKED` task gets more context,
 - **Never** skip the review gate for a task that changes logic, interfaces, or error handling — the fast path is for mechanical edits only
 - **Never** proceed past an unresolved BLOCKED status
 - **Never** start on main/master without explicit user consent
-- **Never** advance to the next wave before the STATE file is updated and committed —
-  TodoWrite alone does not survive a session interruption
+- **Never** make a commit without amending its STATE update into it — TodoWrite alone
+  does not survive a session interruption, and a commit missing its STATE line makes
+  the resumed run redo work that is already done
