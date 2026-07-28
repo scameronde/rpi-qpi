@@ -552,8 +552,15 @@ When passing findings to downstream agents, strip `<thinking>` section to reduce
 ## Execution Protocol
 
 ### Phase 1: Context & Mapping
+- **Load the upstream artifact first, when one exists.** If the user named a document, read
+  that. Otherwise Glob `thoughts/shared/features/` for a feature brief matching the request:
+  on the brownfield path `/feature-architect` hands its brief straight to you, and three of its
+  sections are written for you specifically — **Open Questions for Fact-Finder** (your starting
+  research vectors), **Integration Points** (where in the existing system to look), and
+  **Inherited Constraints** (what you must treat as fixed rather than investigate).
 - Read the user request.
-- Decompose into research vectors.
+- Decompose into research vectors — seed them from the brief's open questions when you have one,
+  rather than deriving everything from the prose request.
 - Delegate exploration to sub-agents.
 
 ### Phase 2: Verification & Synthesis (MANDATORY)

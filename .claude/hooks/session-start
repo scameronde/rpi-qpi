@@ -6,7 +6,7 @@ context="You have workflow skills for software development available in this pro
 ## Available Workflow Skills
 
 /mission-architect — Greenfield projects: discover vision, output mission statement to thoughts/shared/missions/. Use before /specifier.
-/feature-architect — Brownfield features: define new feature in existing system, output feature brief to thoughts/shared/features/. Use before /epic-planner.
+/feature-architect — Brownfield features: define new feature in existing system, output feature brief to thoughts/shared/features/. Use before /fact-finder — brownfield skips /epic-planner, which exists to cut a whole spec into several streams.
 /specifier — Transform mission statement into technical spec. Output to thoughts/shared/specs/. Use after /mission-architect.
 /epic-planner — Decompose spec into epics. Output to thoughts/shared/epics/. Use after /specifier.
 /fact-finder — Map the codebase for a spec or question. Spawns codebase agents for isolation. Output to thoughts/shared/facts/. Use before /planner.
@@ -17,7 +17,7 @@ context="You have workflow skills for software development available in this pro
 ## Workflow Ordering
 
 Greenfield:  /mission-architect → /specifier → /epic-planner → /fact-finder → /planner → /implement
-Brownfield:  /feature-architect → /epic-planner → /fact-finder → /planner → /implement
+Brownfield:  /feature-architect → /fact-finder → /planner → /implement
 Small fix:   /fact-finder → /planner → /implement
 Unsure:      /prototype → then one of the three above, on a 'go' decision
 
