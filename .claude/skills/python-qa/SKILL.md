@@ -2,7 +2,7 @@
 name: python-qa
 description: Python code quality analysis using ruff, pyright, bandit, and interrogate. Use when asked to review Python code quality, run a Python QA pass, or audit a .py file or module.
 disable-model-invocation: true
-allowed-tools: Bash, Read
+allowed-tools: Bash, Read, Grep, Glob, Write, Agent   # no Edit — a reviewer must not fix what it reviews
 ---
 
 # Python QA Skill
@@ -32,6 +32,38 @@ Use this hierarchy when categorizing findings:
 2. **High**: Type errors blocking type checking (pyright errors)
 3. **Medium**: Testability issues, maintainability risks (ruff complexity rules C901+, interrogate coverage gaps)
 4. **Low**: Readability improvements, style consistency (ruff style rules E501, N806)
+
+## Delegation
+
+Delegate when a question needs breadth you should not spend your own context on. Do **not** delegate a file whose path you already have — reading it yourself is cheaper than a subagent dispatch. Record every call you make in **Phase 4: Delegation Log**.
+
+```
+Agent tool:
+  subagent_type: "codebase-locator"
+  description: "Find test files for [target]"
+  prompt: "Locate the test files covering [target]. Search scope: tests_only."
+```
+
+```
+Agent tool:
+  subagent_type: "codebase-pattern-finder"
+  description: "Find [pattern] variations"
+  prompt: "Find every occurrence of [pattern] under [scope]. Return concrete excerpts with file:line."
+```
+
+```
+Agent tool:
+  subagent_type: "codebase-analyzer"
+  description: "Trace [function]"
+  prompt: "Trace the execution path of [function] in [file]. Output scope: execution_only."
+```
+
+```
+Agent tool:
+  subagent_type: "web-search-researcher"
+  description: "Research [topic]"
+  prompt: "[Specific question about a library, API or Python idiom]. Verify against authoritative sources."
+```
 
 ## Report Template
 

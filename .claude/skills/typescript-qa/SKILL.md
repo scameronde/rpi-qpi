@@ -2,7 +2,7 @@
 name: typescript-qa
 description: TypeScript code quality analysis using tsc, eslint, and knip. Use when asked to review TypeScript code quality, run a TypeScript QA pass, or audit a .ts/.tsx file or module.
 disable-model-invocation: true
-allowed-tools: Bash, Read
+allowed-tools: Bash, Read, Grep, Glob, Write, Agent   # no Edit — a reviewer must not fix what it reviews
 ---
 
 # TypeScript QA Skill
@@ -37,6 +37,31 @@ Use this hierarchy when categorizing findings:
 2. **High**: Type errors blocking compilation (tsc errors)
 3. **Medium**: Testability issues, maintainability risks, dead code (eslint complexity, knip findings)
 4. **Low**: Readability improvements, style consistency, React patterns
+
+## Delegation
+
+Delegate when a question needs breadth you should not spend your own context on. Do **not** delegate a file whose path you already have — reading it yourself is cheaper than a subagent dispatch. Record every call you make in **Phase 4: Delegation Log**.
+
+```
+Agent tool:
+  subagent_type: "codebase-locator"
+  description: "Find test files for [target]"
+  prompt: "Locate the test files covering [target]. Search scope: tests_only."
+```
+
+```
+Agent tool:
+  subagent_type: "codebase-pattern-finder"
+  description: "Find [pattern] variations"
+  prompt: "Find every occurrence of [pattern] under [scope]. Return concrete excerpts with file:line."
+```
+
+```
+Agent tool:
+  subagent_type: "codebase-analyzer"
+  description: "Trace [function/component]"
+  prompt: "Trace the execution path of [function/component] in [file]. Output scope: execution_only."
+```
 
 ## Report Template
 

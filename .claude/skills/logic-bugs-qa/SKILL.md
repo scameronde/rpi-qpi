@@ -2,7 +2,7 @@
 name: logic-bugs-qa
 description: Language-agnostic logic bug detection through manual code analysis and execution flow tracing. Use when asked to find logic errors, trace execution paths, audit algorithm correctness, or review code for bugs that automated tools cannot detect.
 disable-model-invocation: true
-allowed-tools: Bash, Read, Agent
+allowed-tools: Bash, Read, Grep, Glob, Write, Agent   # no Edit — a reviewer must not fix what it reviews
 ---
 
 # Logic Bugs QA Skill
@@ -164,6 +164,29 @@ Use this hierarchy when categorizing findings:
 4. **Low**: Defensive programming improvements, clarity issues
 
 ## Delegation Strategy
+
+Invoke these via the `Agent` tool, substituting the bracketed parts. Record every call in **Phase 4: Delegation Log**. Do not delegate a file whose path you already have — reading it yourself is cheaper than a dispatch.
+
+```
+Agent tool:
+  subagent_type: "codebase-analyzer"
+  description: "Trace [function]"
+  prompt: "Trace [function] in [file]. Output scope: comprehensive | focused | execution_only."
+```
+
+```
+Agent tool:
+  subagent_type: "codebase-pattern-finder"
+  description: "Find [pattern] variations"
+  prompt: "Find every occurrence of [pattern] under [scope]. Return concrete excerpts with file:line."
+```
+
+```
+Agent tool:
+  subagent_type: "web-search-researcher"
+  description: "Research [topic]"
+  prompt: "[Specific question]. Verify against authoritative sources."
+```
 
 ### Heavy Use of codebase-analyzer
 

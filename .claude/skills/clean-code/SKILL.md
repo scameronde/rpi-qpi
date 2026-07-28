@@ -2,7 +2,7 @@
 name: clean-code
 description: Language-agnostic code quality analysis focusing on design principles from Clean Code, Pragmatic Programmer, Code Complete, Refactoring, and other seminal software engineering books. Use when asked to review code quality, find code smells, evaluate design, or run a clean code QA pass.
 disable-model-invocation: true
-allowed-tools: Bash, Read
+allowed-tools: Bash, Read, Grep, Glob, Write, Agent   # no Edit — a reviewer must not fix what it reviews
 ---
 
 # Clean Code QA Skill
@@ -424,7 +424,27 @@ When categorizing findings in QA reports, use this hierarchy:
    - Team pain points: Frequently mentioned in retros → higher priority
 5. **Assign priority** using rules above
 
-## Section 6: QA Report Template
+## Section 6: Delegation
+
+When the review target is a directory or a concern rather than a named file, delegate the discovery instead of guessing. Do not delegate a file whose path you already have — reading it yourself is cheaper than a subagent dispatch.
+
+```
+Agent tool:
+  subagent_type: "codebase-locator"
+  description: "Discover review targets under [scope]"
+  prompt: "Locate the source files under [scope]. Search scope: paths_only."
+```
+
+```
+Agent tool:
+  subagent_type: "codebase-pattern-finder"
+  description: "Find duplicated [concern]"
+  prompt: "Find every occurrence of [concern] under [scope]. Return concrete excerpts with file:line."
+```
+
+Record which method produced the file list in **Phase 1: Target Discovery**.
+
+## Section 7: QA Report Template
 
 Write to `thoughts/shared/qa/YYYY-MM-DD-[Target].md` using this template:
 
@@ -709,7 +729,7 @@ See `references/` for detailed guidance:
 </answer>
 ```
 
-## Section 7: Integration with QA Workflow
+## Section 8: Integration with QA Workflow
 
 ### Usage Pattern
 
@@ -753,7 +773,7 @@ Planner: "Create plan from latest QA reports"
 - Onboarding new team members (educational)
 - After significant feature development
 
-## Section 8: References
+## Section 9: References
 
 All reference materials are in `references/`:
 
