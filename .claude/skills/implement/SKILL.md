@@ -260,3 +260,10 @@ Escalation stays reactive, not anticipatory: a `BLOCKED` task gets more context,
 - **Never** make a commit without amending its STATE update into it — TodoWrite alone
   does not survive a session interruption, and a commit missing its STATE line makes
   the resumed run redo work that is already done
+- **Never** edit a skill or agent file under `.claude/` while you are mid-plan, unless a
+  task in the plan says to. Your own behaviour is defined by those files; changing them
+  under yourself makes the rest of the run unreproducible
+- **Never** rename a task field or change its allowed values here alone. The field list is
+  a contract shared by `planner/SKILL.md`, this file, and both prompt templates in this
+  directory — a half-landed change fails silently, because the reader just does not find
+  what it looks for

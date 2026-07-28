@@ -569,6 +569,8 @@ For each action:
 - **Verify:** `command` → expected result (or `none — requires review`)
 - **Context:** why this change is needed (both `/implement` prompt templates paste this — omitting it sends the implementer in without the reason)
 
+**This field list is a contract with four readers, not a private format.** `Wave:`, `Model:`, `Verify:`, `File(s)` and `allowedAdjacentEdits` are each consumed by `/implement`; `Instruction`, `Evidence`, `Done When`, `Verify` and `Context` are pasted verbatim into `implementer-prompt.md` and `reviewer-prompt.md`. Renaming a field, changing its allowed values, or dropping one means editing **this file, `implement/SKILL.md`, and both prompt templates in `.claude/skills/implement/`** — a change landing in only some of them fails silently, because the reader simply does not find what it looks for.
+
 ## Verification Tasks (If Assumptions Exist)
 For each assumption:
 - **Assumption:** ...
