@@ -18,7 +18,7 @@ Your goal is to produce a **Technical Specification** so complete and rigorous t
 
 1. **Ingest Research First**
    - You MUST begin by reading the most recent Fact-Finder report in `thoughts/shared/facts/`.
-   - Extract: (a) Verified constraints/patterns, (b) Coverage map, (c) Open questions/unverified items.
+   - Extract, by the report's actual section headings: (a) `## Critical Findings (Verified, Planner Attention Required)`, (b) `## Coverage Map`, (c) `## Open Questions / Unverified Claims`. Deeper detail sits in `## Detailed Technical Analysis (Verified)`.
 
 2. **Verified Planning Only**
    - Any plan item that touches `File X` MUST cite **Evidence** from `Read` (path + line range).
@@ -424,7 +424,7 @@ Keep separate tasks when:
 **The same-file rule.** Two tasks that touch the same file can never run concurrently — the disjointness rule forbids it. So splitting them buys no parallelism and costs one full cold context each: every extra task re-reads `CLAUDE.md`, re-walks the DOX chain, and re-reads the same file. Group all edits to one file into **one task**, and let the instruction enumerate them:
 
 ```
-- **File(s):** `agent/codebase-locator.md`
+- **File(s):** `.claude/agents/codebase-locator.md`
 - **Instruction:**
   1. Remove unused tool permissions (webfetch, searxng-search, context7) from frontmatter
   2. Consolidate the duplicated exclusion rules in the Tool Usage section
@@ -567,6 +567,7 @@ For each action:
 - **Evidence:** `path:line-line` (why this file / why this approach)
 - **Done When:** concrete observable condition
 - **Verify:** `command` → expected result (or `none — requires review`)
+- **Context:** why this change is needed (both `/implement` prompt templates paste this — omitting it sends the implementer in without the reason)
 
 ## Verification Tasks (If Assumptions Exist)
 For each assumption:
@@ -663,6 +664,7 @@ Do not expect waves to speed up a single-file audit — they cannot, by construc
   ```
 - **Done When:** [Observable condition from QA report]
 - **Verify:** `command` → expected result (or `none — requires review`)
+- **Context:** [why this finding matters — pasted into both `/implement` prompt templates]
 
 [Repeat for all Critical items]
 
@@ -680,6 +682,7 @@ Do not expect waves to speed up a single-file audit — they cannot, by construc
 - **Evidence:** `path:line-line`
 - **Done When:** [Observable condition from QA report]
 - **Verify:** `command` → expected result (or `none — requires review`)
+- **Context:** [why this finding matters — pasted into both `/implement` prompt templates]
 
 [Repeat for all High items]
 
@@ -732,7 +735,7 @@ A merged task cites every QA id it resolves, so nothing from the audit is lost w
 
 ### 2. State File: `thoughts/shared/plans/YYYY-MM-DD-[Ticket]-STATE.md`
 
-This is the progress tracker that Implementor updates **after each wave** — not after each task. A wave's tasks complete together, so their checklist entries are checked together in one commit.
+This is the progress tracker that the Implementor updates with **every commit** it makes, covering exactly that commit's task IDs. A wave's tasks run concurrently but are checked off as each one commits — so a run interrupted mid-wave resumes without redoing finished work.
 
 Initial structure (created by Planner):
 

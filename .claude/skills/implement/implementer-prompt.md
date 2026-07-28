@@ -8,7 +8,7 @@ Other implementers may be running concurrently on other files. Stay inside your 
 
 **[PLAN-XXX]: [Task Name]**
 
-[PASTE FULL TASK CONTENT HERE — include: instruction, File(s), evidence, doneWhen, context, allowedAdjacentEdits if any]
+[PASTE FULL TASK CONTENT HERE — include: Instruction, File(s), Evidence, Done When, Verify, Context, and allowedAdjacentEdits if any. Omitting Verify leaves step 4 below unperformable.]
 
 ## Files Changed by Earlier Waves
 

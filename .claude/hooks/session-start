@@ -11,13 +11,15 @@ context="You have workflow skills for software development available in this pro
 /epic-planner — Decompose spec into epics. Output to thoughts/shared/epics/. Use after /specifier.
 /fact-finder — Map the codebase for a spec or question. Spawns codebase agents for isolation. Output to thoughts/shared/facts/. Use before /planner.
 /planner — Write a sequenced, evidence-based implementation plan. Output to thoughts/shared/plans/. Use after /fact-finder.
-/implement — Execute plan task-by-task via subagents with spec and quality review after each. Use after /planner.
+/implement — Execute a plan wave-by-wave via concurrent subagents, with one combined spec-and-quality review gate per task. Use after /planner.
+/prototype — Optional. Spike a rough idea into disposable code in an isolated worktree and reach a go/no-go decision. Use before /mission-architect, /feature-architect or /fact-finder, when it is not yet clear whether the thing should be built at all.
 
 ## Workflow Ordering
 
 Greenfield:  /mission-architect → /specifier → /epic-planner → /fact-finder → /planner → /implement
 Brownfield:  /feature-architect → /epic-planner → /fact-finder → /planner → /implement
 Small fix:   /fact-finder → /planner → /implement
+Unsure:      /prototype → then one of the three above, on a 'go' decision
 
 ## Rules
 

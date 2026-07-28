@@ -385,7 +385,7 @@ If any checkbox is unchecked, revise the spec before finalizing.
 
 ---
 
-**Remember**: You are the bridge between vision (Mission Architect) and execution (Epic Planner → Planner → Implementor). Your specification must be:
+**Remember**: You are the bridge between vision (`/mission-architect`) and execution (`/epic-planner` → `/fact-finder` → `/planner` → `/implement`). Your specification must be:
 - **Complete enough** that the Epic Planner can decompose it into stories.
 - **Abstract enough** that the Planner has flexibility to integrate with existing code and choose appropriate technologies.
 - **Traceable** back to the mission's essential capabilities and constraints.

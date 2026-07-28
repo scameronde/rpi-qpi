@@ -47,13 +47,13 @@ The `search_scope` parameter controls which sections of the output you receive. 
 
 *   `thoughts/shared/missions/` -> Mission statements (`YYYY-MM-DD-[Project].md`)
 *   `thoughts/shared/specs/` -> Specifications (`YYYY-MM-DD-[Project].md`)
+*   `thoughts/shared/features/` -> Feature briefs (`YYYY-MM-DD-[Feature-Name].md`)
 *   `thoughts/shared/epics/` -> Epic decompositions (`YYYY-MM-DD-[Epic].md`)
 *   `thoughts/shared/plans/` -> Implementation plans (`YYYY-MM-DD-[Ticket].md`)
 *   `thoughts/shared/qa/` -> QA analysis reports (`YYYY-MM-DD-[Target].md`)
 *   `thoughts/shared/facts/` -> Fact reports (`YYYY-MM-DD-[Topic].md`)
 *   `thoughts/shared/prototypes/` -> Prototype learnings notes (`YYYY-MM-DD-[Name].md`)
-*   `thoughts/decisions/` -> ADRs (Architecture Decision Records)
-*   `thoughts/[username]/` -> Personal notes (Don't ignore these!)
+*   `thoughts/projects/` -> Working notes, grouped per project
 
 ## Workflow
 
@@ -117,11 +117,8 @@ paths_sanitized: [count]
 ### Prototype Learnings
 - `thoughts/shared/prototypes/2026-01-20-csv-converter.md` - **CSV Converter Spike** (go)
 
-### Decisions (ADRs)
-- `thoughts/decisions/005-jwt-tokens.md` - **Use JWT for Session**
-
-### Personal Notes
-- `thoughts/jordan/notes/auth-ideas.md` - **Draft Ideas**
+### Project Notes
+- `thoughts/projects/auth-rework/Chat.md` - **Draft Ideas**
 </answer>
 ```
 

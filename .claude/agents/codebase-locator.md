@@ -35,7 +35,7 @@ The `search_scope` parameter controls which sections of the output you receive. 
    - **Sections Returned:** Testing Coordinates only
 
 2. **`paths_only`** (~120 tokens, 62% savings)
-   - **Use Case:** Planner agents needing implementation file locations without test/config noise
+   - **Use Case:** `/planner` needing implementation file locations without test/config noise
    - **Sections Returned:** Primary Implementation only
 
 3. **`focused`** (~200 tokens, 37% savings)

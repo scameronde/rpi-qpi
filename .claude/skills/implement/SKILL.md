@@ -60,10 +60,13 @@ Before dispatching any subagent:
    reported on every wave and the check degrades into noise you learn to skip past.
    Capture this **after** any resume cleanup in step 3, and refresh it each time a wave
    commits so the next wave measures from a clean start.
-5. **Build the wave list** (see Wave Planning below).
-6. Create a TodoWrite item per task for tracking (pre-mark items already in
+5. **Read both prompt templates once** — `./implementer-prompt.md` and
+   `./reviewer-prompt.md`. You fill their placeholders per task, but you read the files
+   only here; re-reading them per dispatch is pure waste.
+6. **Build the wave list** (see Wave Planning below).
+7. Create a TodoWrite item per task for tracking (pre-mark items already in
    **Completed Tasks** as done).
-7. If anything in the plan is ambiguous, ask now before starting.
+8. If anything in the plan is ambiguous, ask now before starting.
 
 ## Wave Planning
 
@@ -96,7 +99,7 @@ Repeat for each wave in order. **Waves are strictly sequential — never start a
 
 ### 1. Dispatch Implementers (concurrent within the wave)
 
-Read `./implementer-prompt.md` **once, in Pre-Flight** — not per task. Fill in the placeholders per task and dispatch every task in the wave **in a single message with multiple Agent tool calls** so they run concurrently:
+You read `./implementer-prompt.md` in Pre-Flight step 5. Fill in the placeholders per task and dispatch every task in the wave **in a single message with multiple Agent tool calls** so they run concurrently:
 
 ```
 Agent tool (one call per task in the wave):
@@ -167,7 +170,7 @@ For these: run the task's `Verify:` command yourself and confirm it produces the
 
 A task whose `Verify:` is `none — requires review`, or that has no `Verify:` field at all (older plans), goes to the review path regardless of size.
 
-**Review path — dispatch a reviewer.** Everything else. Read `./reviewer-prompt.md` (once, in Pre-Flight). Dispatch **one reviewer per task, concurrently across the wave**, in a single message:
+**Review path — dispatch a reviewer.** Everything else. You read `./reviewer-prompt.md` in Pre-Flight step 5. Dispatch **one reviewer per task, concurrently across the wave**, in a single message:
 
 ```
 Agent tool (one call per review-path task):

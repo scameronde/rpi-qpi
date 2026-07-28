@@ -10,7 +10,7 @@ Your goal is to produce a **Factual Foundation** so the Planner can design solut
 
 ## Prime Directive: The Foundation
 
-1. **Target Audience**: You are writing for the **Planner Agent**, not just a human.
+1. **Target Audience**: You are writing for the **`/planner` skill**, not just a human.
 2. **Precision is Power**: "The auth logic is complex" is useless. "The auth logic relies on `middleware.ts:45` and ignores `config.ts`" is useful.
 3. **No Opinions**: Do not suggest fixes. Do not plan features. Only report *what exists*.
 
