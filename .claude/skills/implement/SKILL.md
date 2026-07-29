@@ -53,11 +53,12 @@ Before dispatching any subagent:
 4. **Record a dirty-tree baseline** — the Boundary Check compares against it. Write it
    outside the repo so it does not become a finding itself:
    ```bash
-   git status --porcelain | cut -c4- | sort > "$TMPDIR/wave-baseline.txt"
+   git status --porcelain -uall | cut -c4- | sort > "${TMPDIR:-/tmp}/wave-baseline.txt"
    ```
    Repos routinely carry dirty or untracked paths that belong to nobody's task — editor
    directories, local dotfiles, build output. Without a baseline every one of them is
    reported on every wave and the check degrades into noise you learn to skip past.
+   The `-uall` flag ensures untracked files and directories are fully enumerated; without it git reports a newly created directory as a single trailing-slash path, which matches no `File(s)` entry and turns every create-in-a-new-directory task into a false finding.
    Capture this **after** any resume cleanup in step 3, and refresh it each time a wave
    commits so the next wave measures from a clean start.
 5. **Read both prompt templates once** — `./implementer-prompt.md` and
@@ -138,7 +139,7 @@ If any task in the wave is unresolved, do not commit the wave. Resolve it or dro
 Confirm the wave touched **only** what it declared — before spending a single reviewer. You are the only party who can do this: each implementer sees just its own file list, and reviewers are told to ignore changes outside theirs, so an undeclared path falls in the gap between them.
 
 ```bash
-git status --porcelain | cut -c4- | sort | comm -13 "$TMPDIR/wave-baseline.txt" -
+git status --porcelain -uall | cut -c4- | sort | comm -13 "${TMPDIR:-/tmp}/wave-baseline.txt" -
 ```
 
 That lists every path this wave touched, with the pre-existing dirty paths from the Pre-Flight baseline filtered out. (`cut -c4-` strips the status columns; a rename appears as `old -> new`, so read both halves.)
@@ -218,7 +219,7 @@ Verify with `git log --oneline -N` (N = the number of commits this wave produced
 **Refresh the Boundary Check baseline** so the next wave measures from here, not from before this wave:
 
 ```bash
-git status --porcelain | cut -c4- | sort > "$TMPDIR/wave-baseline.txt"
+git status --porcelain -uall | cut -c4- | sort > "${TMPDIR:-/tmp}/wave-baseline.txt"
 ```
 
 Skip this and every later wave inherits this wave's paths as findings.
