@@ -2,15 +2,15 @@
 
 **Plan**: thoughts/shared/plans/2026-07-29-QA-Repair-Residue.md
 **Current Wave**: 1
-**Current Task**: PLAN-001
-**Completed Tasks**: (none yet)
+**Current Task**: PLAN-002
+**Completed Tasks**: PLAN-001
 
 ## Task Checklist
 
 Grouped by wave. Tasks within a wave run concurrently, but are checked off as each one commits — not together at the end of the wave.
 
 ### Wave 1
-- [ ] PLAN-001: Relabel the code-smells catalog's Priority column to Critical/High/Medium/Low
+- [x] PLAN-001: Relabel the code-smells catalog's Priority column to Critical/High/Medium/Low
 - [ ] PLAN-002: Bring the QA plan template's Inputs and References onto the current contract
 
 ## Notes

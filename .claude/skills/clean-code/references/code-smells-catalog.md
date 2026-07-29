@@ -885,19 +885,19 @@ def update_profile(user: UserContext): ...
 
 | Smell | Detection | Priority | Refactoring |
 |-------|-----------|----------|-------------|
-| Long Method | > 50 lines, CCN > 15 | P1 if > 100 lines | Extract Method |
-| Large Class | > 300 lines, > 10 methods | P2 | Extract Class |
-| Long Parameter List | > 3 params | P2 | Introduce Parameter Object |
-| Primitive Obsession | Strings for status, floats for money | P2 | Replace Data Value with Object |
-| Switch Statements | Type code conditionals | P2 | Replace Conditional with Polymorphism |
-| Divergent Change | Multiple reasons to change | P1 | Extract Class (SRP) |
-| Shotgun Surgery | One change affects 5+ files | P1 | Move Method, Move Field |
-| Feature Envy | Uses other class's data | P2 | Move Method |
-| Data Clumps | Same 3-4 params repeated | P2 | Introduce Parameter Object |
-| Duplicate Code | > 5% duplication | P1 if > 10% | Extract Method |
-| Message Chains | a.b().c().d() | P3 | Hide Delegate |
-| Middle Man | All methods delegate | P4 | Remove Middle Man |
-| Speculative Generality | Unused abstractions | P4 | Inline Class |
+| Long Method | > 50 lines, CCN > 15 | Critical if > 100 lines | Extract Method |
+| Large Class | > 300 lines, > 10 methods | High | Extract Class |
+| Long Parameter List | > 3 params | High | Introduce Parameter Object |
+| Primitive Obsession | Strings for status, floats for money | High | Replace Data Value with Object |
+| Switch Statements | Type code conditionals | High | Replace Conditional with Polymorphism |
+| Divergent Change | Multiple reasons to change | Critical | Extract Class (SRP) |
+| Shotgun Surgery | One change affects 5+ files | Critical | Move Method, Move Field |
+| Feature Envy | Uses other class's data | High | Move Method |
+| Data Clumps | Same 3-4 params repeated | High | Introduce Parameter Object |
+| Duplicate Code | > 5% duplication | Critical if > 10% | Extract Method |
+| Message Chains | a.b().c().d() | Medium | Hide Delegate |
+| Middle Man | All methods delegate | Low | Remove Middle Man |
+| Speculative Generality | Unused abstractions | Low | Inline Class |
 
 ## Further Reading
 
