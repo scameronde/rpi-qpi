@@ -25,6 +25,7 @@ Stores sequenced implementation plans produced by `/planner` and the STATE files
 ## Verified Current State        # Fact / Evidence `path:line-line` / Excerpt
 ## Inherited Constraints (Respected)  # rows from the fact report's `## Inherited Constraints (Treated as Fixed)`; `None` if that read `None`
 ## Goals / Non-Goals
+## Approval Gate                  # which Phase 3 triggers apply + the questions, or `None applied — proceeding.`
 ## Design Overview
 ## Execution Waves               # table: Wave | Tasks | Files touched | Rationale
 ## Implementation Instructions (For Implementor)
@@ -38,15 +39,15 @@ Stores sequenced implementation plans produced by `/planner` and the STATE files
 ```markdown
 - **Action ID:** PLAN-001
 - **Wave:** 1
-- **Model:** haiku (default) | opus (architecture/complex refactor only)
+- **Model:** [haiku | opus]
 - **Change Type:** create/modify/remove
 - **File(s):** `path/...` (exhaustive — impl, tests, config, docs)
 - **allowedAdjacentEdits:** `path/...` or none
 - **Instruction:** exact steps
 - **Interfaces / Pseudocode:** minimal
-- **Evidence:** `path:line-line`
+- **Evidence:** `path:line-line` plus a 1-6 line excerpt (why this file / why this approach)
 - **Done When:** concrete observable condition
-- **Verify:** `command` → expected result (or `none — requires review`)
+- **Verify:** [`command` → expected result, or `none — requires review`]
 - **Context:** why this change is needed
 ```
 
@@ -76,15 +77,12 @@ Two fields are load-bearing:
 ### Wave 2
 - [ ] PLAN-003: [One-line task description]
 
-## Quick Verification
-<the Verify: commands from the plan>
-
 ## Notes
 - Plan created: YYYY-MM-DD
 - Total tasks: N across M waves
 ```
 
-The checklist is grouped by wave — tasks in one wave have disjoint `File(s)` and run concurrently, but are checked off as each one commits, not together at the end of the wave. `**Current Wave**` is what `/implement` advances between waves; `**Current Task**` names the next unfinished task. Both read `Complete` once every task is checked off.
+The checklist is grouped by wave — tasks in one wave have disjoint `File(s)` and run concurrently, but are checked off as each one commits, not together at the end of the wave. `**Current Wave**` is what `/implement` advances between waves; `**Current Task**` names the next unfinished task. Both read `Complete` once every task is checked off. STATE carries no copy of the plan's `Verify:` commands — the plan is the only place they live, so STATE cannot drift from it.
 
 **Update cadence:** `/implement` amends a STATE update into **every** commit it makes, covering exactly the task IDs in that commit — not batched to the wave boundary. This is what lets a run interrupted mid-wave resume without redoing finished work. STATE files written before this rule advance only at wave boundaries; `/implement`'s resume path detects and handles both kinds.
 

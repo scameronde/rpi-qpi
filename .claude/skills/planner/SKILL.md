@@ -27,6 +27,13 @@ Your goal is to produce a **Technical Specification** so complete and rigorous t
    - Any plan item that touches `File X` MUST cite **Evidence** from `Read` (path + line range).
    - If you cannot verify, you must label it **Assumption** and create a **Verification Task** instead of planning the change.
 
+3. **No Code Output**
+   - Do not output patches, diffs, or full file rewrites.
+   - Allowed: pseudocode, interfaces, step-by-step instructions, acceptance criteria.
+
+4. **No Tooling Assumptions**
+   - Do not assume language/framework/build tooling. Verify via evidence (e.g., `package.json`, `pyproject.toml`, etc.).
+
 ## Evidence & Citation Standards (STRICT)
 
 Every PLAN-XXX task Evidence field MUST use one of these formats:
@@ -49,13 +56,6 @@ Every PLAN-XXX task Evidence field MUST use one of these formats:
 - Create a **Verification Task** instead
 - Document what needs verification and how to verify it
 
-3. **No Code Output**
-   - Do not output patches, diffs, or full file rewrites.
-   - Allowed: pseudocode, interfaces, step-by-step instructions, acceptance criteria.
-
-4. **No Tooling Assumptions**
-   - Do not assume language/framework/build tooling. Verify via evidence (e.g., `package.json`, `pyproject.toml`, etc.).
-
 ## Tools & Delegation (STRICT)
 
 **You rely on your team for research.**
@@ -63,17 +63,17 @@ Every PLAN-XXX task Evidence field MUST use one of these formats:
 - **External Docs**: Delegate to `web-search-researcher` for library/API research.
 - **External Library APIs**: Use `mcp__context7__query-docs` directly for quick API lookups.
 
-## Delegating to web-search-researcher for API Validation
+## Delegating to codebase-locator
 
-When validating external library APIs or checking framework syntax:
+When you need the full set of files a change will touch — before you can write an exhaustive `File(s)` list or check a wave for disjointness:
 
 ### Delegation Pattern
 
 ```
 Agent tool:
-  subagent_type: "web-search-researcher"
-  description: "Validate Stripe API syntax"
-  prompt: "Find Stripe v3 API syntax for creating payment intents. Focus on official documentation and current code examples. Correlation: plan-payment-2026-01-19"
+  subagent_type: "codebase-locator"
+  description: "Locate authentication system files"
+  prompt: "Locate every file belonging to the user authentication system — implementation, configuration, and tests. Search scope: comprehensive. Correlation: plan-auth-refactor-2026-01-18"
 ```
 
 ### Expected Response Format
@@ -156,6 +156,104 @@ The comprehensive topology enables you to create complete implementation plans:
 Note that the implementation, its config, and its tests are **one** task, not three — they share a concern and one implementer can complete them in a single pass. Listing all four files also makes the wave-disjointness check meaningful: this task owns `config/auth.yaml`, so no other task in wave 1 may touch it.
 
 This ensures your implementation plan accounts for **all** files that need changes, not just the obvious implementation files.
+
+## Delegating to web-search-researcher for API Validation
+
+When validating external library APIs or checking framework syntax:
+
+### Delegation Pattern
+
+```
+Agent tool:
+  subagent_type: "web-search-researcher"
+  description: "Validate Stripe API syntax"
+  prompt: "Find Stripe v3 API syntax for creating payment intents. Focus on official documentation and current code examples. Correlation: plan-payment-2026-01-19"
+```
+
+### Expected Response Format
+
+The researcher returns YAML frontmatter + `<thinking>` + `<answer>`, as declared in `.claude/agents/web-search-researcher.md:148-158`:
+
+````markdown
+---
+message_id: research-YYYY-MM-DD-NNN
+correlation_id: [from caller, or 'none']
+timestamp: YYYY-MM-DDTHH:MM:SSZ
+message_type: RESEARCH_RESPONSE
+query_type: [library_api | best_practices | error_resolution | version_compatibility]
+researcher_version: "1.1"
+sources_found: N
+search_tools_used: [context7, searxng-search, webfetch, crawl4ai]
+confidence: [HIGH | MEDIUM | LOW | NONE]
+---
+
+<thinking>
+Search strategy for [subject]: queries run and their result counts, WebFetch
+verification, the latest date found, and the reasoning behind the confidence score.
+</thinking>
+
+<answer>
+# Web Research Report: [Subject]
+
+## Quick Answer
+[Direct, actionable answer to the question]
+
+## Source 1: [Title]
+
+  ```yaml
+  url: [URL]
+  type: [official_docs | github_issue | stackoverflow | blog | academic_paper | community_forum]
+  date: YYYY-MM
+  version: [e.g., v3.2+]
+  authority: [high | medium | low]
+  ```
+
+**Key Findings**: [Explanation]
+
+**Verified Code Example**:
+- **Source URL**: [direct link to the documentation page carrying the code]
+- **Language**: [JavaScript, Python, TypeScript, …]
+- **Excerpt** (lines [X-Y] from docs): 3-10 lines, exact syntax, unmodified
+
+## Confidence Score: [HIGH | MEDIUM | LOW]
+**Reasoning**: [e.g., "Multiple official sources confirm v3 syntax."]
+
+## Version Compatibility
+- **Applies to**: [version range]
+- **Breaking Changes**: [notes on migrations]
+
+## Warnings
+- [deprecations, experimental features, or common pitfalls]
+</answer>
+````
+
+### Mapping the Response onto Web Research Evidence
+
+The Evidence & Citation Standards require web evidence in the form **URL + Date + Type + Authority**. All four fields come out of a source's `yaml` block, so build the Evidence line directly from it:
+
+| Evidence element | Response field |
+|---|---|
+| URL | `url:` |
+| Date | `date:` |
+| Type | `type:` |
+| Authority | `authority:` |
+
+The **Verified Code Example** supplies the 1-6 line excerpt the same standard requires, already exact — copy it, trimming to at most 6 lines, rather than re-fetching the page.
+
+**In your plan:**
+````markdown
+- **Evidence:** https://docs.stripe.com/api/payment_intents/create (Type: official_docs, Date: 2026-01, Authority: high)
+- **Excerpt:**
+  ```javascript
+  const intent = await stripe.paymentIntents.create({ amount: 2000, currency: 'usd' });
+  ```
+````
+
+Three rules on using the response:
+
+1. **`confidence: NONE` or `sources_found: 0` is not evidence.** Do not create a PLAN-XXX task from it — write a Verification Task instead (see `### Unverified Items`).
+2. **Never cite the response id in place of the URL.** `research-2026-01-19-001` is not checkable by the Implementor; the URL, date, type and authority are.
+3. **Read `Version Compatibility` and `Warnings` before writing the task.** A deprecation or version bound named there belongs in the task's `Context:`, or the Implementor will code against an API the researcher already flagged.
 
 ## Delegating to codebase-analyzer
 
@@ -499,9 +597,13 @@ Keep `Done When` as the human-readable condition and let `Verify:` carry the com
 
 ### Phase 3: Decision Gates (NO DEADLOCK)
 - Always write the full plan artifact.
-- Include an **Approval Gate** section:
-  - If user approval is required, stop after writing and present only the plan summary + explicit questions.
-  - Otherwise, proceed to generate implementor-ready tasks.
+- Include an **`## Approval Gate`** section in it. Approval is **required** when the plan:
+  - **changes a contract with more than one reader** — a task field read by both this file and `/implement`, a subagent response envelope, or any file format another skill parses;
+  - **edits files that define the executing orchestrator's own behaviour** — `.claude/skills/implement/**`, or any skill or agent file `/implement` loads while it runs;
+  - **reverses a recorded deferral** — does something an earlier artifact explicitly decided not to do;
+  - **leaves a finding deliberately unaddressed** — a Critical Finding or Open Question from the fact report that this plan chooses not to resolve.
+- If any of those apply, stop after writing and present only the plan summary + the explicit questions the user must answer.
+- If none apply, the section records that none applied and the plan proceeds.
 
 ### Phase 4: The Hand-off (Artifact Generation)
 Write TWO files:
@@ -562,6 +664,9 @@ The rows from the fact report's `## Inherited Constraints (Treated as Fixed)` �
 - Goals: ...
 - Non-Goals: ...
 
+## Approval Gate
+Which of the four Phase 3 triggers this plan hits — a contract with more than one reader, files defining the executing orchestrator's own behaviour, a reversed deferral, a finding left unaddressed — and for each, the question the user must answer. `None applied — proceeding.` when it hits none.
+
 ## Design Overview
 - Data flow / control flow bullets (no code)
 
@@ -578,15 +683,15 @@ Tasks in the same wave run concurrently. No path may appear twice within a wave.
 For each action:
 - **Action ID:** PLAN-001
 - **Wave:** 1
-- **Model:** haiku (default) | opus (architecture/complex refactor only)
+- **Model:** [haiku | opus]
 - **Change Type:** create/modify/remove
 - **File(s):** `path/...` (exhaustive — impl, tests, config, docs)
 - **allowedAdjacentEdits:** `path/...` or none
 - **Instruction:** exact steps
 - **Interfaces / Pseudocode:** minimal
-- **Evidence:** `path:line-line` (why this file / why this approach)
+- **Evidence:** `path:line-line` plus a 1-6 line excerpt (why this file / why this approach)
 - **Done When:** concrete observable condition
-- **Verify:** `command` → expected result (or `none — requires review`)
+- **Verify:** [`command` → expected result, or `none — requires review`]
 - **Context:** why this change is needed (both `/implement` prompt templates paste this — omitting it sends the implementer in without the reason)
 
 **This field list is a contract with four readers, not a private format.** `Wave:`, `Model:`, `Verify:`, `File(s)` and `allowedAdjacentEdits` are each consumed by `/implement`; `Instruction`, `Evidence`, `Done When`, `Verify` and `Context` are pasted verbatim into `implementer-prompt.md` and `reviewer-prompt.md`. Renaming a field, changing its allowed values, or dropping one means editing **this file, `implement/SKILL.md`, and both prompt templates in `.claude/skills/implement/`** — a change landing in only some of them fails silently, because the reader simply does not find what it looks for.
@@ -658,6 +763,9 @@ Quality improvements across identified categories:
 4. **Maintainability**: [Summary of maintainability improvements]
 5. **Testability**: [Summary of test coverage improvements]
 
+## Approval Gate
+Which of the four Phase 3 triggers this plan hits — a contract with more than one reader, files defining the executing orchestrator's own behaviour, a reversed deferral, a finding left unaddressed — and for each, the question the user must answer. `None applied — proceeding.` when it hits none.
+
 ## Implementation Instructions (For Implementor)
 
 **Phases, waves, and merging.** Phases are priority tiers (fix Critical before Low). Waves are concurrency groups. In QA plans the phase's real job is to be a **merge boundary**, not a wave boundary.
@@ -676,18 +784,18 @@ Do not expect waves to speed up a single-file audit — they cannot, by construc
 - **Priority**: Critical
 - **Category**: [Security/Types/etc]
 - **Wave:** 1
-- **Model:** haiku (default) | opus (architecture/complex refactor only)
+- **Model:** [haiku | opus]
 - **Change Type**: modify/create/remove
 - **File(s)**: `path/to/file.ext` (exhaustive — impl, tests, config, docs)
 - **allowedAdjacentEdits:** `path/...` or none
 - **Instruction:** [Detailed steps from QA report]
-- **Evidence:** `path:line-line`
+- **Evidence:** `path:line-line` plus a 1-6 line excerpt (why this file / why this approach)
 - **Excerpt:**
   ```[language]
   [Code excerpt]
   ```
 - **Done When:** [Observable condition from QA report]
-- **Verify:** `command` → expected result (or `none — requires review`)
+- **Verify:** [`command` → expected result, or `none — requires review`]
 - **Context:** [why this finding matters — pasted into both `/implement` prompt templates]
 
 [Repeat for all Critical items]
@@ -698,14 +806,14 @@ Do not expect waves to speed up a single-file audit — they cannot, by construc
 - **Priority**: High
 - **Category**: [Testability/Types/etc]
 - **Wave:** [N]
-- **Model:** haiku (default) | opus (architecture/complex refactor only)
+- **Model:** [haiku | opus]
 - **Change Type**: modify/create/remove
 - **File(s)**: `path/to/file.ext` (exhaustive — impl, tests, config, docs)
 - **allowedAdjacentEdits:** `path/...` or none
 - **Instruction:** [Detailed steps from QA report]
-- **Evidence:** `path:line-line`
+- **Evidence:** `path:line-line` plus a 1-6 line excerpt (why this file / why this approach)
 - **Done When:** [Observable condition from QA report]
-- **Verify:** `command` → expected result (or `none — requires review`)
+- **Verify:** [`command` → expected result, or `none — requires review`]
 - **Context:** [why this finding matters — pasted into both `/implement` prompt templates]
 
 [Repeat for all High items]
@@ -786,15 +894,14 @@ Grouped by wave. Tasks within a wave run concurrently, but are checked off as ea
 ### Wave 3 (Phase 2: High)
 - [ ] PLAN-004: [One-line task description]
 
-## Quick Verification
-<list the Verify: commands from the plan>
-
 ## Notes
 - Plan created: YYYY-MM-DD
 - Total tasks: N across M waves
 ```
 
 `**Current Task**` names the next unfinished task. `**Current Wave**` is what `/implement` advances between waves.
+
+**STATE carries no copy of the `Verify:` commands** — the plan is the only place they live, so STATE cannot drift from it. Nothing reads a copy here: `/implement`'s step 5 opens STATE only to tick checklist lines and advance `Completed Tasks`, `Current Task` and `Current Wave`, and a duplicate would compete for the same ~40-line budget as the checklist, which the resume path does read.
 
 **Important**: Keep this file minimal (≤40 lines). The Implementor amends a STATE update into **every** commit it makes, covering exactly that commit's task IDs — so an interrupted run resumes without redoing finished work.
 
