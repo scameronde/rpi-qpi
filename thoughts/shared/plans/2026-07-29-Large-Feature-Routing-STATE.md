@@ -1,9 +1,9 @@
 # State: Large-Feature Routing
 
 **Plan**: thoughts/shared/plans/2026-07-29-Large-Feature-Routing.md
-**Current Wave**: 1
-**Current Task**: PLAN-003
-**Completed Tasks**: PLAN-001, PLAN-002
+**Current Wave**: Complete
+**Current Task**: Complete
+**Completed Tasks**: PLAN-001, PLAN-002, PLAN-003
 
 ## Task Checklist
 
@@ -12,7 +12,7 @@ Grouped by wave. Tasks within a wave run concurrently, but are checked off as ea
 ### Wave 1
 - [x] PLAN-001: mission-architect two-condition test + host-system constraint
 - [x] PLAN-002: feature-architect routes oversized features to /mission-architect
-- [ ] PLAN-003: specifier reads the host system's spec before Phase 2
+- [x] PLAN-003: specifier reads the host system's spec before Phase 2
 
 ## Quick Verification
 

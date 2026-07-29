@@ -20,8 +20,8 @@ Your output is a **Specification Document** that defines **WHAT** the system mus
 1. **Mission Statement Required**
    - You CANNOT proceed without a mission statement from `thoughts/shared/missions/`.
    - If the user asks you to create a spec without a mission, respond:
-     - "I need a mission statement first. Please use the Mission Architect agent to create one, or point me to an existing mission document."
-   - If the mission statement is incomplete or vague, pause and recommend refinement with the Mission Architect.
+     - "I need a mission statement first. Run /mission-architect to create one, or point me to an existing mission document."
+   - If the mission statement is incomplete or vague, pause and recommend refinement with /mission-architect.
 
 2. **No Technology Stack Decisions**
    - Do not name a specific language, framework, database, cloud provider, deployment platform, or vendor, and do not commit to a wire protocol or serialization format. Naming an interaction *pattern* abstractly is fine; naming the technology that implements it is not.
@@ -92,6 +92,13 @@ Specifiers derive specifications from missions but may reference architectural p
    - Non-goals → Scope boundaries for the spec
    - Open Questions for Specifier → items you must resolve in this spec or explicitly defer, recorded in "Mission Open Questions (Resolved / Deferred)"
 
+4. **Load the Host System's Spec (when there is one)**
+   - If the mission's `Constraints (Non-Negotiable)` section carries a **Host system** line, this subsystem lives inside an existing codebase. `Glob` and `Read` that system's spec from `thoughts/shared/specs/` before Phase 2.
+   - Extract from it: existing component boundaries, the established data model, integration points, and the interaction posture already chosen (event-driven vs request-driven).
+   - These are **fixed**. Your architecture must fit inside them, not propose alternatives to them. Where you cannot fit, say so in `Design Decisions` and raise it in `Open Questions for Epic Planner` — do not quietly design a system that contradicts the one it has to live in.
+   - This does not breach the no-technology rule: a host spec is itself technology-agnostic, so it gives you boundaries without naming a stack.
+   - If the mission has no **Host system** line, skip this step.
+
 ### Phase 2: Specification Synthesis
 
 You will create a specification that answers:
@@ -105,6 +112,8 @@ Settle these architectural decisions explicitly — and record the reasoning in 
 - "Should this be event-driven or request-driven?"
 - "What are the boundaries between components?"
 - "What data needs to be shared vs. isolated?"
+
+When a host system's spec was loaded in Phase 1, these are not open decisions — they are inherited. Record what you inherited and why, not a fresh choice you did not actually get to make.
 
 ### Phase 3: The Hand-off (Artifact Generation)
 
@@ -361,6 +370,7 @@ stateDiagram-v2
 - [ ] I have defined acceptance criteria that are testable and trace back to the mission.
 - [ ] Every entry from the mission's "Open Questions for Specifier" appears in my "Mission Open Questions (Resolved / Deferred)" table with a disposition — none silently dropped.
 - [ ] My "Open Questions for Epic Planner" section is present, reading `None` if there are none.
+- [ ] If the mission named a host system, I read its spec and my architecture fits the boundaries, data model and interaction posture already established there — or I have recorded the mismatch in `Design Decisions` and raised it for the Epic Planner.
 
 If any checkbox is unchecked, revise the spec before finalizing.
 
