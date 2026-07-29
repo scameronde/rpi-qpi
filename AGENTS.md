@@ -56,16 +56,18 @@ Closeout checklist:
 
 ## Project: ORBIT — Claude Code Workflow Toolkit
 
-An agentic engineering framework for Claude Code. Provides a full pipeline from project vision to code implementation via specialized skills, subagents, and MCP servers. The distributable plugin lives in `dist/orbit/`.
+An agentic engineering framework for Claude Code. Provides a full pipeline from project vision to code implementation via specialized skills, subagents, and MCP servers. There is no application code: the product is the prompt set in `.claude/`. The distributable plugin is built on demand into `dist/orbit/` by `scripts/build-plugin.sh` and is not committed.
 
 **Workflow pipeline:**
 - Greenfield: `/mission-architect` → `/specifier` → `/epic-planner` → `/fact-finder` → `/planner` → `/implement`
-- Brownfield: `/feature-architect` → `/epic-planner` → `/fact-finder` → `/planner` → `/implement`
+- Brownfield: `/feature-architect` → `/fact-finder` → `/planner` → `/implement` (a single feature is a single stream, so epic decomposition does not apply)
 - Small fix: `/fact-finder` → `/planner` → `/implement`
+- Optional entry point: `/prototype` → one of the three above, on a "go" decision
 
 **Key rule:** `/fact-finder` must precede `/planner`; `/planner` must precede `/implement`. See `CLAUDE.md` for full documentation.
 
 ## Child DOX Index
 
-- [.claude/](.claude/AGENTS.md) — Framework infrastructure: skills, agents, hooks, MCP servers
 - [thoughts/shared/](thoughts/shared/AGENTS.md) — Workflow artifact store: facts, plans, QA, and more
+
+`.claude/` is deliberately absent from this index and carries no `AGENTS.md`. `dox-init` and `dox-update` exclude it, so files there were hand-maintainable only and went stale; `031e491` removed all three and moved the load-bearing rules into the skills themselves. Every `SKILL.md` and agent file states its own name, description and contract in frontmatter. Do not re-add DOX files under `.claude/`.

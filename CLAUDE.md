@@ -2,9 +2,32 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+# What This Repository Is
+
+ORBIT is a Claude Code workflow toolkit, not an application. There is no application code here: the product is the prompt set in `.claude/` — skills, worker agents, and a SessionStart hook — plus the workflow artifacts in `thoughts/`. Editing a `SKILL.md` *is* editing behavior.
+
+Two consequences to keep in mind:
+
+- **Nothing compiles and there is no test suite.** Verification is reading, plus the two checks below.
+- **Never edit a skill or agent file while `/implement` is mid-plan.** The orchestrator's own behavior comes from those files; changing them mid-run changes the rules under a running plan (`.claude/skills/implement/SKILL.md`, Red Flags).
+
+## Commands
+
+```bash
+bash scripts/build-plugin.sh                          # regenerate dist/orbit/ from .claude/ + .mcp.json
+.claude/hooks/session-start | python3 -m json.tool    # hook must emit valid JSON, or sessions start blind
+```
+
+`dist/` is currently absent — `cab454b` deleted it as a stale build snapshot. The build script regenerates everything derivable but deliberately never generates the two hand-authored plugin assets, so a fresh build warns and produces a tree that will not install until they are recreated:
+
+- `dist/orbit/.claude-plugin/plugin.json` — manifest; last committed as `{"name": "orbit", "version": "3.3.0", "skills": ["./"]}` (recover with `git show cab454b^:dist/orbit/.claude-plugin/plugin.json`)
+- `dist/orbit/README.md` — plugin install docs
+
+The `uv run mypy|ruff|pytest` entries in `.claude/settings.json` are allowlisted for the *target* projects this toolkit is used on. There is no Python in this repo.
+
 # Claude Code Workflow
 
-This project uses a structured agentic workflow for software development. Workflow orchestrators are Skills in `.claude/skills/` and invoked via `/skill-name`. Worker agents are in `.claude/agents/` and spawned by Skills via the Agent tool.
+Workflow orchestrators are Skills in `.claude/skills/`, invoked via `/skill-name`. Worker agents are in `.claude/agents/` and are spawned by Skills via the Agent tool.
 
 ## Workflow Pipeline
 
@@ -15,8 +38,9 @@ This project uses a structured agentic workflow for software development. Workfl
 
 **Brownfield (new feature in existing system):**
 ```
-/feature-architect → /epic-planner → /fact-finder → /planner → /implement
+/feature-architect → /fact-finder → /planner → /implement
 ```
+Brownfield skips `/epic-planner` on purpose: epic decomposition exists to cut a whole specification into several parallel streams, and one feature is one stream. A feature large enough to need that is really a small project — route it through `/specifier` (`.claude/skills/feature-architect/SKILL.md:12`).
 
 **Small change or bug fix:**
 ```
@@ -41,9 +65,21 @@ Each stage produces artifacts written to `thoughts/shared/`:
 | Plan | `/planner` | `thoughts/shared/plans/` |
 | Execution | `/implement` | Git commits per task |
 
-## Workflow Skills
+Artifacts are named `YYYY-MM-DD-Topic.md` and are write-once after creation. The one exception is a plan's STATE file, which the `/implement` orchestrator updates as it goes (`thoughts/shared/AGENTS.md`).
 
-All workflow orchestration is done via Skills (invoked with `/skill-name` or proactively by Claude):
+## The pipeline definition is duplicated — change every copy
+
+The ordering above is stated in five places, and no tooling keeps them in sync:
+
+1. this file
+2. `.claude/hooks/session-start` — the text injected into every session
+3. `README.md`
+4. root `AGENTS.md`
+5. the affected `SKILL.md`, plus any sibling skill that names the stage before or after it
+
+When `7790fda` removed `/epic-planner` from the brownfield path it updated the hook and the skill, leaving this file and `README.md` claiming the old order. Treat a pipeline change as a five-file edit.
+
+## Workflow Skills
 
 | Skill | Purpose |
 |---|---|
@@ -51,12 +87,14 @@ All workflow orchestration is done via Skills (invoked with `/skill-name` or pro
 | `/feature-architect` | Define a new feature within an existing system (brownfield) |
 | `/specifier` | Translate a mission into a technical specification |
 | `/epic-planner` | Decompose a spec into epics and user stories |
-| `/fact-finder` | Map the codebase relevant to a spec or question |
+| `/fact-finder` | Map the codebase relevant to a spec or question; also runs QA mode |
 | `/planner` | Produce a sequenced, evidence-based implementation plan |
-| `/implement` | Execute a plan task-by-task via subagents, with spec + quality review per task |
+| `/implement` | Execute a plan wave-by-wave via subagents, one combined spec-and-quality review gate per task |
 | `/prototype` | Spike a rough idea into disposable, isolated code and reach a go/no-go/iterate decision (optional, before mission-architect/feature-architect/fact-finder — the prototype code itself is always discarded) |
 
-## Quality Skills
+`/prototype` carries `model: opus` deliberately, and must never be given `context: fork`: it is interactive and owns a git worktree lifecycle, neither of which survives being run as a subagent. The rationale is recorded in its own frontmatter note.
+
+## Quality and Maintenance Skills
 
 | Skill | Purpose |
 |---|---|
@@ -64,120 +102,77 @@ All workflow orchestration is done via Skills (invoked with `/skill-name` or pro
 | `python-qa` | Python-specific quality review |
 | `typescript-qa` | TypeScript-specific quality review |
 | `logic-bugs-qa` | Logic and bug analysis across languages |
+| `dox-init` | Bootstrap a DOX `AGENTS.md` tree for a project (idempotent — never overwrites) |
+| `dox-update` | Detect and regenerate stale `AGENTS.md` files |
 | `claude-code-extensions` | Reference for creating commands, skills, subagents, and MCP servers |
 
 ## Worker Agents (used internally by Skills)
 
 These live in `.claude/agents/` and are spawned by Skills via the `Agent` tool — never invoked directly.
 
-| File | Role | Agent type |
-|---|---|---|
-| `codebase-locator.md` | Find files by purpose/pattern | Explore |
-| `codebase-analyzer.md` | Trace logic and data flow | Explore |
-| `codebase-pattern-finder.md` | Find recurring patterns | Explore |
-| `thoughts-locator.md` | Find docs in `thoughts/` directory | Explore |
-| `thoughts-analyzer.md` | Extract signal from docs | Explore |
-| `web-search-researcher.md` | External knowledge and docs | general-purpose |
+| Agent | Role |
+|---|---|
+| `codebase-locator` | Find files by purpose/pattern — returns paths, not analysis |
+| `codebase-analyzer` | Trace logic and data flow through paths it is given — cannot search |
+| `codebase-pattern-finder` | Find recurring patterns and idioms, with snippets |
+| `thoughts-locator` | Find docs in the `thoughts/` directory |
+| `thoughts-analyzer` | Extract decisions and constraints from `thoughts/` docs |
+| `web-search-researcher` | External libraries, APIs, docs |
+
+A Skill dispatches these by the agent's own `name` — `subagent_type: "codebase-locator"` — not via a generic harness agent type. Each agent's capabilities are bounded by the `tools:` list in its frontmatter, which is the only thing stopping, say, `codebase-analyzer` from searching. `/implement` is the exception: its implementers and reviewers run as `general-purpose`, on `haiku` and the session model respectively.
+
+Context isolation comes from the Agent tool call, not from the file: only an agent's returned report enters the caller's context.
 
 ## MCP Servers
 
-Servers live in `.claude/mcp/` and are auto-enabled via `"enableAllProjectMcpServers": true` in `.claude/settings.json`. Build before first use:
+All three servers are **remote** — declared in the root `.mcp.json`, no local install or build — and auto-enabled via `"enableAllProjectMcpServers": true` in `.claude/settings.json`.
 
-```bash
-cd .claude/mcp/crawl4ai && npm install && npm run build
-cd .claude/mcp/searxng  && npm install && npm run build
-```
+| Server | Tool(s) | Endpoint | Notes |
+|---|---|---|---|
+| `crawl4ai` | `crawl4ai` | `mcp.vier.services/crawl4ai-mcp` | Web crawling: crawl, markdown, screenshot modes |
+| `searxng` | `searxng_search` | `mcp.vier.services/searxng-mcp` | Web search via hosted SearXNG |
+| `context7` | `resolve-library-id`, `query-docs` | `mcp.context7.com/mcp` | Library docs; needs a key |
 
-| Server | Tool | Description |
-|---|---|---|
-| `crawl4ai` | `crawl4ai` | Web crawling with 3 modes: crawl, markdown, screenshot |
-| `searxng` | `searxng_search` | Web search via self-hosted SearXNG |
-
-### crawl4ai tool parameters
-- `url` (required): URL to crawl
-- `mode`: `crawl` | `markdown` | `screenshot` (default: `crawl`)
-- `cache_mode`: `enabled` | `disabled` | `bypass` | `read_only` | `write_only`
-- `css_selector`: Extract specific content (crawl mode)
-- `markdown_filter`: `raw` | `fit` | `bm25` | `llm` (default: `fit`)
-- `filter_query`: Query for bm25/llm filters
-
-### searxng_search tool parameters
-- `query` (required): Search query
-- `categories`: Comma-separated categories (e.g., `general,social media`)
-- `language`: Language code (e.g., `en`, `de`)
-- `time_range`: `day` | `month` | `year`
-- `pageno`: Page number (default: 1)
+`.mcp.json` interpolates `${CONTEXT7_API_KEY}` from the gitignored `.env`. Without it only `context7` degrades; the VIER-hosted servers need no credentials.
 
 ## Directory Structure
 
 ```
 .claude/
-  agents/         # Worker agents (spawned by Skills via Agent tool)
-  skills/         # All skills — workflow orchestrators + quality reviewers
-  hooks/          # SessionStart hook for skill bootstrap
-  mcp/
-    crawl4ai/     # MCP server wrapping Crawl4AI
-    searxng/      # MCP server wrapping SearXNG
-  settings.json          # enableAllProjectMcpServers: true
-  settings.local.json    # permissions (WebSearch, WebFetch, Bash allowlist)
+  agents/                # Worker agents (spawned by Skills via Agent tool)
+  skills/                # All skills — workflow orchestrators + quality/DOX
+  hooks/
+    session-start        # Emits the workflow context injected at session start
+    hooks.json           # Hook registration, plugin flavor (see below)
+  settings.json          # enableAllProjectMcpServers, hook registration, uv allowlist
+  settings.local.json    # Local permissions + sandbox settings
+
+.mcp.json                # Remote MCP server declarations
+scripts/build-plugin.sh  # .claude/ + .mcp.json → dist/orbit/
+
+ORBIT-V4-CONCEPT.md      # Draft rearchitecture — NOT current state, see below
+ORBIT-V4-OKF-CONVENTION.md
 
 thoughts/
-  shared/
-    missions/     # Vision artifacts from /mission-architect
-    features/     # Feature briefs from /feature-architect
-    specs/        # Technical specs from /specifier
-    epics/        # Epics from /epic-planner
-    facts/        # Codebase facts from /fact-finder
-    qa/           # QA research from /fact-finder
-    plans/        # Plans + STATE files from /planner
-    prototypes/   # Prototype learnings notes from /prototype
-
-agent/            # Original opencode agent definitions (reference only)
-skills/           # Original opencode skill definitions (reference only)
-tool/             # Original opencode tool source files (crawl4ai.ts, searxng-search.ts)
+  shared/                # Pipeline artifact store (see stage table above)
+  projects/              # Older per-topic working notes
+presentation/            # Slide decks about the method (PDF/PPTX)
 ```
 
-### agents/ vs skills/
-
-- **`agents/`** — Worker agents, never invoked directly. Skills embed their path in `Agent` tool `subagent_type` parameters. Each file defines a specialized read-only or search role (Explore type) or a web researcher (general-purpose type). Context isolation comes from the Agent tool call, not from file type.
-- **`skills/`** — Skills loaded via the `Skill` tool. Workflow orchestrators (`/mission-architect` through `/implement`) plus quality tools. The `/implement` skill directory also contains three prompt template files used to build implementer and reviewer prompts.
+**The SessionStart hook is registered twice, on purpose.** `.claude/settings.json` registers it with a `${CLAUDE_PROJECT_DIR}` path — that copy is what runs in this repo. `.claude/hooks/hooks.json` is the plugin-build source; `scripts/build-plugin.sh` rewrites its path to `${CLAUDE_PLUGIN_ROOT}/hooks-handlers/session-start`. Editing the hook's *text* touches only `session-start`; changing *how it is registered* touches both files.
 
 ## Plan File Format
 
-Plans produced by `/planner` follow this structure:
+`.claude/skills/planner/SKILL.md` holds the canonical task template — read it there rather than reproducing it. Its field list (`Wave:`, `Model:`, `Change Type:`, `File(s):`, `allowedAdjacentEdits:`, `Instruction:`, `Evidence:`, `Done When:`, `Verify:`, `Context:`) is **a contract with four readers**: `planner/SKILL.md`, `implement/SKILL.md`, and both prompt templates in `.claude/skills/implement/` (`implementer-prompt.md`, `reviewer-prompt.md`). Renaming a field or changing its allowed values means editing all four; a change landing in only some of them fails silently, because the reader simply does not find what it looks for.
 
-```markdown
-# Plan: <title>
+Two fields carry most of the weight:
 
-## Inputs
-- Research report(s) used: thoughts/shared/facts/...
+- **`File(s)` plus `allowedAdjacentEdits` must be exhaustive** — implementation, tests, config, docs. They are the input to the wave-disjointness check, so an omitted path is a path two concurrent implementers can both write.
+- **`Verify:` is what lets the orchestrator confirm a mechanical change without spending a review subagent** — but only if the command asserts content. A count or existence check passes for the wrong content, and since the implementer is handed the command before it works, a bar it can see in advance is a bar it can clear without doing the task. Such a task goes to review instead; `Verify: none — requires review` says so explicitly.
 
-## Verified Current State
-- **Fact:** ...
-- **Evidence:** file:line-line
+`/implement` executes the plan **wave by wave**. Tasks sharing a `Wave:` have disjoint `File(s)` and run concurrently — one implementer subagent each. After each wave the orchestrator runs a **Boundary Check**: every path the wave actually changed must appear in the union of its tasks' declared paths, or it is treated as either an incomplete `File(s)` list or scope creep. Then mechanical changes are verified against `Done When`; everything else goes to a single reviewer covering spec compliance and code quality together.
 
-## Goals / Non-Goals
-
-## Design Overview
-
-## Implementation Instructions
-
-### PLAN-001: <task name>
-- wave: 1
-- model: haiku|opus          # haiku is the default; opus only for architecture/complex refactors
-- changeType: modify|create|remove
-- files: [path/to/file]   # exhaustive — impl, tests, config, docs
-- allowedAdjacentEdits: [optional]
-- instruction: What to do
-- evidence: file:line-line
-- doneWhen: Verifiable completion criterion
-- verify: `command` → expected result, or `none — requires review`
-- context: Why this change is needed
-```
-
-`files` plus `allowedAdjacentEdits` must be exhaustive: they are the input to the wave-disjointness check, and an omitted path is a path that can be written by two concurrent implementers. `verify` is what lets the orchestrator confirm a mechanical change without spending a review subagent — but only if the command asserts content. A count or existence check passes for the wrong content, and since the implementer is handed the command before it works, a bar it can see in advance is a bar it can clear without doing the task. Such a task goes to review instead.
-
-`/implement` reads the plan and executes it **wave by wave**. Tasks sharing a `wave` have disjoint `files` and run concurrently — one implementer subagent each. After each wave the orchestrator runs a **Boundary Check**: every path the wave actually changed must appear in the union of its tasks' declared paths, or it is treated as either an incomplete `files` list or scope creep. Then mechanical changes are verified against `doneWhen`; everything else goes to a single reviewer that covers spec compliance and code quality together. The orchestrator — never the subagents — makes every commit, each one carrying the STATE update for exactly the task IDs it contains, so a run interrupted mid-wave resumes without redoing finished work.
+State lives in a sibling file, `<plan>-STATE.md`. The orchestrator — never a subagent — makes every commit and every STATE update, each commit carrying the update for exactly the task IDs it contains, so a run interrupted mid-wave resumes without redoing finished work.
 
 ## DOX Protocol
 
@@ -188,3 +183,11 @@ Plans produced by `/planner` follow this structure:
 **After a meaningful change:** If the change affects a directory's purpose, scope, ownership, structure, file format contracts, or naming conventions — update the nearest owning `AGENTS.md`. If a directory is created or repurposed, also update the parent `AGENTS.md`'s Child DOX Index.
 
 **Conflict rule:** When `AGENTS.md` files conflict, the closer file governs local details. No `AGENTS.md` may override this `CLAUDE.md`.
+
+**Scope in this repo:** `.claude/**` is deliberately outside DOX. `dox-init` and `dox-update` exclude it, which left the `AGENTS.md` files there hand-maintainable only and duly stale, so `031e491` removed all three and moved the load-bearing rules into the skills themselves. `.claude/` is self-describing: every `SKILL.md` and agent file carries its name, description and contract in frontmatter. Live `AGENTS.md` files are the root one plus `thoughts/shared/` and its `facts/`, `plans/`, `qa/`, `prototypes/` children.
+
+## ORBIT V4 — Draft, Not Current State
+
+`ORBIT-V4-CONCEPT.md` and `ORBIT-V4-OKF-CONVENTION.md` (German, both marked *Entwurf*, dated 2026-07-01) propose the next architecture: `thoughts/shared/` becomes an Open-Knowledge-Format bundle under `knowledge/`, splitting normative (intent, rules, specs) from descriptive (code, external, quality facts); a first-class `rules/` layer replaces today's implicit conventions; facts carry content hashes so staleness becomes mechanical; a new compliance agent reports Ist-vs-Soll drift; and DOX dissolves into path-scoped rules.
+
+None of it is implemented — everything else in this file describes V3, which is what runs. Read the V4 docs before planning structural work, and do not treat them as a description of the current tree.

@@ -1,6 +1,8 @@
 # ORBIT — Claude Code Workflow Toolkit
 
-A structured agentic development workflow for [Claude Code](https://claude.ai/code), ported from an [OpenCode](https://opencode.ai) agent system. Provides a full pipeline from project vision to code implementation, with specialized subagents, code quality skills, and MCP servers for web research.
+A structured agentic development workflow for [Claude Code](https://claude.ai/code), ported from an [OpenCode](https://opencode.ai) agent system. It provides a full pipeline from project vision to code implementation, backed by specialized subagents, code quality skills, and hosted MCP servers for web research.
+
+ORBIT has no runtime of its own. It is a set of prompts — skills and agents under `.claude/` — that Claude Code loads, either directly in this repository or as an installable plugin in another one.
 
 ## Pipeline
 
@@ -11,60 +13,92 @@ A structured agentic development workflow for [Claude Code](https://claude.ai/co
 
 **Brownfield (new feature in existing system):**
 ```
-/feature-architect → /epic-planner → /fact-finder → /planner → /implement
+/feature-architect → /fact-finder → /planner → /implement
 ```
+Brownfield skips `/epic-planner`: decomposition into epics exists to split a whole specification into parallel streams, and a single feature is a single stream.
 
 **Small change or bug fix:**
 ```
 /fact-finder → /planner → /implement
 ```
 
-Each stage produces artifacts in `thoughts/shared/`:
+**Not sure it should be built at all:**
+```
+/prototype → then one of the three paths above, on a "go" decision
+```
+
+Two orderings are load-bearing: `/fact-finder` must precede `/planner` (the planner needs a verified research report), and `/planner` must precede `/implement` (which needs a plan file).
+
+Each stage produces artifacts in `thoughts/shared/`, named `YYYY-MM-DD-Topic.md`:
 
 | Stage | Command | Output |
 |---|---|---|
+| Prototype (optional) | `/prototype` | `thoughts/shared/prototypes/` |
 | Vision (greenfield) | `/mission-architect` | `thoughts/shared/missions/` |
 | Feature brief (brownfield) | `/feature-architect` | `thoughts/shared/features/` |
 | Specification | `/specifier` | `thoughts/shared/specs/` |
 | Epics | `/epic-planner` | `thoughts/shared/epics/` |
-| Facts | `/fact-finder` | `thoughts/shared/facts/` |
-| Plan | `/planner` | `thoughts/shared/plans/` |
-| Execution | `/implement` | Commits per task, updates STATE |
+| Facts | `/fact-finder` | `thoughts/shared/facts/` (QA mode: `thoughts/shared/qa/`) |
+| Plan | `/planner` | `thoughts/shared/plans/` (plan + `-STATE.md`) |
+| Execution | `/implement` | Commits per task, advancing STATE |
 
 ## Getting Started
 
 ### Prerequisites
 
-- [Claude Code](https://claude.ai/code) CLI installed
-- Node.js 20+
+- [Claude Code](https://claude.ai/code) CLI
+- Bash and `python3` (the plugin build script and the hook self-check)
 
-### Installing the plugin
+No Node.js or Python packages are needed — the MCP servers are hosted, not built locally.
 
-The distributable plugin lives in `dist/orbit/`. Install it into any project:
+### Using it in this repository
+
+Nothing to install. `.claude/` is picked up directly, and a SessionStart hook injects the pipeline rules at the start of every session. Verify the hook still emits valid JSON after editing it:
 
 ```bash
+.claude/hooks/session-start | python3 -m json.tool
+```
+
+### Installing it into another project
+
+Build the distributable plugin from `.claude/` plus the root `.mcp.json`, then install the result:
+
+```bash
+bash scripts/build-plugin.sh
 claude plugin install ./dist/orbit
+```
+
+`dist/` is not committed. The build regenerates every derivable part of the plugin — agents, skills, the hook handler, `hooks.json` with its command path rewritten to `${CLAUDE_PLUGIN_ROOT}`, and `.mcp.json` — but two hand-authored assets have no counterpart under `.claude/` and are never generated:
+
+- `dist/orbit/.claude-plugin/plugin.json` — the plugin manifest, including its version
+- `dist/orbit/README.md` — plugin-specific install docs
+
+Both were removed along with the stale `dist/` snapshot in commit `cab454b`, so the script currently warns about them and the built tree will not install until they are restored. The last committed manifest is recoverable from git:
+
+```bash
+git show cab454b^:dist/orbit/.claude-plugin/plugin.json
+git show cab454b^:dist/orbit/README.md
 ```
 
 ### Configuration
 
-Edit `.mcp.json` in your project and replace the Context7 API key placeholder with your own key. You can get one for free at [Context7](https://context7.com/):
+`.mcp.json` declares three remote MCP servers and needs no local setup. `crawl4ai` and `searxng` point at hosted VIER instances and require no credentials. `context7` needs an API key, free from [Context7](https://context7.com/), supplied through the environment:
 
 ```json
 "context7": {
   "type": "http",
   "url": "https://mcp.context7.com/mcp",
   "headers": {
-    "CONTEXT7_API_KEY": "<your key here>"
+    "CONTEXT7_API_KEY": "${CONTEXT7_API_KEY}"
   }
 }
 ```
 
-The crawl4ai and searxng MCP servers connect to hosted VIER instances and require no local setup.
+Put the key in a gitignored `.env` as `CONTEXT7_API_KEY=...`. Without it, only library-documentation lookups degrade.
 
 ## Commands
 
-### Workflow Orchestration
+### Workflow orchestration
 
 | Command | Purpose |
 |---|---|
@@ -74,9 +108,10 @@ The crawl4ai and searxng MCP servers connect to hosted VIER instances and requir
 | `/epic-planner` | Decompose a spec into epics and user stories |
 | `/fact-finder` | Map the codebase or investigate a topic before planning |
 | `/planner` | Produce a sequenced, evidence-based implementation plan |
-| `/implement` | Execute a plan task-by-task via subagents, committing after each |
+| `/implement` | Execute a plan wave-by-wave via subagents, committing per task |
+| `/prototype` | Spike a rough idea into disposable code in an isolated worktree, then decide go / no-go / iterate |
 
-### Code Quality Skills
+### Quality and maintenance skills
 
 | Skill | Purpose |
 |---|---|
@@ -84,63 +119,62 @@ The crawl4ai and searxng MCP servers connect to hosted VIER instances and requir
 | `python-qa` | Python-specific quality review |
 | `typescript-qa` | TypeScript-specific quality review |
 | `logic-bugs-qa` | Logic and bug analysis across languages |
+| `dox-init` | Bootstrap a DOX `AGENTS.md` governance tree (idempotent) |
+| `dox-update` | Detect and regenerate stale `AGENTS.md` files |
 | `claude-code-extensions` | Reference for creating commands, skills, subagents, and MCP servers |
 
 ## Architecture
 
 ```
 .claude/
-  agents/              # Subagent prompts — embedded by orchestrators via Agent tool
-  skills/              # Workflow orchestrators and code quality skills
+  agents/              # Subagent prompts — dispatched by skills via the Agent tool
+  skills/              # Workflow orchestrators, quality reviewers, DOX tooling
   hooks/
-    hooks.json         # SessionStart hook definition
-    session-start      # Injects workflow context at session start
-  settings.json        # enableAllProjectMcpServers: true
-  settings.local.json  # Tool permissions
+    session-start      # Emits the workflow context injected at session start
+    hooks.json         # Hook registration used by the plugin build
+  settings.json        # enableAllProjectMcpServers, hook registration
+  settings.local.json  # Local tool permissions and sandbox settings
 
-.mcp.json              # MCP server configs (crawl4ai, searxng, context7)
+.mcp.json              # Remote MCP servers (crawl4ai, searxng, context7)
+scripts/
+  build-plugin.sh      # .claude/ + .mcp.json → dist/orbit/
 
-dist/
-  orbit/               # Distributable Claude Code plugin (built from .claude/)
+thoughts/shared/       # Workflow artifacts (see the pipeline table above)
+presentation/          # Slide decks about the method
 
-thoughts/shared/       # Workflow artifacts (missions, features, specs, epics, facts, plans)
-
-agent/                 # Original OpenCode agent definitions (reference)
-skills/                # Original OpenCode skill definitions (reference)
-tool/                  # Original OpenCode tool source files (reference)
+ORBIT-V4-CONCEPT.md    # Draft next-generation architecture (not implemented)
+ORBIT-V4-OKF-CONVENTION.md
 ```
 
 **`agents/` vs `skills/`:**
-- **agents/** — Subagent prompts that orchestrators embed in `Agent` tool calls; never invoked directly
-- **skills/** — Workflow orchestrators and code quality skills invoked via `/skill-name`
+- **agents/** — Worker prompts, never invoked directly. A skill dispatches one by its frontmatter `name` (`subagent_type: "codebase-locator"`), and each agent's `tools:` list is what bounds its capabilities. Only an agent's returned report enters the caller's context, which is where the context savings come from.
+- **skills/** — Invoked as `/skill-name`, or proactively by Claude when a request matches the skill's description.
 
 ## Plan File Format
 
-Plans in `thoughts/shared/plans/` follow this structure:
+The canonical task template lives in `.claude/skills/planner/SKILL.md`. Each task carries:
 
 ```markdown
-# Plan: <title>
-
-## STATE
-Current: PLAN-001
-Status: pending|in_progress|completed|blocked
-
-## Tasks
-
-### PLAN-001: <task name>
-- changeType: modify|create|remove
-- files: [path/to/file]
-- instruction: What to do
-- evidence: file:line-line
-- doneWhen: Verifiable completion criterion
-- context: Why this change is needed
+- **Action ID:** PLAN-001
+- **Wave:** 1
+- **Model:** haiku (default) | opus (architecture/complex refactor only)
+- **Change Type:** create/modify/remove
+- **File(s):** `path/...` (exhaustive — impl, tests, config, docs)
+- **allowedAdjacentEdits:** `path/...` or none
+- **Instruction:** exact steps
+- **Evidence:** `path:line-line`
+- **Done When:** concrete observable condition
+- **Verify:** `command` → expected result (or `none — requires review`)
+- **Context:** why this change is needed
 ```
 
-`/implement` reads the STATE block to resume interrupted plans.
+That field list is a contract shared by four readers — `planner/SKILL.md`, `implement/SKILL.md`, and the two prompt templates in `.claude/skills/implement/` — so renaming a field means editing all four.
+
+`/implement` runs the plan wave by wave: tasks in the same `Wave:` have disjoint `File(s)` and execute concurrently, one subagent each, followed by a boundary check and a review gate. Progress is tracked in a sibling `<plan>-STATE.md` file, updated by the orchestrator with every commit, so an interrupted run resumes without redoing finished work.
 
 ## Background
 
-This toolkit was converted from an OpenCode workflow. See [ANALYSIS.md](ANALYSIS.md) for a detailed mapping of every agent, skill, and tool — including what was preserved, what was rewritten, and what could not be ported.
+This toolkit was converted from an OpenCode workflow: skills and agents were rewritten as Claude Code skills and subagents, and the two locally built MCP tools were replaced by hosted endpoints. `ORBIT-V4-CONCEPT.md` sketches where it goes next — a living knowledge base as the source of truth, with an explicit rules layer and continuous drift checking against the code.
 
 ## License
 

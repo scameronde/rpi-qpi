@@ -7,7 +7,7 @@ Persistent artifact store for all workflow pipeline outputs. Every stage of the 
 ## Ownership
 
 - Skills write artifacts here; they do not delete or overwrite existing files
-- The `/implement` orchestrator updates STATE files in `plans/` after each task's reviews pass (implementer subagents never touch STATE files directly)
+- The `/implement` orchestrator updates STATE files in `plans/` as it commits (implementer subagents never touch STATE files directly)
 - All other files are write-once after creation
 
 ## Local Contracts
@@ -18,22 +18,29 @@ Persistent artifact store for all workflow pipeline outputs. Every stage of the 
 | Directory | Written by | Read by |
 |---|---|---|
 | `missions/` | `/mission-architect` | `/specifier` |
-| `features/` | `/feature-architect` | `/epic-planner` |
+| `features/` | `/feature-architect` | `/fact-finder` |
 | `specs/` | `/specifier` | `/epic-planner` |
 | `epics/` | `/epic-planner` | `/fact-finder`, `/planner` |
 | `facts/` | `/fact-finder` | `/planner` |
-| `qa/` | `/fact-finder` (QA mode) | human review |
+| `qa/` | `/fact-finder` (QA mode) | human review, `/planner` (QA plans) |
 | `prototypes/` | `/prototype` | `/feature-architect`, `/fact-finder` |
 | `plans/` | `/planner` | `/implement` |
 
-**Currently populated:** `plans/` (66 files, 33 plan/STATE pairs), `facts/` (29 files, including AGENTS.md), `qa/` (4 files), `features/` (1 file), `epics/` (1 file).
-**Currently empty:** `missions/`, `specs/`, `prototypes/`.
+A feature brief goes straight to `/fact-finder`: brownfield skips `/epic-planner`, because epic decomposition exists to cut a whole specification into several parallel streams and one feature is one stream.
+
+**Populated today:** `plans/`, `facts/`, `qa/`, `features/`, `epics/`. **Empty today:** `missions/`, `specs/`, `prototypes/`. File counts are not a contract — they change with every pipeline run, so `ls` is the authority, not this file.
 
 ## Work Guidance
 
 - Never edit facts or plan files manually while `/implement` is executing
 - When referencing an artifact in a plan or prompt, use the full relative path from the repo root
 - Artifact files are read-only after creation (except STATE files in `plans/`)
+- A subdirectory with no `AGENTS.md` of its own inherits this file as its nearest contract
+
+## Verification
+
+- `ls <subdir>` — every file matches `YYYY-MM-DD-*.md`, plus `AGENTS.md` where one exists
+- Each plan in `plans/` has a sibling `-STATE.md`; a plan without one predates STATE tracking, and `/implement` creates it on resume
 
 ## Child DOX Index
 
@@ -41,3 +48,5 @@ Persistent artifact store for all workflow pipeline outputs. Every stage of the 
 - [facts/](facts/AGENTS.md) — Codebase fact reports
 - [qa/](qa/AGENTS.md) — QA review reports
 - [prototypes/](prototypes/AGENTS.md) — Prototype learnings notes (problem/built/outcome/decision)
+
+`missions/`, `specs/`, `epics/` and `features/` carry no `AGENTS.md` — this file is their contract.
