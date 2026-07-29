@@ -1,9 +1,9 @@
 # State: QA Skills Contract Repair
 
 **Plan**: thoughts/shared/plans/2026-07-29-QA-Skills-Contract-Repair.md
-**Current Wave**: 2
-**Current Task**: PLAN-006
-**Completed Tasks**: PLAN-001, PLAN-002, PLAN-003, PLAN-004, PLAN-005
+**Current Wave**: Complete
+**Current Task**: PLAN-006 — pending After the Final Wave
+**Completed Tasks**: PLAN-001, PLAN-002, PLAN-003, PLAN-004, PLAN-005, PLAN-006
 
 ## Task Checklist
 
@@ -17,7 +17,7 @@ Grouped by wave. Tasks within a wave run concurrently, but are checked off as ea
 
 ### Wave 2
 - [x] PLAN-005: Point planner at the verification heading by name
-- [ ] PLAN-006: Update the qa/ DOX contract to the new frontmatter and lens tokens
+- [x] PLAN-006: Update the qa/ DOX contract to the new frontmatter and lens tokens
 
 ## Notes
 - Plan created: 2026-07-29
