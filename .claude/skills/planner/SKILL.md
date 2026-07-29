@@ -18,7 +18,10 @@ Your goal is to produce a **Technical Specification** so complete and rigorous t
 
 1. **Ingest Research First**
    - You MUST begin by reading the most recent Fact-Finder report in `thoughts/shared/facts/`.
-   - Extract, by the report's actual section headings: (a) `## Critical Findings (Verified, Planner Attention Required)`, (b) `## Coverage Map`, (c) `## Open Questions / Unverified Claims`. Deeper detail sits in `## Detailed Technical Analysis (Verified)`.
+   - Extract, by the report's actual section headings: (a) `## Critical Findings (Verified, Planner Attention Required)`, (b) `## Coverage Map`, (c) `## Open Questions / Unverified Claims`, (d) `## Inherited Constraints (Treated as Fixed)`. Deeper detail sits in `## Detailed Technical Analysis (Verified)`.
+   - In `## Inherited Constraints (Treated as Fixed)`, the `Status` column decides what the row is:
+     - `fixed — not investigated` and `inferred — verified` are **settled**. Carry them into the plan's `## Inherited Constraints (Respected)` and design inside them. The plan MUST NOT contain a task that contradicts one — a task proposing a different data model, boundary, or contract than a settled row fixes is a plan defect, not a design choice.
+     - `inferred — not verified` is an **open question, not a constraint**. Do not plan against it either way; route it to `## Verification Tasks` with what to read and the pass condition.
 
 2. **Verified Planning Only**
    - Any plan item that touches `File X` MUST cite **Evidence** from `Read` (path + line range).
@@ -375,10 +378,19 @@ For most planning tasks, you can **skip `thoughts-locator`** and go directly to 
 ### Phase 1: Context & Ingestion (MANDATORY)
 1. Read the user request.
 2. Use `Glob` + `Read` to find and read the latest relevant Fact-Finder report(s).
-3. Create:
+3. **Read the work order the fact report was written for.** Take its path from the fact report's `upstream-artifact:` frontmatter field and `Read` that file — an epic in `thoughts/shared/epics/` or a feature brief in `thoughts/shared/features/`.
+   - **Do not glob `epics/` to find it.** A fact report is named after its research topic, not after the epic (`epic-planner:226`), so the association cannot be recovered from the filename — a guess silently attaches the wrong epic, and every criterion and constraint you then plan against belongs to a different piece of work.
+   - `upstream-artifact: none` means there is no work order. That is the answer, not a prompt to search: plan from the fact report and the user request alone.
+   - Only when the field is **absent** — the report predates it — may you `Glob` `thoughts/shared/epics/` and `thoughts/shared/features/`, and then you must name the candidate to the user and get confirmation before relying on it.
+4. From that artifact, read four sections:
+   - `## Acceptance Criteria for Planner` — the criteria your plan's own `## Acceptance Criteria` must cover. Every entry there is an entry you are accountable for; if the plan cannot deliver one, say so rather than dropping it.
+   - `## Implementation Considerations (For Planner)` — suggested phases, known constraints, and edge cases. **Advisory, not prescriptive**: use it as input to Phase 2b sizing and wave assignment, and depart from it where the verified code says otherwise.
+   - `## Dependencies` — which epics must already exist. A prerequisite epic that is not implemented is a blocking fact, not a task you may quietly absorb into this plan.
+   - `## Verification Plan (For Implementor)` — the verification this epic expects. Carry each item into a task's `Verify:` field where it is mechanical, or into the plan's final `## Acceptance Criteria` where it is not.
+5. Create:
    - **Verified Facts & Constraints** (only items with Evidence)
    - **Open Questions** (items missing evidence)
-4. Only then decompose into planning components.
+6. Only then decompose into planning components.
 
 ### QA Report Detection
 
@@ -530,6 +542,7 @@ Required structure:
 
 ## Inputs
 - Fact report(s) used: `thoughts/shared/facts/...`
+- Epic / feature brief: `thoughts/shared/epics/...` or `none` (from the fact report's `upstream-artifact:`)
 - User request summary: ...
 
 ## Verified Current State
@@ -537,6 +550,13 @@ For each claim:
 - **Fact:** ...
 - **Evidence:** `path:line-line`
 - **Excerpt:** (1–6 lines)
+
+## Inherited Constraints (Respected)
+The rows from the fact report's `## Inherited Constraints (Treated as Fixed)` — same columns, sources copied verbatim. This plan contains no task that contradicts them. `None` when the fact report's section read `None`.
+
+| Constraint | Source | What it forbids or forces | Status |
+|---|---|---|---|
+| ... | [copied verbatim from the fact report's row] | ... | `fixed — not investigated` \| `inferred — verified` |
 
 ## Goals / Non-Goals
 - Goals: ...
@@ -579,6 +599,8 @@ For each assumption:
 
 ## Acceptance Criteria
 - Bullet list of externally observable results.
+- Where an epic or feature brief was read, every entry of its `## Acceptance Criteria for Planner` is covered here, plus whatever its `## Verification Plan (For Implementor)` could not be pushed down into a task's `Verify:`.
+- `/implement` evaluates this section after the final wave, so each bullet must be checkable from the finished tree — not a restatement of the plan's intent.
 
 ## Implementor Checklist
 ### Wave 1

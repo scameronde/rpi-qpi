@@ -21,8 +21,9 @@ Stores sequenced implementation plans produced by `/planner` and the STATE files
 ```markdown
 # Plan: <title>
 
-## Inputs                        # fact report(s) used, user request summary
+## Inputs                        # fact report(s) used, epic / feature brief (or `none`), user request summary
 ## Verified Current State        # Fact / Evidence `path:line-line` / Excerpt
+## Inherited Constraints (Respected)  # rows from the fact report's `## Inherited Constraints (Treated as Fixed)`; `None` if that read `None`
 ## Goals / Non-Goals
 ## Design Overview
 ## Execution Waves               # table: Wave | Tasks | Files touched | Rationale

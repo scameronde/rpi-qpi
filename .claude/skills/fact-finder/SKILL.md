@@ -579,6 +579,8 @@ When passing findings to downstream agents, strip `<thinking>` section to reduce
    | Feature brief | **Integration Points** | where in the existing system to look |
    | Feature brief | **Inherited Constraints** | what to treat as fixed rather than investigate |
 
+   A row in the epic's or feature brief's `## Inherited Constraints` table whose `Source` reads `inferred — <what from>` is the one class of constraint you may re-open, because `/feature-architect` marks it precisely so the researcher verifies it instead of trusting it; when you verify one, record the outcome in the report's `## Inherited Constraints (Treated as Fixed)` table as `inferred — verified` or `inferred — not verified`, and leave every other row `fixed — not investigated`.
+
 3. **Then check `thoughts/shared/prototypes/`** for a learnings note relevant to the target. Treat its problem, outcome and decision as **additional context only** — never as a substitute for the epic or brief, and never as verified evidence. The note records what was learned from code that was then thrown away, so its assumptions may no longer hold.
 
 Then:
@@ -622,10 +624,13 @@ date: YYYY-MM-DD
 fact-finder: [identifier]
 topic: "[Topic]"
 status: complete
+upstream-artifact: [path or none]
 coverage:
   - [what was inspected: directories/modules/tools]
 ---
 ```
+
+**The `upstream-artifact` field** holds the **path of the epic or feature brief read in Phase 1**, or the literal `none` when the user named the target directly and no work order was globbed. This field is what **`/planner` reads to locate the epic**, so a guess or an omission strands the downstream task. Always fill it in precisely.
 
 **Key Distinction**:
 - **Message envelope** = Structured response to delegating agents (YAML + thinking/answer)
@@ -653,6 +658,7 @@ date: YYYY-MM-DD
 fact-finder: [identifier]
 topic: "[Topic]"
 status: complete
+upstream-artifact: [path or none]
 coverage:
   - [what was inspected: directories/modules/tools]
 ---
@@ -666,6 +672,13 @@ coverage:
 - List what you actually inspected (files, directories, tool names).
 - If the scope is partial, say so explicitly.
 
+## Inherited Constraints (Treated as Fixed)
+These rows are carried in from the epic's or feature brief's `## Inherited Constraints` section, which were treated as settled rather than investigated. The section is required — write `None` when the upstream artifact had none or when there was no upstream artifact.
+
+| Constraint | Source | What it forbids or forces | Status |
+|---|---|---|---|
+| [constraint] | [copied verbatim from upstream] | [what this rules out or obliges for this work, from the upstream row] | fixed — not investigated |
+
 ## Critical Findings (Verified, Planner Attention Required)
 For each item:
 - **Observation:** …
@@ -678,7 +691,8 @@ For each item:
 Repeat the same per-claim evidence format.
 
 ## Verification Log
-- `Verified:` list each file you personally read (paths only).
+- `Verified (personally read):` listing paths the fact-finder opened itself.
+- `Accepted from sub-agent excerpts (not personally re-read):` listing paths whose evidence came from a sub-agent.
 - `Spot-checked excerpts captured:` yes/no
 
 ## Open Questions / Unverified Claims
