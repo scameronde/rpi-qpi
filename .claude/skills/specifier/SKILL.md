@@ -25,7 +25,7 @@ Your output is a **Specification Document** that defines **WHAT** the system mus
 
 2. **No Technology Stack Decisions**
    - Do NOT specify: programming languages, frameworks, databases, cloud providers, deployment platforms.
-   - Forbidden terms: [Framework], [Language], [Database], [CloudProvider], [ContainerTech], REST, GraphQL (unless describing abstract interaction patterns, not implementations).
+   - Do not name a specific language, framework, database, cloud provider, or vendor, and do not commit to a wire protocol or serialization format. Naming an interaction *pattern* abstractly is fine; naming the technology that implements it is not.
    - Allowed abstractions:
      - "A persistent data store" (not "PostgreSQL")
      - "A user-facing interface" (not "React SPA")
@@ -83,13 +83,15 @@ Specifiers derive specifications from missions but may reference architectural p
      - [ ] Essential capabilities (3-7 items)
      - [ ] Explicit non-goals
      - [ ] Success criteria
-   - If incomplete, STOP and use AskUserQuestion to inform the user and recommend refinement with the Mission Architect.
+     - [ ] Open Questions for Specifier (may read "None", but the section must be present)
+   - If incomplete, stop and tell the user which sections are missing, and recommend refinement with /mission-architect. Do not use AskUserQuestion to deliver a message — it is for choosing between options, not for informing.
 
 3. **Extract Key Inputs**
    - Essential capabilities → System components & behaviors
    - Success criteria → Acceptance tests (abstract)
    - Constraints → Non-functional requirements
    - Non-goals → Scope boundaries for the spec
+   - Open Questions for Specifier → items you must resolve in this spec or explicitly defer, recorded in "Mission Open Questions (Resolved / Deferred)"
 
 ### Phase 2: Specification Synthesis
 
@@ -109,34 +111,6 @@ Settle these architectural decisions explicitly — and record the reasoning in 
 
 Write the specification to: `thoughts/shared/specs/YYYY-MM-DD-[Project-Name].md`
 
-## Response Format (Structured Output)
-
-Specifiers work in two communication contexts:
-
-1. **Interactive Specification (with user)**: Natural conversation flow during specification synthesis
-2. **Agent Delegation (when invoked by other agents)**: Use structured message envelope for machine-readable responses
-
-### Document Frontmatter (In Specification Files)
-
-The specification `.md` files you write have **different frontmatter** (not YAML message envelope):
-
-```markdown
----
-date: YYYY-MM-DD
-specifier: [identifier]
-mission-source: "thoughts/shared/missions/YYYY-MM-DD-[Project-Name].md"
-project-name: "[Project/Feature Name]"
-type: "greenfield-project" | "greenfield-feature"
-status: complete
----
-```
-
-**Key Distinction**:
-- **Message envelope** = Structured response to delegating agents (YAML + thinking/answer)
-- **Document frontmatter** = Metadata in the specification file you write (different structure, serves different purpose)
-
-When writing specification files, use the document frontmatter shown above (see "## Output Format (STRICT)" section below for full file structure).
-
 ## Output Format (STRICT)
 
 File: `thoughts/shared/specs/YYYY-MM-DD-[Project-Name].md`
@@ -146,11 +120,10 @@ Required structure:
 ```markdown
 ---
 date: YYYY-MM-DD
-specifier: [identifier]
 mission-source: "thoughts/shared/missions/YYYY-MM-DD-[Project-Name].md"
 project-name: "[Project/Feature Name]"
-type: "greenfield-project" | "greenfield-feature"
-status: complete
+type: "greenfield-project"
+status: draft | complete | superseded
 ---
 
 # Specification: [Project/Feature Name]
@@ -324,10 +297,17 @@ For each essential capability from the mission, define WHAT must be true (observ
 **Deferred Decisions** (for Planner/Fact-Finder):
 - [What we're intentionally NOT deciding here — e.g., "Specific database choice deferred to Planner based on existing codebase patterns"]
 
+## Mission Open Questions (Resolved / Deferred)
+
+Every entry from the mission's "Open Questions for Specifier", with its disposition. Required — write `None` if the mission listed none.
+
+| Mission Question | Disposition | Where |
+|---|---|---|
+| [Question as written in the mission] | Resolved / Deferred | [Spec section that answers it, or why it is deferred and to whom] |
+
 ## Open Questions for Epic Planner
 
-[Questions that emerged during specification that the Epic Planner should decompose or clarify]
-- [Question about feature decomposition, dependencies, or sequencing]
+Questions that emerged during specification which the Epic Planner must resolve or carry forward. `/epic-planner` reads this section by name and records the disposition of every entry, so the section is **required** — write `None` when there are none rather than omitting it.
 
 ## Traceability Matrix
 
