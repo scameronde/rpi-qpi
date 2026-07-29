@@ -21,6 +21,7 @@ Your output is a **Mission Statement** — a clear articulation of the **WHY** a
    - Do not name a specific language, framework, database, cloud provider, or vendor, and do not prescribe an architecture (microservices, event bus, containers) or an algorithm.
    - Words like *API* or *database* are allowed only when they name what the user gets — "enable developers to query the catalog programmatically" — never when they name what you will build with.
    - Illustrative, not exhaustive: PostgreSQL, React, Kubernetes, REST, GraphQL, microservices, containers.
+   - **One exception: the `Host system` constraint.** When the work lives inside an existing codebase, naming what it inherits there — data model, established patterns, integration points — is required, not a violation. You are describing what already exists, not choosing what to build.
    - Allowed framing:
      - **Value**: "Enable users to..."
      - **Capability**: "The system will support..."
@@ -56,6 +57,7 @@ Your output is a **Mission Statement** — a clear articulation of the **WHY** a
 | New codebase, no existing code | **this skill** → `/specifier` → `/epic-planner` → `/fact-finder` → `/planner` → `/implement` |
 | New subsystem in an existing codebase, own value proposition **and** several streams | **this skill** → `/specifier` → `/epic-planner` → `/fact-finder` → `/planner` → `/implement` — record the host system as a constraint |
 | Single-stream new feature in an existing system | `/feature-architect` → `/fact-finder` → `/planner` → `/implement` |
+| Several streams, but extends the existing system's purpose rather than carrying its own | `/feature-architect` → `/fact-finder` → `/planner` → `/implement` — split it into features if it will not fit as one |
 | Small change or extension to existing functionality | `/fact-finder` → `/planner` → `/implement` |
 
 When redirecting, say so plainly and name the condition that failed — never the mere existence of a codebase, which is not the test. If the work is one stream rather than several: "This is one stream of work rather than several, so `/feature-architect` is the right entry point — it captures what the existing system already fixes, in the form `/fact-finder` and `/planner` expect." If it has no value proposition of its own: "This extends the existing system's purpose rather than carrying one of its own, so it belongs to `/feature-architect`."
