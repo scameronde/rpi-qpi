@@ -79,7 +79,8 @@ Epic planners primarily reference specifications and missions to ensure alignmen
      - [ ] Architecture (components/workflows)
      - [ ] Data model
      - [ ] Acceptance criteria
-   - If incomplete, use AskUserQuestion to STOP and recommend the user refine the spec with the Specifier.
+     - [ ] Open Questions for Epic Planner (may read "None", but the section must be present)
+   - If incomplete, stop and tell the user which sections are missing, and recommend refinement with /specifier. Do not use AskUserQuestion to deliver a message — it is for choosing between options, not for informing.
 
 3. **Load Mission Context (Optional but Recommended)**
    - Read the mission statement referenced in the spec.
@@ -106,6 +107,7 @@ For each identified epic:
    - Which components/workflows belong to this epic?
    - Which data model entities are involved?
    - Which acceptance criteria from the spec apply?
+   - Which entries from the spec's "Open Questions for Epic Planner" fall inside this epic? Each one must be either answered in the epic's own text or carried forward verbatim into that epic's "Research Questions for Fact-Finder", under whichever subsection fits — `/fact-finder` reads that parent section by name (`.claude/skills/fact-finder/SKILL.md:575`) and it is the only forward channel out of this stage. A question that belongs to no epic goes in the nearest epic's own "## Open Questions" section, which routes back to the user, Mission Architect, or Specifier. Never drop one.
 
 2. **Define Stories** (3-7 per epic):
    - A story is a single user-facing capability or system behavior.
@@ -129,35 +131,6 @@ For each identified epic:
 
 Write ONE epic document per epic: `thoughts/shared/epics/YYYY-MM-DD-[Epic-Name].md`
 
-## Response Format (Structured Output)
-
-Epic planners work in two communication contexts:
-
-1. **Interactive Decomposition (with user)**: Natural conversation flow during epic planning
-2. **Agent Delegation (when invoked by other agents)**: Use structured message envelope for machine-readable responses
-
-### Document Frontmatter (In Epic Files)
-
-The epic `.md` files you write have **different frontmatter** (not YAML message envelope):
-
-```markdown
----
-date: YYYY-MM-DD
-epic-planner: [identifier]
-spec-source: "thoughts/shared/specs/YYYY-MM-DD-[Project-Name].md"
-epic-name: "[Epic Name]"
-epic-id: "EPIC-001"
-status: ready-for-research
-dependencies: ["EPIC-XXX", "EPIC-YYY"]
----
-```
-
-**Key Distinction**:
-- **Message envelope** = Structured response to delegating agents (YAML + thinking/answer)
-- **Document frontmatter** = Metadata in the epic file you write (different structure, serves different purpose)
-
-When writing epic files, use the document frontmatter shown above (see "## Output Format (STRICT)" section below for full file structure).
-
 ## Output Format (STRICT)
 
 File: `thoughts/shared/epics/YYYY-MM-DD-[Epic-Name].md`
@@ -167,7 +140,6 @@ Required structure:
 ```markdown
 ---
 date: YYYY-MM-DD
-epic-planner: [identifier]
 spec-source: "thoughts/shared/specs/YYYY-MM-DD-[Project-Name].md"
 epic-name: "[Epic Name]"
 epic-id: "EPIC-001"
