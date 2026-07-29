@@ -574,6 +574,7 @@ When passing findings to downstream agents, strip `<thinking>` section to reduce
    |---|---|---|
    | Epic | **Research Questions for Fact-Finder** | your starting research vectors, already as a checklist |
    | Epic | **Dependencies** | which epics must exist first |
+   | Epic | **Inherited Constraints** | what to treat as fixed rather than investigate |
    | Feature brief | **Open Questions for Fact-Finder** | your starting research vectors |
    | Feature brief | **Integration Points** | where in the existing system to look |
    | Feature brief | **Inherited Constraints** | what to treat as fixed rather than investigate |
