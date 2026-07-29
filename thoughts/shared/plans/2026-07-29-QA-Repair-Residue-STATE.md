@@ -1,9 +1,9 @@
 # State: QA Repair Residue
 
 **Plan**: thoughts/shared/plans/2026-07-29-QA-Repair-Residue.md
-**Current Wave**: 1
-**Current Task**: PLAN-002
-**Completed Tasks**: PLAN-001
+**Current Wave**: Complete
+**Current Task**: PLAN-002 — pending After the Final Wave
+**Completed Tasks**: PLAN-001, PLAN-002
 
 ## Task Checklist
 
@@ -11,7 +11,7 @@ Grouped by wave. Tasks within a wave run concurrently, but are checked off as ea
 
 ### Wave 1
 - [x] PLAN-001: Relabel the code-smells catalog's Priority column to Critical/High/Medium/Low
-- [ ] PLAN-002: Bring the QA plan template's Inputs and References onto the current contract
+- [x] PLAN-002: Bring the QA plan template's Inputs and References onto the current contract
 
 ## Notes
 - Plan created: 2026-07-29

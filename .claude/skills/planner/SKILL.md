@@ -714,10 +714,9 @@ Required structure:
 # QA Implementation Plan: [Target]
 
 ## Inputs
-- QA report: `thoughts/shared/qa/YYYY-MM-DD-[Target].md`
+- QA report: `thoughts/shared/qa/YYYY-MM-DD-[Target]-[Lens].md` (one entry per loaded QA skill)
 - Audit date: YYYY-MM-DD
-- Language: [Detected from QA skill]
-- QA Skill: [language]-qa (loaded via skill tool)
+- QA skill / lens: (one of: `python-qa` / `-Python`, `typescript-qa` / `-TypeScript`, `clean-code` / `-Design`, `logic-bugs-qa` / `-Bugs`)
 - Automated tools: [list from QA report]
 
 ## Scan Summary
@@ -851,8 +850,8 @@ Grouped by wave and labelled with its phase, matching the STATE file.
 A merged task cites every QA id it resolves, so nothing from the audit is lost when findings collapse into one task.
 
 ## References
-- Source QA report: `thoughts/shared/qa/YYYY-MM-DD-[Target].md`
-- QA Skill: [language]-qa
+- Source QA report: `thoughts/shared/qa/YYYY-MM-DD-[Target]-[Lens].md` (one entry per loaded QA skill)
+- QA skill / lens: (one of: `python-qa` / `-Python`, `typescript-qa` / `-TypeScript`, `clean-code` / `-Design`, `logic-bugs-qa` / `-Bugs`)
 - Automated tools: [list]
 ```
 
