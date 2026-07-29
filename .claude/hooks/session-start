@@ -5,8 +5,8 @@ context="You have workflow skills for software development available in this pro
 
 ## Available Workflow Skills
 
-/mission-architect — Greenfield projects: discover vision, output mission statement to thoughts/shared/missions/. Use before /specifier.
-/feature-architect — Brownfield features: define new feature in existing system, output feature brief to thoughts/shared/features/. Use before /fact-finder — brownfield skips /epic-planner, which exists to cut a whole spec into several streams.
+/mission-architect — New projects: discover vision, output mission statement to thoughts/shared/missions/. Use before /specifier. Also takes a new subsystem inside an existing codebase when it has its own value proposition AND needs several parallel streams — then its mission must record the host system as a constraint.
+/feature-architect — Brownfield features: define new feature in existing system, output feature brief to thoughts/shared/features/. Use before /fact-finder — brownfield skips /epic-planner, which exists to cut a whole spec into several streams. A feature needing that decomposition is a subsystem: send it to /mission-architect, never straight to /specifier.
 /specifier — Transform mission statement into technical spec. Output to thoughts/shared/specs/. Use after /mission-architect.
 /epic-planner — Decompose spec into epics. Output to thoughts/shared/epics/. Use after /specifier.
 /fact-finder — Map the codebase for a spec or question. Spawns codebase agents for isolation. Output to thoughts/shared/facts/. Use before /planner.
@@ -18,6 +18,7 @@ context="You have workflow skills for software development available in this pro
 
 Greenfield:  /mission-architect → /specifier → /epic-planner → /fact-finder → /planner → /implement
 Brownfield:  /feature-architect → /fact-finder → /planner → /implement
+Subsystem:   own value proposition AND several parallel streams → take the greenfield path, mission records the host system as a constraint (either condition alone stays brownfield)
 Small fix:   /fact-finder → /planner → /implement
 Unsure:      /prototype → then one of the three above, on a 'go' decision
 

@@ -17,6 +17,8 @@ ORBIT has no runtime of its own. It is a set of prompts — skills and agents un
 ```
 Brownfield skips `/epic-planner`: decomposition into epics exists to split a whole specification into parallel streams, and a single feature is a single stream.
 
+A feature that does need epic decomposition is a subsystem with its own mission — take the greenfield path instead. The test is both at once: its own value proposition, **and** several parallel streams. Either alone stays brownfield. On that route the mission records the host system as a constraint, which `/specifier` reads before settling architecture.
+
 **Small change or bug fix:**
 ```
 /fact-finder → /planner → /implement

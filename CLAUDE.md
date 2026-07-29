@@ -40,7 +40,9 @@ Workflow orchestrators are Skills in `.claude/skills/`, invoked via `/skill-name
 ```
 /feature-architect → /fact-finder → /planner → /implement
 ```
-Brownfield skips `/epic-planner` on purpose: epic decomposition exists to cut a whole specification into several parallel streams, and one feature is one stream. A feature large enough to need that is really a small project — route it through `/specifier` (`.claude/skills/feature-architect/SKILL.md:12`).
+Brownfield skips `/epic-planner` on purpose: epic decomposition exists to cut a whole specification into several parallel streams, and one feature is one stream.
+
+A feature that turns out to need epic decomposition is not a feature — it is a subsystem carrying its own mission, and it goes through `/mission-architect` on the greenfield path instead. The test is **both** of these at once: it has its own value proposition (you can say why it should exist without reference to the host system's mission) **and** it needs several parallel streams. Either alone stays with `/feature-architect`. When that route is taken, the mission **must** record the host system in its `Constraints (Non-Negotiable)` section — that `Host system` line is what `/specifier` reads before settling architecture, and it is the only thing standing in for the inherited-constraint capture `/feature-architect` would otherwise have produced (`.claude/skills/mission-architect/SKILL.md`, "Projects, Not Features"; `.claude/skills/feature-architect/SKILL.md:12`).
 
 **Small change or bug fix:**
 ```

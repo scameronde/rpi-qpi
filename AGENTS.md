@@ -61,6 +61,7 @@ An agentic engineering framework for Claude Code. Provides a full pipeline from 
 **Workflow pipeline:**
 - Greenfield: `/mission-architect` → `/specifier` → `/epic-planner` → `/fact-finder` → `/planner` → `/implement`
 - Brownfield: `/feature-architect` → `/fact-finder` → `/planner` → `/implement` (a single feature is a single stream, so epic decomposition does not apply)
+- Brownfield subsystem: work with its own value proposition **and** several parallel streams takes the greenfield path instead, and its mission records the host system as a constraint. Either condition alone stays brownfield.
 - Small fix: `/fact-finder` → `/planner` → `/implement`
 - Optional entry point: `/prototype` → one of the three above, on a "go" decision
 
