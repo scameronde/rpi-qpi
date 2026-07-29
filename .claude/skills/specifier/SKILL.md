@@ -95,7 +95,7 @@ Specifiers derive specifications from missions but may reference architectural p
 4. **Load the Host System's Spec (when there is one)**
    - If the mission's `Constraints (Non-Negotiable)` section carries a **Host system** line, this subsystem lives inside an existing codebase. `Glob` and `Read` that system's spec from `thoughts/shared/specs/` before Phase 2.
    - Extract from it: existing component boundaries, the established data model, integration points, and the interaction posture already chosen (event-driven vs request-driven).
-   - These are **fixed**. Your architecture must fit inside them, not propose alternatives to them. Where you cannot fit, say so in `Design Decisions` and raise it in `Open Questions for Epic Planner` — do not quietly design a system that contradicts the one it has to live in.
+   - These are **fixed**. Record each one in `Inherited Constraints` — that section is what `/epic-planner` and `/fact-finder` read, and a constraint recorded anywhere else does not travel. Your architecture must fit inside them, not propose alternatives to them. Where you cannot fit, say so in `Design Decisions` and raise it in `Open Questions for Epic Planner` — do not quietly design a system that contradicts the one it has to live in.
    - This does not breach the no-technology rule: a host spec is itself technology-agnostic, so it gives you boundaries without naming a stack.
    - If the mission has no **Host system** line, skip this step.
 
@@ -294,6 +294,14 @@ For each essential capability from the mission, define WHAT must be true (observ
 
 [These will inform the Epic Planner's acceptance criteria]
 
+## Inherited Constraints
+
+What the host system fixes for this subsystem — not choices made here. `/epic-planner` carries the entries that apply to each epic into that epic's own `## Inherited Constraints`, and `/fact-finder` treats them as fixed rather than investigating them. Required — write `None` when there is no host system.
+
+| Constraint | Source | What it forbids or forces |
+|---|---|---|
+| [Existing component boundary, data model, integration point, or interaction posture] | [`thoughts/shared/specs/...` of the host system, with line range] | [What this rules out for the new subsystem, or what it obliges] |
+
 ## Assumptions & Design Decisions
 
 **Assumptions** (inherited from mission or added):
@@ -370,7 +378,7 @@ stateDiagram-v2
 - [ ] I have defined acceptance criteria that are testable and trace back to the mission.
 - [ ] Every entry from the mission's "Open Questions for Specifier" appears in my "Mission Open Questions (Resolved / Deferred)" table with a disposition — none silently dropped.
 - [ ] My "Open Questions for Epic Planner" section is present, reading `None` if there are none.
-- [ ] If the mission named a host system, I read its spec and my architecture fits the boundaries, data model and interaction posture already established there — or I have recorded the mismatch in `Design Decisions` and raised it for the Epic Planner.
+- [ ] If the mission named a host system, I read its spec, recorded every constraint it fixes in `Inherited Constraints`, and my architecture fits the boundaries, data model and interaction posture established there — or I have recorded the mismatch in `Design Decisions` and raised it for the Epic Planner.
 
 If any checkbox is unchecked, revise the spec before finalizing.
 
