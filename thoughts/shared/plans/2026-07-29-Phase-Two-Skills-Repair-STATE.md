@@ -2,8 +2,8 @@
 
 **Plan**: thoughts/shared/plans/2026-07-29-Phase-Two-Skills-Repair.md
 **Current Wave**: 2
-**Current Task**: PLAN-005
-**Completed Tasks**: PLAN-001, PLAN-002, PLAN-003, PLAN-004
+**Current Task**: PLAN-006
+**Completed Tasks**: PLAN-001, PLAN-002, PLAN-003, PLAN-004, PLAN-005
 
 ## Task Checklist
 
@@ -16,7 +16,7 @@ Grouped by wave. Tasks within a wave run concurrently, but are checked off as ea
 - [x] PLAN-004: implementer-prompt states test-vs-scope precedence
 
 ### Wave 2
-- [ ] PLAN-005: fact-finder corrections — agent contracts, Read, Bash, QA naming
+- [x] PLAN-005: fact-finder corrections — agent contracts, Read, Bash, QA naming
 - [ ] PLAN-006: planner corrections — non-negotiables, delegation, Approval Gate
 - [ ] PLAN-007: implement gains branch check, re-armed check, final gate
 

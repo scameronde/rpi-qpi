@@ -62,7 +62,7 @@ All factual claims MUST include evidence. Use the appropriate format:
 - You may not infer file contents.
 - Sub-agents must provide: **(a)** exact file path **(b)** suggested line range **(c)** 1–6 line excerpt.
 - If a sub-agent does not provide those three, you must request a more specific result or mark as Unverified.
-- Use `Bash` only if absolutely required to locate files AND only after asking permission.
+- Use `Bash` to locate files only after asking permission. In QA Mode, running the automated tools (linters, type checkers, test runners) from the loaded QA skill is expected use and does not require asking permission.
 
 ## QA Mode Detection and Workflow
 
@@ -91,7 +91,7 @@ Activate QA Mode when the user request includes:
 
 Pick by target and by question. For a full audit load **both** a language skill and `clean-code`: the first covers syntax, types and security, the second covers structure and design, and they do not overlap. Load `logic-bugs-qa` when the concern is whether the code is *right*, not whether it is clean.
 
-Each loaded skill writes its own report. Two skills means two reports in `thoughts/shared/qa/`, which `/planner` then reads together.
+Each loaded skill writes its own report. Two skills means two reports in `thoughts/shared/qa/`, which `/planner` then reads together. Each report takes a lens suffix: `thoughts/shared/qa/YYYY-MM-DD-[Target]-[Lens].md`, where `[Lens]` names the QA skill that produced it (e.g., `-Python`, `-Design`). This follows the convention already documented at `.claude/skills/clean-code/SKILL.md:740-746`.
 
 **Phase 1: Target Discovery**
 - Use `codebase-locator` with `tests_only` scope to find test files
@@ -254,7 +254,7 @@ The **codebase-analyzer** sub-agent provides deep technical analysis of code com
 3. **Output Scope**: Choose based on your research needs:
    - `comprehensive`: Full analysis with all dependencies, call chains, and technical details (typical for Fact-Finder)
    - `focused`: Component-level analysis with immediate dependencies only
-   - `surface`: Quick overview of structure and exports
+   - `execution_only`: Return only the execution-flow section
 
 **Example delegation (typical Fact-Finder use case):**
 
@@ -275,7 +275,7 @@ The codebase-analyzer will return a structured analysis containing:
 - Related components (dependencies and dependents)
 - Code excerpts with file paths and line ranges
 
-**Important:** The codebase-analyzer provides excerpts directly in its response. You do NOT need to re-read files to obtain excerpts—extract them from the sub-agent's analysis and include them in your research report with proper attribution (file:line-line).
+**Important:** The codebase-analyzer provides excerpts directly in its response. You may reuse these excerpts verbatim in your research report with proper attribution (file:line-line). However, you must still open the file to confirm the cited lines exist, recording it under the Verification Log's `Verified (personally read):` bullet. If you do not verify a file personally, record it instead under `Accepted from sub-agent excerpts (not personally re-read):`.
 
 **Note:** For backward compatibility, codebase-analyzer still accepts 'analysis_depth' parameter as an alias for 'output_scope'.
 
@@ -354,9 +354,6 @@ Search strategy for authentication documentation:
 
 ### Research Reports
 - `thoughts/shared/facts/2025-11-30-JWT-Libraries.md`
-
-### STATE Files
-- `thoughts/shared/plans/2025-12-15-AUTH-001-STATE.md`
 </answer>
 ```
 
@@ -367,16 +364,16 @@ Choose the appropriate scope level based on how many document types you need:
 **Use `paths_only` when you need only one document type:**
 - Example: "Find only specs related to authentication. Search scope: paths_only."
 - Returns: Only the Specifications section
-- Token efficiency: ~70% reduction vs comprehensive
+- Token efficiency: ~28% savings
 
 **Use `focused` when you need 2-3 document types:**
 - Example: "Find specs and implementation plans for authentication. Search scope: focused."
 - Returns: Specifications + Implementation Plans sections
-- Token efficiency: ~40% reduction vs comprehensive
+- Token efficiency: ~15% savings
 
 **Use `comprehensive` when exploring all historical context:**
 - Example: "Find all mission statements, specs, epics, plans, QA reports, and research related to authentication. Search scope: comprehensive."
-- Returns: All 8 categories (missions, specs, epics, plans, QA reports, research, STATE files, related docs)
+- Returns: All 9 categories (missions, specs, feature briefs, epics, plans, QA reports, fact reports, prototype learnings, project notes)
 - Use case: Initial research phase, full system understanding
 
 **Example delegation with paths_only scope:**
@@ -529,8 +526,7 @@ This allows you to trace which analysis responses correspond to which locator re
 1. **Frontmatter**: Use correlation_id to match with locator results; check sections_extracted to validate completeness
 2. **Thinking**: Include in research notes if extraction strategy reveals document structure patterns
 3. **Answer**: Extract all sections (Objectives, Technical Requirements, Acceptance Criteria, Dependencies)
-4. **Evidence format**: thoughts-analyzer provides file:line-line references and excerpts—use directly in research report
-5. **Verification**: You do NOT need to re-read the thoughts documents; thoughts-analyzer provides excerpts directly
+4. **Evidence format**: thoughts-analyzer provides file:line-line references and excerpts—you may reuse these excerpts verbatim in your research report. However, you must still open the file to confirm the cited lines exist, recording it under the Verification Log's `Verified (personally read):` bullet. If you do not verify a file personally, record it instead under `Accepted from sub-agent excerpts (not personally re-read):`.
 
 ## Delegating to codebase-pattern-finder
 
@@ -609,11 +605,6 @@ Write the report to `thoughts/shared/facts/YYYY-MM-DD-[Topic].md`.
 
 ## Response Format (Structured Output)
 
-Fact-Finders work in two communication contexts:
-
-1. **Research Execution (writing reports)**: Create research report documents
-2. **Agent Delegation (when invoked by other agents)**: Use structured message envelope for machine-readable responses
-
 ### Document Frontmatter (In Research Report Files)
 
 The research report `.md` files you write have **different frontmatter** (not YAML message envelope):
@@ -632,23 +623,19 @@ coverage:
 
 **The `upstream-artifact` field** holds the **path of the epic or feature brief read in Phase 1**, or the literal `none` when the user named the target directly and no work order was globbed. This field is what **`/planner` reads to locate the epic**, so a guess or an omission strands the downstream task. Always fill it in precisely.
 
-**Key Distinction**:
-- **Message envelope** = Structured response to delegating agents (YAML + thinking/answer)
-- **Document frontmatter** = Metadata in the research report file you write (different structure, serves different purpose)
-
 When writing research reports, use the document frontmatter shown above (see "## Output Format (STRICT)" section below for full file structure).
 
 ## Output Format (STRICT)
 
 ### Standard Mode:
 
-Write exactly one report to: `thoughts/shared/facts/YYYY-MM-DD-[Topic].md`
+Write report to: `thoughts/shared/facts/YYYY-MM-DD-[Topic].md`
 
 ### QA Mode:
 
-Write exactly one report to: `thoughts/shared/qa/YYYY-MM-DD-[Target].md`
+Write one report per loaded QA skill to: `thoughts/shared/qa/YYYY-MM-DD-[Target]-[Lens].md`
 
-**Note**: In QA Mode, use the report template structure from the loaded QA skill. Include `message_type: QA_REPORT` in the document's YAML frontmatter. The [Target] should be a descriptive name derived from the file path or module name (e.g., "Auth-Module", "TypeScript-Config").
+**Note**: In QA Mode, use the report template structure from the loaded QA skill. Include `message_type: QA_REPORT` in the document's YAML frontmatter. The [Target] should be a descriptive name derived from the file path or module name (e.g., "Auth-Module", "TypeScript-Config"). The [Lens] names the QA skill that produced the report (e.g., `-Python`, `-Design`, `-Bugs`). When two loaded skills both run for one target, they produce two files with different lens suffixes, which `/planner` then reads together.
 
 Required structure for standard mode:
 

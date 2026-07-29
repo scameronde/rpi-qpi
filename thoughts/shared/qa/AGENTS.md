@@ -10,7 +10,7 @@ Stores quality analysis reports produced by `/fact-finder` when operating in QA 
 
 ## Local Contracts
 
-**File naming:** `YYYY-MM-DD-<Target>.md` where `<Target>` is the module or file name (e.g., `Auth-Module`, `TypeScript-Config`).
+**File naming:** `YYYY-MM-DD-<Target>-<Lens>.md` where `<Target>` is the module or file name (e.g., `Auth-Module`, `TypeScript-Config`) and `<Lens>` names the QA skill that produced the report (e.g., `-Python`, `-Design`, `-Bugs`). A full audit produces one file per loaded skill, requiring the lens suffix to prevent collisions.
 
 **Required frontmatter:**
 ```yaml
@@ -35,6 +35,7 @@ status: complete
 - QA reports are read-only after creation
 - When re-running QA on the same target, create a new dated report — do not overwrite
 - Severity classification follows the rules in the loaded language-specific QA skill
+- When two QA skills are loaded for one target, each produces a separate report with its own lens suffix; the lens suffix prevents collisions and signals to `/planner` which skill produced each report
 
 ## Verification
 
