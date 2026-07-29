@@ -1,9 +1,9 @@
 # State: Phase-Two Skills Repair
 
 **Plan**: thoughts/shared/plans/2026-07-29-Phase-Two-Skills-Repair.md
-**Current Wave**: 2
-**Current Task**: PLAN-007
-**Completed Tasks**: PLAN-001, PLAN-002, PLAN-003, PLAN-004, PLAN-005, PLAN-006
+**Current Wave**: Complete
+**Current Task**: PLAN-007 — pending After the Final Wave
+**Completed Tasks**: PLAN-001, PLAN-002, PLAN-003, PLAN-004, PLAN-005, PLAN-006, PLAN-007
 
 ## Task Checklist
 
@@ -18,7 +18,7 @@ Grouped by wave. Tasks within a wave run concurrently, but are checked off as ea
 ### Wave 2
 - [x] PLAN-005: fact-finder corrections — agent contracts, Read, Bash, QA naming
 - [x] PLAN-006: planner corrections — non-negotiables, delegation, Approval Gate
-- [ ] PLAN-007: implement gains branch check, re-armed check, final gate
+- [x] PLAN-007: implement gains branch check, re-armed check, final gate
 
 ## Notes
 - Plan created: 2026-07-29

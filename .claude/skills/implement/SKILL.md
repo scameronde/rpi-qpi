@@ -29,9 +29,10 @@ Never trade away correctness for speed. Do trade away ceremony.
 
 Before dispatching any subagent:
 
-1. Read the plan file in full.
-2. Extract ALL task IDs, names, `File(s)`, `allowedAdjacentEdits`, and (if present) `Wave:` / `Model:` / `Verify:` fields upfront — do not read task-by-task. If the plan has an `## Execution Waves` table, read it instead of deriving waves yourself.
-3. Locate the STATE file: same path as the plan file with `.md` replaced by `-STATE.md`
+1. **Check the current branch.** Run `git rev-parse --abbrev-ref HEAD`. If the result is `main` or `master`, stop and ask the user for explicit consent before continuing. Offer to create a branch. Do not start dispatch on main or master without permission.
+2. Read the plan file in full.
+3. Extract ALL task IDs, names, `File(s)`, `allowedAdjacentEdits`, and (if present) `Wave:` / `Model:` / `Verify:` fields upfront — do not read task-by-task. If the plan has an `## Execution Waves` table, read it instead of deriving waves yourself.
+4. Locate the STATE file: same path as the plan file with `.md` replaced by `-STATE.md`
    (per `thoughts/shared/plans/AGENTS.md` naming convention). Read it.
    - If `**Current Task**` is `Complete`: all tasks are already done. Report this to
      the user and stop — do not dispatch anything.
@@ -50,7 +51,7 @@ Before dispatching any subagent:
    - If no STATE file exists (plan predates STATE tracking): create one now using the
      template in `.claude/skills/planner/SKILL.md` (Current Task = first task ID,
      Completed Tasks = none, checklist populated from the plan's tasks), commit it.
-4. **Record a dirty-tree baseline** — the Boundary Check compares against it. Write it
+5. **Record a dirty-tree baseline** — the Boundary Check compares against it. Write it
    outside the repo so it does not become a finding itself:
    ```bash
    git status --porcelain -uall | cut -c4- | sort > "${TMPDIR:-/tmp}/wave-baseline.txt"
@@ -59,15 +60,15 @@ Before dispatching any subagent:
    directories, local dotfiles, build output. Without a baseline every one of them is
    reported on every wave and the check degrades into noise you learn to skip past.
    The `-uall` flag ensures untracked files and directories are fully enumerated; without it git reports a newly created directory as a single trailing-slash path, which matches no `File(s)` entry and turns every create-in-a-new-directory task into a false finding.
-   Capture this **after** any resume cleanup in step 3, and refresh it each time a wave
+   Capture this **after** any resume cleanup in step 4, and refresh it each time a wave
    commits so the next wave measures from a clean start.
-5. **Read both prompt templates once** — `./implementer-prompt.md` and
+6. **Read both prompt templates once** — `./implementer-prompt.md` and
    `./reviewer-prompt.md`. You fill their placeholders per task, but you read the files
    only here; re-reading them per dispatch is pure waste.
-6. **Build the wave list** (see Wave Planning below).
-7. Create a TodoWrite item per task for tracking (pre-mark items already in
+7. **Build the wave list** (see Wave Planning below).
+8. Create a TodoWrite item per task for tracking (pre-mark items already in
    **Completed Tasks** as done).
-8. If anything in the plan is ambiguous, ask now before starting.
+9. If anything in the plan is ambiguous, ask now before starting.
 
 ## Wave Planning
 
@@ -100,7 +101,7 @@ Repeat for each wave in order. **Waves are strictly sequential — never start a
 
 ### 1. Dispatch Implementers (concurrent within the wave)
 
-You read `./implementer-prompt.md` in Pre-Flight step 5. Fill in the placeholders per task and dispatch every task in the wave **in a single message with multiple Agent tool calls** so they run concurrently:
+You read `./implementer-prompt.md` in Pre-Flight step 6. Fill in the placeholders per task and dispatch every task in the wave **in a single message with multiple Agent tool calls** so they run concurrently:
 
 ```
 Agent tool (one call per task in the wave):
@@ -152,7 +153,7 @@ Every changed path that is not in the declared set is a finding. Diagnose each o
 
 **Cause B — scope creep.** The implementer was told to report `NEEDS_CONTEXT` rather than touch an unlisted file, and did not. **Read the change before you throw it away** — `git diff -- <path>` — then discard it: `git checkout -- <path>` for a tracked file, delete an untracked one. Note it in the wave report.
 
-`git checkout --` is unrecoverable, and it discards the file's *whole* working state, not just the part the implementer added. Never aim it at a path you have not just read. If the diff holds anything you cannot attribute to this wave, stop and ask the user before discarding — the same rule the resume path in Pre-Flight step 3 applies to leftover changes.
+`git checkout --` is unrecoverable, and it discards the file's *whole* working state, not just the part the implementer added. Never aim it at a path you have not just read. If the diff holds anything you cannot attribute to this wave, stop and ask the user before discarding — the same rule the resume path in Pre-Flight step 4 applies to leftover changes.
 
 Never commit a path that no task declared. And never settle a finding by adding the path to the plan after the fact: the declared set is what made the wave safe to run concurrently, so editing it retroactively destroys the evidence that it was wrong.
 
@@ -171,7 +172,7 @@ For these: run the task's `Verify:` command yourself and confirm it produces the
 
 A task whose `Verify:` is `none — requires review`, or that has no `Verify:` field at all (older plans), goes to the review path regardless of size.
 
-**Review path — dispatch a reviewer.** Everything else. You read `./reviewer-prompt.md` in Pre-Flight step 5. Dispatch **one reviewer per task, concurrently across the wave**, in a single message:
+**Review path — dispatch a reviewer.** Everything else. You read `./reviewer-prompt.md` in Pre-Flight step 6. Dispatch **one reviewer per task, concurrently across the wave**, in a single message:
 
 ```
 Agent tool (one call per review-path task):
@@ -183,11 +184,13 @@ Agent tool (one call per review-path task):
 
 The reviewer returns spec compliance **and** code quality in one report — there is no separate quality stage.
 
-**SPEC ISSUES**, **Critical**, or **Important** must be fixed before the wave commits. Re-dispatch the implementer for that task with the listed issues, then re-run the reviewer for that task only. Repeat until it passes.
+**SPEC ISSUES**, **Critical**, or **Important** must be fixed before the wave commits. Re-dispatch the implementer for that task with the listed issues, then re-run the reviewer for that task only. Repeat until it passes. Once every re-dispatched task passes review, re-run the Boundary Check before proceeding to commit, because a fix round can touch a path the first check never saw.
 
 **Minor** issues may be noted and deferred.
 
 ### 5. Commit the Wave and Advance
+
+Do not commit until the most recent Boundary Check ran **after** the last implementer dispatch of the wave. (If fix rounds occurred, you re-ran the check in the Review Gate; use that result. Otherwise, use the check from step 3.)
 
 Commit the wave's work as one commit per task's logical change. When a wave is a set of mechanically identical edits (e.g. the same fix mirrored across four files), commit it as **one** commit listing every task ID:
 
@@ -205,7 +208,7 @@ For **each** commit you make:
 1. Open the plan's STATE file.
 2. Check the checklist lines matching **this commit's** task IDs exactly (`- [ ] PLAN-XXX: ...` → `- [x] PLAN-XXX: ...`). Do not check any other line.
 3. Append this commit's IDs to `**Completed Tasks**`.
-4. Set `**Current Task**` to the next unfinished task. Advance `**Current Wave**` only when the wave's last commit lands — or set both to `Complete` after the plan's final task. (Older STATE files have no `**Current Wave**` line; add one.)
+4. Set `**Current Task**` to the next unfinished task. Advance `**Current Wave**` only when the wave's last commit lands. After the plan's **final** task, do not write `Complete` yet — `## After the Final Wave` gates it. (Older STATE files have no `**Current Wave**` line; add one.)
 5. Amend it into the commit you just made:
    ```bash
    git add [STATE file path]
@@ -225,6 +228,16 @@ git status --porcelain -uall | cut -c4- | sort > "${TMPDIR:-/tmp}/wave-baseline.
 Skip this and every later wave inherits this wave's paths as findings.
 
 Mark the wave's tasks done in your todo list. Move to the next wave.
+
+## After the Final Wave
+
+Once the last wave has committed, the run is not yet closed — perform these acceptance checks:
+
+1. **Read the plan's `## Acceptance Criteria` section.** Confirm each item holds in the working tree. For each criterion, name the evidence (output of a command, a code location, or both). Report any criterion that does not hold rather than closing the run.
+2. **If the plan is a QA plan,** run the plan's `## Baseline Verification` command block and report the output.
+3. **If the plan's `## Inputs` cites an epic,** carry out the epic's `## Verification Plan (For Implementor)` section and report the result.
+
+Set the STATE file's `**Current Task**` to `Complete` **only after** all applicable checks pass. A plan whose acceptance criteria do not all hold is a plan that did not finish — extend the work or escalate.
 
 ## Model Selection
 
@@ -261,6 +274,7 @@ Escalation stays reactive, not anticipatory: a `BLOCKED` task gets more context,
 - **Never** make a commit without amending its STATE update into it — TodoWrite alone
   does not survive a session interruption, and a commit missing its STATE line makes
   the resumed run redo work that is already done
+- **Never** report a plan complete without evaluating its `## Acceptance Criteria` — per-task `Verify:` commands check tasks, not the plan
 - **Never** edit a skill or agent file under `.claude/` while you are mid-plan, unless a
   task in the plan says to. Your own behaviour is defined by those files; changing them
   under yourself makes the rest of the run unreproducible
