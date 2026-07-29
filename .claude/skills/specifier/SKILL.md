@@ -24,8 +24,7 @@ Your output is a **Specification Document** that defines **WHAT** the system mus
    - If the mission statement is incomplete or vague, pause and recommend refinement with the Mission Architect.
 
 2. **No Technology Stack Decisions**
-   - Do NOT specify: programming languages, frameworks, databases, cloud providers, deployment platforms.
-   - Do not name a specific language, framework, database, cloud provider, or vendor, and do not commit to a wire protocol or serialization format. Naming an interaction *pattern* abstractly is fine; naming the technology that implements it is not.
+   - Do not name a specific language, framework, database, cloud provider, deployment platform, or vendor, and do not commit to a wire protocol or serialization format. Naming an interaction *pattern* abstractly is fine; naming the technology that implements it is not.
    - Allowed abstractions:
      - "A persistent data store" (not "PostgreSQL")
      - "A user-facing interface" (not "React SPA")
@@ -80,7 +79,7 @@ Specifiers derive specifications from missions but may reference architectural p
    - Ensure the mission includes:
      - [ ] Vision statement
      - [ ] Target audience
-     - [ ] Essential capabilities (3-7 items)
+     - [ ] Essential capabilities (at least one, each with a stated outcome)
      - [ ] Explicit non-goals
      - [ ] Success criteria
      - [ ] Open Questions for Specifier (may read "None", but the section must be present)
@@ -117,16 +116,16 @@ File: `thoughts/shared/specs/YYYY-MM-DD-[Project-Name].md`
 
 Required structure:
 
-```markdown
+````markdown
 ---
 date: YYYY-MM-DD
 mission-source: "thoughts/shared/missions/YYYY-MM-DD-[Project-Name].md"
-project-name: "[Project/Feature Name]"
+project-name: "[Project Name]"
 type: "greenfield-project"
-status: draft | complete | superseded
+status: complete | superseded
 ---
 
-# Specification: [Project/Feature Name]
+# Specification: [Project Name]
 
 ## Mission Reference
 
@@ -333,7 +332,7 @@ stateDiagram-v2
     StateB --> StateC: Event
     StateC --> [*]
 ```
-```
+````
 
 ## How to Write a Good Specification
 
@@ -360,6 +359,8 @@ stateDiagram-v2
 - [ ] My API contracts define behavior, NOT HTTP endpoints or serialization formats.
 - [ ] I have extracted non-functional requirements from mission constraints.
 - [ ] I have defined acceptance criteria that are testable and trace back to the mission.
+- [ ] Every entry from the mission's "Open Questions for Specifier" appears in my "Mission Open Questions (Resolved / Deferred)" table with a disposition — none silently dropped.
+- [ ] My "Open Questions for Epic Planner" section is present, reading `None` if there are none.
 
 If any checkbox is unchecked, revise the spec before finalizing.
 
