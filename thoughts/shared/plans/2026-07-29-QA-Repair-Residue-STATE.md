@@ -2,7 +2,7 @@
 
 **Plan**: thoughts/shared/plans/2026-07-29-QA-Repair-Residue.md
 **Current Wave**: Complete
-**Current Task**: PLAN-002 — pending After the Final Wave
+**Current Task**: Complete
 **Completed Tasks**: PLAN-001, PLAN-002
 
 ## Task Checklist
