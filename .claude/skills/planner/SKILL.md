@@ -614,18 +614,9 @@ Write TWO files:
 
 ## Response Format (Structured Output)
 
-Planners work in two communication contexts:
-
-1. **Plan Creation (writing plan documents)**: Create implementation plan and state files
-2. **Agent Delegation (when invoked by other agents)**: Use structured message envelope for machine-readable responses
-
 ### Document Frontmatter (In Plan Files)
 
-The plan `.md` files you write have **different structure** (not YAML message envelope). Plan files use a specific implementation plan format without traditional frontmatter, focusing on verified facts, evidence, and actionable tasks.
-
-**Key Distinction**:
-- **Message envelope** = Structured response to delegating agents (YAML + thinking/answer)
-- **Plan document structure** = Implementation-focused format with verified facts, evidence, and PLAN-XXX tasks (see "## Output Format (STRICT)" section below)
+Plan files use a specific implementation plan format without traditional frontmatter, focusing on verified facts, evidence, and actionable tasks.
 
 When writing plan files, use the implementation plan structure shown in the Output Format section below.
 

@@ -2,7 +2,7 @@
 
 **Plan**: thoughts/shared/plans/2026-07-29-Phase-Two-Skills-Repair.md
 **Current Wave**: Complete
-**Current Task**: PLAN-007 — pending After the Final Wave
+**Current Task**: Complete
 **Completed Tasks**: PLAN-001, PLAN-002, PLAN-003, PLAN-004, PLAN-005, PLAN-006, PLAN-007
 
 ## Task Checklist
