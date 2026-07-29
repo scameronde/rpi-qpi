@@ -2,8 +2,8 @@
 
 **Plan**: thoughts/shared/plans/2026-07-29-QA-Skills-Contract-Repair.md
 **Current Wave**: 2
-**Current Task**: PLAN-005
-**Completed Tasks**: PLAN-001, PLAN-002, PLAN-003, PLAN-004
+**Current Task**: PLAN-006
+**Completed Tasks**: PLAN-001, PLAN-002, PLAN-003, PLAN-004, PLAN-005
 
 ## Task Checklist
 
@@ -16,7 +16,7 @@ Grouped by wave. Tasks within a wave run concurrently, but are checked off as ea
 - [x] PLAN-004: Converge clean-code — sections, severity vocabulary, single frontmatter
 
 ### Wave 2
-- [ ] PLAN-005: Point planner at the verification heading by name
+- [x] PLAN-005: Point planner at the verification heading by name
 - [ ] PLAN-006: Update the qa/ DOX contract to the new frontmatter and lens tokens
 
 ## Notes

@@ -819,13 +819,13 @@ Do not expect waves to speed up a single-file audit — they cannot, by construc
 
 ## Baseline Verification
 
-Commands from [language]-qa skill Section 4:
+Commands from the loaded QA skill's **Baseline Verification Commands** section:
 
 ```bash
 [Insert verification commands from loaded QA skill]
 ```
 
-**Note:** The specific verification tools and commands are provided by the loaded QA skill for the target language. Refer to the skill's Section 4 for the complete verification command set.
+**Note:** The specific verification tools and commands are provided by the loaded QA skill. Refer to the loaded QA skill's **Baseline Verification Commands** section for the complete verification command set. These commands assert the end state after all phases, because `/implement` runs this block once after the final wave.
 
 ## Acceptance Criteria
 
