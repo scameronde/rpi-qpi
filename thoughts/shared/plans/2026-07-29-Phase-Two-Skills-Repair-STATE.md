@@ -1,9 +1,9 @@
 # State: Phase-Two Skills Repair
 
 **Plan**: thoughts/shared/plans/2026-07-29-Phase-Two-Skills-Repair.md
-**Current Wave**: 1
-**Current Task**: PLAN-004
-**Completed Tasks**: PLAN-001, PLAN-002, PLAN-003
+**Current Wave**: 2
+**Current Task**: PLAN-005
+**Completed Tasks**: PLAN-001, PLAN-002, PLAN-003, PLAN-004
 
 ## Task Checklist
 
@@ -13,7 +13,7 @@ Grouped by wave. Tasks within a wave run concurrently, but are checked off as ea
 - [x] PLAN-001: fact-finder report gains inherited-constraints section and inferred rule
 - [x] PLAN-002: planner ingests the epic and the constraint section
 - [x] PLAN-003: Boundary Check uses -uall and a TMPDIR fallback
-- [ ] PLAN-004: implementer-prompt states test-vs-scope precedence
+- [x] PLAN-004: implementer-prompt states test-vs-scope precedence
 
 ### Wave 2
 - [ ] PLAN-005: fact-finder corrections — agent contracts, Read, Bash, QA naming

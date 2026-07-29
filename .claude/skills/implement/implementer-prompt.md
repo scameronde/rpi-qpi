@@ -27,6 +27,7 @@ These files were modified by earlier waves in this plan. Read them before starti
 5. **Tests** — apply judgment, do not write tests reflexively:
    - Behavior change in executable code → write a test, failing test first when possible, then run it.
    - Documentation, prompt text, config values, or markdown → no test. The `Verify:` command is the check.
+   - Behavior change but no test file in **File(s)** or **allowedAdjacentEdits** → report `NEEDS_CONTEXT` naming the test file (per the **Constraints** section). Do not create the test or skip testing silently.
    - If an existing test suite covers the files you touched, run it either way.
 6. Self-review against the checklist below.
 
