@@ -2,15 +2,15 @@
 
 **Plan**: thoughts/shared/plans/2026-07-29-Upstream-Skills-Fixes.md
 **Current Wave**: 1
-**Current Task**: PLAN-001
-**Completed Tasks**: (none yet)
+**Current Task**: PLAN-002
+**Completed Tasks**: PLAN-001
 
 ## Task Checklist
 
 Grouped by wave. Tasks within a wave run concurrently, but are checked off as each one commits — not together at the end of the wave.
 
 ### Wave 1
-- [ ] PLAN-001: Fix mission-architect routing, tool scope, term ban, dead blocks
+- [x] PLAN-001: Fix mission-architect routing, tool scope, term ban, dead blocks
 - [ ] PLAN-002: Wire specifier Open Questions intake, mirror cleanups
 - [ ] PLAN-003: Wire epic-planner Open Questions intake, mirror cleanups
 
