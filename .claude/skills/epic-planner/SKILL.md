@@ -102,6 +102,8 @@ Answer these three in order — each one constrains the next:
 - **By System Component**: Epic per major architectural component (e.g., "Authentication Service", "Data Persistence Layer", "Notification System")
 - **By Feature Cluster**: Epic per related set of capabilities (e.g., "User Profile Features", "Admin Controls")
 
+**Then assign the IDs, before you write anything.** Once the set of epics is settled, number them `EPIC-001` upward in the logical sequence you established in question 3 — prerequisites before the epics that need them. Each ID is unique within this decomposition and belongs to exactly one epic file. Fix the whole numbering now rather than as you write: `dependencies:` and the `## Dependencies` section reference these IDs, and IDs invented one file at a time end up referring to epics you later renamed or merged.
+
 ### Phase 3: Epic Creation
 
 For each identified epic:
@@ -134,6 +136,8 @@ For each identified epic:
 5. **Identify Dependencies**:
    - What other epics must be done first?
    - Example: "Database Layer" must exist before "User Management" can store users.
+   - **Every ID you reference must resolve to an epic in this set.** After the set is drafted, walk each epic's `dependencies:` list and its `## Dependencies` section — prerequisite, concurrent and dependent alike — and confirm each `EPIC-XXX` is one of the IDs you assigned in Phase 2. `/fact-finder` reads `Dependencies` to learn which epics must exist first, so an ID pointing at nothing sends it looking for an epic that was renamed, merged away, or belongs to an earlier decomposition.
+   - **The dependency graph must be acyclic, and the two directions must agree.** If EPIC-002 lists EPIC-001 as a prerequisite, EPIC-001 must list EPIC-002 as a dependent. Follow the prerequisite edges and confirm no path returns to where it started — a cycle means no epic can start, and it is a decomposition error, not a sequencing detail: two epics in a cycle belong together, or the boundary between them is in the wrong place. Fix the decomposition rather than deleting one edge to break the loop.
 
 ### Phase 4: The Hand-off (Artifact Generation)
 
@@ -147,7 +151,7 @@ File: `thoughts/shared/epics/YYYY-MM-DD-[Epic-Name].md`
 
 Required structure:
 
-```markdown
+````markdown
 ---
 date: YYYY-MM-DD
 spec-source: "thoughts/shared/specs/YYYY-MM-DD-[Project-Name].md"
@@ -359,7 +363,7 @@ flowchart TD
     Step1 -->|Invalid| Error[Show Error]
     Step2 --> End[Complete]
 ```
-```
+````
 
 ## How to Write a Good Epic
 
@@ -386,6 +390,8 @@ flowchart TD
 - [ ] Every row of the spec's `## Inherited Constraints` appears in at least one epic's own `## Inherited Constraints`, with its source copied verbatim — none dropped as "applies to no epic" without being raised with the user first. Or the spec's section read `None`.
 - [ ] I have defined acceptance criteria that the Planner can use.
 - [ ] I have identified dependencies between epics.
+- [ ] Every `epic-id` is unique within this decomposition, and every `EPIC-XXX` referenced in any `dependencies:` list or `## Dependencies` section resolves to an epic in this set — none left over from an earlier decomposition or pointing at an epic I renamed or merged.
+- [ ] The prerequisite graph is acyclic, and prerequisite/dependent declarations agree in both directions.
 - [ ] Each epic traces back to specific components/workflows in the spec.
 - [ ] Each epic traces back to essential capabilities in the mission.
 - [ ] The epics, when combined, fully cover the specification.

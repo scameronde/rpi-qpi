@@ -36,6 +36,7 @@ Unlike greenfield projects, brownfield feature additions are constrained by real
    - Locate and read the project's mission statement (`thoughts/shared/missions/`) and specification (`thoughts/shared/specs/`) before starting discovery.
    - If neither exists, ask the user: "I can't find an existing mission or spec for this project. Do you have one, or is this actually a new project? If it's new, use the Mission Architect instead."
    - If only one exists, use what's available and record the gap in the brief's `Assumptions` under **About the existing system** — name which document was missing and what you substituted for it (the codebase scan, the user's account). Then mark the consequences where they land: `/fact-finder` reads `Inherited Constraints` as settled, so every row there that you inferred instead of reading out of a spec carries `inferred — <what from>` in its `Source` column. The note in `Assumptions` explains the gap; the per-row marking is what survives being read one section at a time.
+   - Write `none` for the missing document's frontmatter field — `mission-source: "none"` or `spec-source: "none"`. Do not write a path to a file you did not read, and do not drop the field: a plausible-looking path that resolves to nothing is worse than a recorded absence, and an omitted field reads as an oversight rather than as a fact about the project.
 
 2. **No new architecture decisions**
    - The technology stack is already decided. Do not ask "what database will you use?" or "what framework?"
@@ -43,7 +44,7 @@ Unlike greenfield projects, brownfield feature additions are constrained by real
    - Your job: define what the feature does and how it fits in, not how it will be built.
 
 3. **Explicit constraint capture**
-   - Every inherited constraint (existing tech, patterns, data models, API contracts) must be explicitly documented in the feature brief's `Inherited Constraints` table, each row with its source.
+   - Every inherited constraint (existing tech, patterns, data models, API contracts) must be explicitly documented in the feature brief's `Inherited Constraints` table, each row with its source and with what it forbids or forces.
    - Do not leave constraints implicit. `/fact-finder` and `/planner` depend on knowing what's fixed.
    - Sourced is not optional decoration: it is what separates "the spec fixes this" from "I guessed this from a scan", and `/fact-finder` needs the difference to know which rows it may re-open.
 
@@ -115,10 +116,10 @@ Write the brief to: `thoughts/shared/features/YYYY-MM-DD-[Feature-Name].md`
 Before writing, `Glob` for the target path. Feature briefs are write-once (`thoughts/shared/AGENTS.md`) and `Write` overwrites silently — if the file exists, stop and ask the user whether to supersede it (set the existing file's `status:` to `superseded`) or pick a different name.
 
 **Pre-write checklist (enforced):**
-- [ ] Existing mission and spec have been read — or their absence is recorded per Non-Negotiable 1, naming which one was missing and what I used instead
+- [ ] Existing mission and spec have been read — or their absence is recorded per Non-Negotiable 1, naming which one was missing and what I used instead, with `none` in the corresponding frontmatter field
 - [ ] 2-4 essential capabilities defined
 - [ ] At least 2 explicit non-goals stated
-- [ ] Inherited constraints documented (what's fixed from existing system), every row carrying a source — a spec/scan path, or `inferred — <what from>` where there was nothing to read
+- [ ] Inherited constraints documented (what's fixed from existing system), every row carrying a source — a spec/scan path, or `inferred — <what from>` where there was nothing to read — and every row saying what it forbids or forces, not just naming the thing that is fixed
 - [ ] Integration points with existing functionality identified
 - [ ] Success criteria are observable/testable
 - [ ] User has confirmed the summary
@@ -131,8 +132,8 @@ File: `thoughts/shared/features/YYYY-MM-DD-[Feature-Name].md`
 ---
 date: YYYY-MM-DD
 feature-architect: [identifier]
-mission-source: "thoughts/shared/missions/YYYY-MM-DD-[Project-Name].md"
-spec-source: "thoughts/shared/specs/YYYY-MM-DD-[Project-Name].md"
+mission-source: "thoughts/shared/missions/YYYY-MM-DD-[Project-Name].md"   # or "none" when the project has no mission
+spec-source: "thoughts/shared/specs/YYYY-MM-DD-[Project-Name].md"        # or "none" when the project has no spec
 feature-name: "[Feature Name]"
 type: "feature-addition"
 status: complete | superseded
@@ -189,13 +190,15 @@ These are explicitly OUT of scope for this feature:
 
 These constraints are fixed by the existing system and are NOT open for discussion. `/fact-finder` reads this section by name and treats every row as settled rather than investigating it — which is exactly why each row must carry where it came from. A constraint you inferred from a codebase scan or from the user's account, with no spec behind it, gets `inferred` in its source; the researcher can then verify that one instead of trusting it.
 
-| Constraint | Kind | Source |
-|---|---|---|
-| [Language, framework, runtime, or a library already in use that this feature must work with] | Technology | [`thoughts/shared/specs/...` with line range, `package.json`/`go.mod`/etc. from the scan, or `inferred — <what from>`] |
-| [Pattern that must be followed, existing data model to work with, or API contract that cannot be broken] | Architectural | [Spec path with line range, or `inferred — <what from>`] |
-| [Deployment environment, infrastructure limit] | Operational | [Mission or spec path with line range, or `inferred — <what from>`] |
+| Constraint | Kind | Source | What it forbids or forces |
+|---|---|---|---|
+| [Language, framework, runtime, or a library already in use that this feature must work with] | Technology | [`thoughts/shared/specs/...` with line range, `package.json`/`go.mod`/etc. from the scan, or `inferred — <what from>`] | [What this rules out for this feature, or what it obliges] |
+| [Pattern that must be followed, existing data model to work with, or API contract that cannot be broken] | Architectural | [Spec path with line range, or `inferred — <what from>`] | [What this rules out, or what it obliges] |
+| [Deployment environment, infrastructure limit] | Operational | [Mission or spec path with line range, or `inferred — <what from>`] | [What this rules out, or what it obliges] |
 
 [Group by `Kind` for readability; every row needs a source. Where the mission or spec was missing entirely, say so once in `Assumptions` → **About the existing system** as well — but the per-row `inferred` marking is what actually travels, because that is the section `/fact-finder` reads.]
+
+[The last column is the one that makes a constraint actionable. "Uses the existing session middleware" tells the researcher nothing on its own; "must authenticate through the existing session middleware — a parallel token path is ruled out" tells it what not to go looking for. This matches the column `/specifier` and `/epic-planner` carry on the greenfield path, so a constraint reaching `/fact-finder` says the same kind of thing whichever route it travelled.]
 
 ## Integration Points
 
