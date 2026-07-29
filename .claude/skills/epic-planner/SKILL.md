@@ -107,9 +107,12 @@ For each identified epic:
    - Which components/workflows belong to this epic?
    - Which data model entities are involved?
    - Which acceptance criteria from the spec apply?
-   - Which entries from the spec's "Open Questions for Epic Planner" fall inside this epic? Each one must be either answered in the epic's own text or carried forward verbatim into that epic's "Research Questions for Fact-Finder", under whichever subsection fits — `/fact-finder` reads that parent section by name (`.claude/skills/fact-finder/SKILL.md:575`) and it is the only forward channel out of this stage. A question that belongs to no epic goes in the nearest epic's own "## Open Questions" section, which routes back to the user, Mission Architect, or Specifier. Never drop one.
+   - Which entries from the spec's "Open Questions for Epic Planner" fall inside this epic? Every entry must end up in exactly one of three places — never dropped:
+     - **Answered** in the epic's own text, where the decomposition settles it.
+     - **Carried forward verbatim** into that epic's "Research Questions for Fact-Finder", under whichever subsection fits. `/fact-finder` reads that parent section by name (`.claude/skills/fact-finder/SKILL.md:575`), and it is the only forward channel out of this stage.
+     - **Raised with the user before you finish**, if it belongs to no epic. That means either the decomposition missed something or the question sits above epic level, and both need a human decision before research starts. Record it in the nearest epic's `## Open Questions` too — but the record is not the hand-off. No downstream skill reads that section, so a question left there and never raised is a question lost.
 
-2. **Define Stories** (3-7 per epic):
+2. **Define Stories** (typically 3-7 per epic):
    - A story is a single user-facing capability or system behavior.
    - Good story: "As a user, I can register with email and password"
    - Good story: "The system validates email format and uniqueness"
@@ -300,7 +303,8 @@ graph TD
 
 ## Open Questions
 
-[Questions that arose during epic planning that need resolution]
+Questions needing a human decision. **No downstream skill reads this section** — it is a record, not a hand-off, so anything listed here must also have been raised with the user in conversation before the epics were finalized. Write `None` if there are none.
+
 - [Question for user, Mission Architect, or Specifier]
 
 ## Verification Plan (For Implementor)
@@ -361,8 +365,9 @@ flowchart TD
 
 - [ ] I have read and understood the specification.
 - [ ] Each epic represents a cohesive, user-facing capability or system component.
-- [ ] Each epic has 3-7 user stories.
+- [ ] Each epic's stories cover its capability — typically 3-7, but a genuinely small epic may have fewer.
 - [ ] I have defined research questions that the Fact-Finder can answer.
+- [ ] Every entry from the spec's "Open Questions for Epic Planner" is answered in an epic, carried verbatim into an epic's "Research Questions for Fact-Finder", or raised with the user — none dropped.
 - [ ] I have defined acceptance criteria that the Planner can use.
 - [ ] I have identified dependencies between epics.
 - [ ] Each epic traces back to specific components/workflows in the spec.
