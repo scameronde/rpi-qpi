@@ -1,7 +1,6 @@
 ---
 name: clean-code
 description: Language-agnostic code quality analysis focusing on design principles from Clean Code, Pragmatic Programmer, Code Complete, Refactoring, and other seminal software engineering books. Use when asked to review code quality, find code smells, evaluate design, or run a clean code QA pass.
-disable-model-invocation: true
 allowed-tools: Bash, Read, Grep, Glob, Write, Agent   # no Edit — a reviewer must not fix what it reviews
 ---
 
@@ -262,94 +261,92 @@ Evaluate change resistance and code smells. See [references/maintainability-prin
   - **Red Flags**: Swallowed exceptions, returning null, error codes, missing finally/cleanup
   - **Evidence**: List error handling issues with file:line
 
-## Section 4: Verification Commands for Planner
+## Section 4: Baseline Verification Commands
 
-When creating implementation plans from clean-code QA reports, use these verification criteria.
+These commands assert the end state after every phase of a clean-code plan has landed. `/implement` runs them once after the final wave:
 
-### Quantitative Verifications
+```bash
+lizard [target] --CCN 15 --length 50 --arguments 3
+scc [target] --by-file
+jscpd [target] --threshold 5 --min-lines 5 --min-tokens 50
+```
 
-Use these objective, measurable criteria:
+Per finding, the `Verify:` field of `## Improvement Plan (For Implementor)` (see **Section 7**) takes one of exactly two forms:
+
+- a literal command plus its expected result — `` `lizard src/orders/service.py --CCN 10` → exit 0, no function listed ``
+- the literal `none — requires review`, when no command can assert the outcome
+
+A `Done When:` is always an observable condition, never a command.
+
+### Command-Assertable Verifications
+
+Objective, measurable criteria. Use these as `Verify:` values verbatim, substituting the real path:
 
 1. **Complexity Reduced**:
-   ```bash
-   lizard [file] --CCN 15
-   ```
-   - Done When: All functions show CCN ≤ 15 (or specified target)
-   - Example: "PLAN-003: Refactor processOrder → lizard shows CCN < 10"
+   - **Done When**: All functions show CCN ≤ 15 (or specified target)
+   - **Verify**: `lizard [file] --CCN 15` → exit 0, no function listed above the threshold
 
 2. **Function Length Reduced**:
-   ```bash
-   lizard [file] --length 50
-   ```
-   - Done When: All functions ≤ 50 lines (or specified target)
-   - Example: "PLAN-005: Extract helper methods → lizard shows all functions < 30 lines"
+   - **Done When**: All functions ≤ 50 lines (or specified target)
+   - **Verify**: `lizard [file] --length 50` → exit 0, no function listed above the threshold
 
 3. **Parameter Count Reduced**:
-   ```bash
-   lizard [file] --arguments 3
-   ```
-   - Done When: All functions have ≤ 3 parameters
-   - Example: "PLAN-007: Introduce UserContext object → lizard shows max 3 params"
+   - **Done When**: All functions have ≤ 3 parameters
+   - **Verify**: `lizard [file] --arguments 3` → exit 0, no function listed above the threshold
 
 4. **Duplication Eliminated**:
-   ```bash
-   jscpd [target] --threshold 5
-   ```
-   - Done When: Duplication < 5% (or specified target)
-   - Example: "PLAN-009: Extract common validation → jscpd shows < 3% duplication"
+   - **Done When**: Duplication < 5% (or specified target)
+   - **Verify**: `jscpd [target] --threshold 5` → exit 0, reported duplication below 5%
 
 5. **Comment Ratio in Range**:
-   ```bash
-   scc [target]
-   ```
-   - Done When: Comment ratio between 10-30%
-   - Example: "PLAN-011: Add docstrings → scc shows comment ratio 15-25%"
+   - **Done When**: Comment ratio between 10-30%
+   - **Verify**: `scc [target]` → comment/code ratio between 10% and 30%
 
-### Qualitative Verifications
+### Review-Only Verifications
 
-Use these for subjective principles (requires code review):
+Subjective principles no command can assert. Their `Verify:` is always the literal `none — requires review`; the judgement itself belongs in `Done When:`:
 
 1. **Naming Improved**:
-   - Done When: Code review confirms all identifiers are intention-revealing
-   - Example: "PLAN-013: Rename variables → Code review confirms names reveal intent"
+   - **Done When**: Every identifier in the touched scope is intention-revealing
+   - **Verify**: `none — requires review`
 
 2. **Comments Explain Why**:
-   - Done When: Code review confirms comments explain rationale, not mechanics
-   - Example: "PLAN-015: Improve comments → Code review confirms WHY over WHAT"
+   - **Done When**: Comments state rationale and trade-offs, not mechanics
+   - **Verify**: `none — requires review`
 
 3. **Code Smell Eliminated**:
-   - Done When: Code review confirms specific smell is addressed
-   - Example: "PLAN-017: Eliminate Feature Envy → Code review confirms method uses own data"
+   - **Done When**: The named smell no longer occurs at the cited locations
+   - **Verify**: `none — requires review`
 
 4. **Abstraction Consistent**:
-   - Done When: Code review confirms abstraction levels are uniform within layers
-   - Example: "PLAN-019: Separate concerns → Code review confirms business logic isolated from data access"
+   - **Done When**: Abstraction levels are uniform within each layer — business logic isolated from data access
+   - **Verify**: `none — requires review`
 
 5. **Seams Introduced**:
-   - Done When: Code review confirms dependencies can be substituted for testing
-   - Example: "PLAN-021: Inject dependencies → Code review confirms service is mockable"
+   - **Done When**: Every external dependency of the target can be substituted in a test
+   - **Verify**: `none — requires review`
 
-### Hybrid Verifications
+### Mixed Findings
 
-Combine quantitative and qualitative:
+A finding whose outcome is partly measurable takes the command as its `Verify:` and carries the reviewable half in `Done When:`:
 
 1. **Extract Method Refactoring**:
-   - Quantitative: `lizard` shows CCN reduced by 50%
-   - Qualitative: Code review confirms extracted functions have clear single responsibility
+   - **Done When**: CCN reduced by 50% and each extracted function has a single responsibility
+   - **Verify**: `lizard [file] --CCN 10` → exit 0, no function listed above the threshold
 
 2. **Introduce Parameter Object**:
-   - Quantitative: `lizard` shows parameter count reduced to ≤ 3
-   - Qualitative: Code review confirms parameter object is semantically meaningful
+   - **Done When**: Parameter count ≤ 3 and the parameter object is semantically meaningful
+   - **Verify**: `lizard [file] --arguments 3` → exit 0, no function listed above the threshold
 
 3. **Eliminate Duplication**:
-   - Quantitative: `jscpd` shows duplication < 5%
-   - Qualitative: Code review confirms abstraction is appropriate (not forced)
+   - **Done When**: Duplication < 5% and the extracted abstraction is appropriate, not forced
+   - **Verify**: `jscpd [target] --threshold 5` → exit 0, reported duplication below 5%
 
 ## Section 5: Prioritization Rules
 
 When categorizing findings in QA reports, use this hierarchy:
 
-### P1 (Critical) - Immediate Action Required
+### Critical - Immediate Action Required
 
 **Criteria**: Issues causing active maintenance burden or high bug risk
 
@@ -363,7 +360,7 @@ When categorizing findings in QA reports, use this hierarchy:
 
 **Timeline**: Address within current sprint
 
-### P2 (High) - Plan for Next Sprint
+### High - Plan for Next Sprint
 
 **Criteria**: Issues blocking testability or causing frequent rework
 
@@ -379,7 +376,7 @@ When categorizing findings in QA reports, use this hierarchy:
 
 **Timeline**: Address within 1-2 sprints
 
-### P3 (Medium) - Address When Touching Code
+### Medium - Address When Touching Code
 
 **Criteria**: Issues reducing readability or requiring opportunistic improvement
 
@@ -395,7 +392,7 @@ When categorizing findings in QA reports, use this hierarchy:
 
 **Timeline**: Address opportunistically when modifying nearby code
 
-### P4 (Low) - Nice to Have
+### Low - Nice to Have
 
 **Criteria**: Minor improvements with low ROI
 
@@ -414,10 +411,10 @@ When categorizing findings in QA reports, use this hierarchy:
 1. **Extract metrics** from automated tools (lizard, scc, jscpd)
 2. **Identify code smells** using manual analysis checklist
 3. **Assess impact**:
-   - Is this causing bugs? → P1
-   - Is this blocking testing? → P2
-   - Is this slowing development? → P2 or P3
-   - Is this just aesthetics? → P4
+   - Is this causing bugs? → Critical
+   - Is this blocking testing? → High
+   - Is this slowing development? → High or Medium
+   - Is this just aesthetics? → Low
 4. **Consider context**:
    - Code change frequency (git history): Hot paths → higher priority
    - Business criticality: Core domain → higher priority
@@ -442,125 +439,34 @@ Agent tool:
   prompt: "Find every occurrence of [concern] under [scope]. Return concrete excerpts with file:line."
 ```
 
-Record which method produced the file list in **Phase 1: Target Discovery**.
+Record which method produced the file list under **Audit Trail → Target Discovery**.
 
 ## Section 7: QA Report Template
 
-Write to `thoughts/shared/qa/YYYY-MM-DD-[Target].md` using this template:
+Write to `thoughts/shared/qa/YYYY-MM-DD-[Target]-Design.md` using this template (note: `-Design` is this skill's lens token):
 
 ```markdown
 ---
 date: YYYY-MM-DD
-auditor: clean-code
-target: [module/package/file]
-language: [python|typescript|go|rust|java|etc.]
-status: complete
----
-
-<thinking>
-## Phase 1: Target Discovery
-
-**Target Identification Method**: [user-provided | codebase-locator | git diff]
-
-**Files Discovered**:
-- `path/to/file1.ext` (XXX lines, X functions)
-- `path/to/file2.ext` (XXX lines, X functions)
-- [list all analyzed files]
-
-**Scope**: [single file | module | package | entire codebase]
-
-**Language Detection**: [Detected from file extensions]
-
-## Phase 2: Automated Tool Execution
-
-**Tool Versions**:
-- lizard: X.X.X
-- scc: X.X.X
-- jscpd: X.X.X
-
-**Commands Executed**:
-```bash
-lizard [target] --CCN 15 --length 50 --arguments 3
-scc [target] --by-file
-jscpd [target] --threshold 5 --min-lines 5 --min-tokens 50
-```
-
-**Tool Outputs** (raw metrics):
-
-### Lizard Complexity Analysis
-- Total functions analyzed: X
-- Functions with CCN > 15: X
-- Functions with length > 50: X
-- Functions with 4+ params: X
-- Max CCN: XX in `function_name` at file.ext:line
-- Max length: XXX lines in `function_name` at file.ext:line
-
-### SCC Code Metrics
-- Total files: X
-- Total lines: X (code: X, comments: X, blank: X)
-- Comment ratio: X.X%
-
-### JSCPD Duplication Analysis
-- Total duplicates: X blocks
-- Duplication percentage: X.X%
-- Largest duplicate: X lines at file1.ext:line and file2.ext:line
-
-## Phase 3: Manual Analysis
-
-### Checklist Items Reviewed
-- [x] Structure: Coupling, cohesion, abstraction, orthogonality
-- [x] Readability: Naming, function size, nesting, comments, magic numbers
-- [x] Testability: Seams, pure functions, dependency injection, argument count
-- [x] Maintainability: DRY, SRP, OCP, code smells, error handling
-
-### Key Findings per Category
-
-**STRUCTURE**:
-- [Summarize coupling/cohesion/abstraction findings]
-
-**READABILITY**:
-- [Summarize naming/formatting/comment findings]
-
-**TESTABILITY**:
-- [Summarize seam/dependency/purity findings]
-
-**MAINTAINABILITY**:
-- [Summarize DRY/SOLID/code smell findings]
-
-## Phase 4: Synthesis
-
-**Prioritization Decisions**:
-- P1 issues: X (based on [criteria])
-- P2 issues: X (based on [criteria])
-- P3 issues: X (based on [criteria])
-- P4 issues: X (based on [criteria])
-
-**Total Issues**: XX
-</thinking>
-
-<answer>
----
-message_id: clean-code-qa-YYYY-MM-DD-NNN
 message_type: QA_REPORT
-target: [target path]
-auditor: clean-code
-language: [language]
-total_issues: X
-p1_count: X
-p2_count: X
-p3_count: X
-p4_count: X
-timestamp: YYYY-MM-DDTHH:MM:SSZ
+target: "[module or file name]"
+status: complete
+upstream-artifact: none
 ---
 
-# Clean Code QA Report: [Target Name]
+# Clean Code QA Report: [Target]
+
+## Scan Metadata
+- Date: YYYY-MM-DD
+- Target: [path]
+- Auditor: clean-code
+- Language: [python|typescript|go|rust|java|etc.]
+- Tools: lizard, scc, jscpd, manual analysis
 
 ## Executive Summary
 
 - **Target**: `[module/package/file path]`
-- **Language**: [Python|TypeScript|Go|Rust|Java|etc.]
-- **Date**: YYYY-MM-DD
-- **Total Issues**: X (P1: X, P2: X, P3: X, P4: X)
+- **Total Issues**: X (Critical: X, High: X, Medium: X, Low: X)
 
 ### Complexity Metrics
 - **Max Complexity (CCN)**: XX (threshold: 15) [✅ PASS | ❌ FAIL]
@@ -571,7 +477,7 @@ timestamp: YYYY-MM-DDTHH:MM:SSZ
 ### Recommendation
 [One sentence summary: "Immediate action required" | "Plan refactoring for next sprint" | "Code quality acceptable"]
 
-## Critical Findings (P1)
+## Critical Findings
 
 ### CLEAN-001: Long Method - `processOrder` (CCN: 28)
 
@@ -595,13 +501,12 @@ timestamp: YYYY-MM-DDTHH:MM:SSZ
   3. Extract payment logic → `processPayment()`
   4. Extract inventory logic → `updateInventory()`
   5. Extract notification logic → `sendOrderConfirmation()`
-- **Verification**:
-  - Quantitative: `lizard src/orders/service.py --CCN 10` passes
-  - Qualitative: Code review confirms each extracted function has single responsibility
+- **Done When**: CCN ≤ 10 and each extracted function has a single responsibility
+- **Verify**: `lizard src/orders/service.py --CCN 10` → exit 0, no function listed above the threshold
 
-[Repeat for each P1 issue: CLEAN-002, CLEAN-003, etc.]
+[Repeat for each Critical issue: CLEAN-002, CLEAN-003, etc.]
 
-## High Priority (P2)
+## High Priority
 
 ### CLEAN-005: Data Clumps - User parameters repeated 8 times
 
@@ -632,13 +537,12 @@ timestamp: YYYY-MM-DDTHH:MM:SSZ
   def authenticate(user: UserContext):
       # Single parameter
   ```
-- **Verification**:
-  - Quantitative: `lizard src/ --arguments 3` passes (all functions ≤ 3 params)
-  - Qualitative: Code review confirms UserContext is semantically meaningful
+- **Done When**: All functions take ≤ 3 parameters and `UserContext` is semantically meaningful
+- **Verify**: `lizard src/ --arguments 3` → exit 0, no function listed above the threshold
 
-[Repeat for each P2 issue]
+[Repeat for each High issue]
 
-## Medium Priority (P3)
+## Medium Priority
 
 ### CLEAN-010: Magic Numbers in configuration
 
@@ -665,14 +569,14 @@ timestamp: YYYY-MM-DDTHH:MM:SSZ
   setTimeout(ONE_DAY_SECONDS)
   maxConnections = DEFAULT_DB_POOL_SIZE
   ```
-- **Verification**:
-  - Qualitative: Code review confirms no unexplained numeric literals
+- **Done When**: No unexplained numeric literal remains in the cited files
+- **Verify**: `none — requires review`
 
-[Repeat for each P3 issue]
+[Repeat for each Medium issue]
 
-## Low Priority (P4)
+## Low Priority
 
-[List P4 issues briefly - these are low ROI]
+[List Low issues briefly - these are low ROI]
 
 - CLEAN-020: Variable `data` in `parser.py:45` could be renamed to `parsedResponse`
 - CLEAN-021: Minor duplication (3.2%) in test fixtures (acceptable level)
@@ -700,6 +604,40 @@ timestamp: YYYY-MM-DDTHH:MM:SSZ
 | Feature Envy | 1 | `OrderValidator.validatePayment` uses `PaymentService` data |
 | Primitive Obsession | 2 | Status codes as strings, amounts as floats |
 
+## Improvement Plan (For Implementor)
+
+Restate every finding above as one actionable unit, in priority order.
+
+### CLEAN-001: [Issue Title]
+- **Priority**: Critical/High/Medium/Low
+- **Category**: Structure/Readability/Testability/Maintainability
+- **File(s)**: `path/to/file.ext:line-line`
+- **Issue**: [Detailed description]
+- **Evidence**:
+  ```python
+  [Excerpt from file or tool output]
+  ```
+- **Recommendation**: [Name the refactoring and list its steps - NO VAGUE INSTRUCTIONS]
+- **Done When**: [Observable condition]
+- **Verify**: [`command` → expected result, or `none — requires review`]
+
+[Repeat for each finding]
+
+## Acceptance Criteria
+- [ ] Every Critical finding resolved
+- [ ] Max complexity (CCN) ≤ 15 across the target
+- [ ] No function longer than 50 lines
+- [ ] No function taking 4 or more parameters
+- [ ] Duplication < 5%
+- [ ] Comment ratio between 10% and 30%
+- [ ] Every smell in **Code Smells Detected** either eliminated or accepted with a recorded reason
+- [ ] [Additional criteria derived from the findings]
+
+## Implementor Checklist
+- [ ] CLEAN-001: [Short title]
+- [ ] CLEAN-002: [Short title]
+[etc.]
+
 ## Recommendations for Next Steps
 
 ### Immediate (Current Sprint)
@@ -715,18 +653,88 @@ timestamp: YYYY-MM-DDTHH:MM:SSZ
 6. **CLEAN-012**: Improve comments to explain WHY not WHAT
 
 ### Ignore (Low ROI)
-7. P4 issues (CLEAN-020 to CLEAN-022) - address only if trivial
+7. Low-priority issues (CLEAN-020 to CLEAN-022) - address only if trivial
 
-## References
+## Audit Trail
 
-See `references/` for detailed guidance:
-- [code-smells-catalog.md](references/code-smells-catalog.md) - Fowler's complete catalog with examples
-- [structure-principles.md](references/structure-principles.md) - Coupling, cohesion, orthogonality
-- [readability-principles.md](references/readability-principles.md) - Naming, formatting, comments
-- [testability-principles.md](references/testability-principles.md) - Seams, dependencies, pure functions
-- [maintainability-principles.md](references/maintainability-principles.md) - DRY, SOLID principles
-- [book-references.md](references/book-references.md) - Complete citations and key chapters
-</answer>
+### Target Discovery
+
+**Target Identification Method**: [user-provided | codebase-locator | git diff]
+
+**Files Discovered**:
+- `path/to/file1.ext` (XXX lines, X functions)
+- `path/to/file2.ext` (XXX lines, X functions)
+- [list all analyzed files]
+
+**Scope**: [single file | module | package | entire codebase]
+
+**Language Detection**: [Detected from file extensions]
+
+### Tool Versions and Commands
+
+**Tool Versions**:
+- lizard: X.X.X
+- scc: X.X.X
+- jscpd: X.X.X
+
+**Commands Executed**:
+```bash
+lizard [target] --CCN 15 --length 50 --arguments 3
+scc [target] --by-file
+jscpd [target] --threshold 5 --min-lines 5 --min-tokens 50
+```
+
+**Tool Outputs** (raw metrics):
+
+#### Lizard Complexity Analysis
+- Total functions analyzed: X
+- Functions with CCN > 15: X
+- Functions with length > 50: X
+- Functions with 4+ params: X
+- Max CCN: XX in `function_name` at file.ext:line
+- Max length: XXX lines in `function_name` at file.ext:line
+
+#### SCC Code Metrics
+- Total files: X
+- Total lines: X (code: X, comments: X, blank: X)
+- Comment ratio: X.X%
+
+#### JSCPD Duplication Analysis
+- Total duplicates: X blocks
+- Duplication percentage: X.X%
+- Largest duplicate: X lines at file1.ext:line and file2.ext:line
+
+### Manual Analysis
+
+#### Checklist Items Reviewed
+- [x] Structure: Coupling, cohesion, abstraction, orthogonality
+- [x] Readability: Naming, function size, nesting, comments, magic numbers
+- [x] Testability: Seams, pure functions, dependency injection, argument count
+- [x] Maintainability: DRY, SRP, OCP, code smells, error handling
+
+#### Key Findings per Category
+
+**STRUCTURE**:
+- [Summarize coupling/cohesion/abstraction findings]
+
+**READABILITY**:
+- [Summarize naming/formatting/comment findings]
+
+**TESTABILITY**:
+- [Summarize seam/dependency/purity findings]
+
+**MAINTAINABILITY**:
+- [Summarize DRY/SOLID/code smell findings]
+
+### Prioritization Reasoning
+
+**Prioritization Decisions**:
+- Critical issues: X (based on [criteria])
+- High issues: X (based on [criteria])
+- Medium issues: X (based on [criteria])
+- Low issues: X (based on [criteria])
+
+**Total Issues**: XX
 ```
 
 ## Section 8: Integration with QA Workflow

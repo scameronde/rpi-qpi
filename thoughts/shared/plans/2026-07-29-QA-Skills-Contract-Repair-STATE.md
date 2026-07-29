@@ -1,9 +1,9 @@
 # State: QA Skills Contract Repair
 
 **Plan**: thoughts/shared/plans/2026-07-29-QA-Skills-Contract-Repair.md
-**Current Wave**: 1
-**Current Task**: PLAN-004
-**Completed Tasks**: PLAN-001, PLAN-002, PLAN-003
+**Current Wave**: 2
+**Current Task**: PLAN-005
+**Completed Tasks**: PLAN-001, PLAN-002, PLAN-003, PLAN-004
 
 ## Task Checklist
 
@@ -13,7 +13,7 @@ Grouped by wave. Tasks within a wave run concurrently, but are checked off as ea
 - [x] PLAN-001: Restructure python-qa — flag, frontmatter, Verify field, lens, baseline
 - [x] PLAN-002: Restructure typescript-qa — same, plus the missing delegation block
 - [x] PLAN-003: Restructure logic-bugs-qa — same, plus merge two verification sections
-- [ ] PLAN-004: Converge clean-code — sections, severity vocabulary, single frontmatter
+- [x] PLAN-004: Converge clean-code — sections, severity vocabulary, single frontmatter
 
 ### Wave 2
 - [ ] PLAN-005: Point planner at the verification heading by name
