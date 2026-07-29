@@ -1,7 +1,6 @@
 ---
 name: logic-bugs-qa
 description: Language-agnostic logic bug detection through manual code analysis and execution flow tracing. Use when asked to find logic errors, trace execution paths, audit algorithm correctness, or review code for bugs that automated tools cannot detect.
-disable-model-invocation: true
 allowed-tools: Bash, Read, Grep, Glob, Write, Agent   # no Edit — a reviewer must not fix what it reviews
 ---
 
@@ -97,6 +96,8 @@ This skill provides a systematic framework for detecting logic errors and coding
 
 ## Baseline Verification Commands
 
+This section asserts the end state after every phase has landed. `/implement` runs these commands once after the final wave. Since logic bugs are verified through tests rather than linters, tests and coverage should rise for fixed paths.
+
 Language-agnostic test execution patterns:
 
 ### Python
@@ -165,13 +166,13 @@ Use this hierarchy when categorizing findings:
 
 ## Delegation Strategy
 
-Invoke these via the `Agent` tool, substituting the bracketed parts. Record every call in **Phase 4: Delegation Log**. Do not delegate a file whose path you already have — reading it yourself is cheaper than a dispatch.
+Invoke these via the `Agent` tool, substituting the bracketed parts. Record every call in the report's **Audit Trail → Delegation Log** section. Do not delegate a file whose path you already have — reading it yourself is cheaper than a dispatch.
 
 ```
 Agent tool:
   subagent_type: "codebase-analyzer"
   description: "Trace [function]"
-  prompt: "Trace [function] in [file]. Output scope: comprehensive | focused | execution_only."
+  prompt: "Trace [function] in [file]. Output scope: [comprehensive | focused | execution_only]."
 ```
 
 ```
@@ -208,129 +209,15 @@ Agent tool:
 
 ## Report Template
 
-Write to `thoughts/shared/qa/YYYY-MM-DD-[Target].md` using this exact template:
+Write to `thoughts/shared/qa/YYYY-MM-DD-[Target]-Bugs.md` using this exact template. The `-Bugs` suffix is this skill's lens token.
 
 ```markdown
-<thinking>
-## Phase 1: Target Discovery
-
-**Target Identification Method**: [user-provided | codebase-locator | git diff]
-
-**Files Discovered**:
-- `path/to/file.ext` (XXX lines)
-
-**Scope**: [single function | module | feature]
-
-## Phase 2: Baseline Verification
-
-**Test Suite Status**:
-- Command: [language-specific test command]
-- Result: [X tests passed, Y failed]
-- Coverage: [if available]
-
-**Behavioral Baseline**:
-- [What does the code currently do? What SHOULD it do?]
-- [Any discrepancies between tests and expected behavior?]
-
-## Phase 3: Logic Analysis
-
-**Analysis Method**:
-- Read files: [list with line ranges]
-- Delegation: [codebase-analyzer calls with targets]
-- Categories examined: [control flow, data handling, etc.]
-
-**Files Read** (with line ranges):
-- `path/to/file.ext:1-150`
-
-**Analysis Findings by Category**:
-
-### Control Flow Analysis
-[List findings with file:line references]
-
-### Data Handling Analysis
-[List findings with file:line references]
-
-### Concurrency Analysis
-[List findings or "N/A - single-threaded code"]
-
-### Error Handling Analysis
-[List findings with file:line references]
-
-### Algorithm Correctness Analysis
-[List findings with file:line references]
-
-### Boundary and Edge Cases Analysis
-[List findings with file:line references]
-
-### State Management Analysis
-[List findings with file:line references]
-
-**Issue Counts by Category**:
-- Control Flow: X issues
-- Data Handling: Y issues
-- Concurrency: Z issues
-- Error Handling: W issues
-- Algorithm: V issues
-- Edge Cases: U issues
-- State Management: T issues
-
-## Phase 4: Delegation Log
-
-**Subagent Invocations**:
-
-1. **codebase-analyzer** (comprehensive depth):
-   - Task: Trace execution path for [function/method]
-   - Response: [X execution steps, Y edge cases identified]
-   - Key findings: [summary with file:line references]
-
-2. **codebase-pattern-finder**:
-   - Task: Find error handling patterns in [scope]
-   - Response: [X variations found]
-   - Key findings: [inconsistencies noted]
-
-3. **web-search-researcher**:
-   - Task: Research known issues with [algorithm/pattern]
-   - Response: [confidence level + sources]
-   - Key findings: [vulnerabilities or edge cases]
-
-## Phase 5: Prioritization and Synthesis
-
-**Prioritization Reasoning**:
-
-**Critical Issues** (Data loss, security, crash):
-- [Issue description] -> LOGIC-XXX
-
-**High Priority Issues** (Incorrect results, silent failures):
-- [Issue description] -> LOGIC-XXX
-
-**Medium Priority Issues** (Performance, race conditions):
-- [Issue description] -> LOGIC-XXX
-
-**Low Priority Issues** (Defensive programming):
-- [Issue description] -> LOGIC-XXX
-
-**Synthesis Decisions**:
-- Grouped [related issues] into single LOGIC-XXX task
-- Deferred [issue] because [reason]
-- Prioritized [issue] over [other] due to [severity/impact]
-</thinking>
-
-<answer>
 ---
-message_id: logic-bugs-qa-YYYY-MM-DD-NNN
-correlation_id: [workflow-id]
-timestamp: YYYY-MM-DDTHH:MM:SSZ
+date: YYYY-MM-DD
 message_type: QA_REPORT
-qa_agent: logic-bugs-qa
-qa_agent_version: "1.0"
-target_path: [path/to/target]
-target_type: [function | module | feature]
-overall_status: [Pass | Conditional Pass | Fail]
-critical_issues: [count]
-high_priority_issues: [count]
-medium_priority_issues: [count]
-low_priority_issues: [count]
-analysis_categories: [control-flow, data-handling, concurrency, error-handling, algorithm, edge-cases, state-management]
+target: "[module or file name]"
+status: complete
+upstream-artifact: none
 ---
 
 # Logic Bugs QA Analysis: [Target]
@@ -435,22 +322,7 @@ For each issue:
 
 ## Improvement Plan (For Implementor)
 
-### LOGIC-001: [Issue Title]
-- **Priority**: Critical/High/Medium/Low
-- **Category**: Control Flow | Data Handling | Concurrency | Error Handling | Algorithm | Edge Cases | State Management
-- **File(s)**: `path/to/file.ext:line-line`
-- **Issue**: [What is wrong with the logic?]
-- **Evidence**:
-  ```[language]
-  [Code excerpt showing the bug]
-  ```
-- **Expected Behavior**: [What SHOULD happen?]
-- **Actual Behavior**: [What DOES happen?]
-- **Recommendation**: [Specific fix - be precise]
-- **Test Case**: [Specific input that triggers the bug OR new test to add]
-- **Done When**: All tests pass + new test case added
-
-[Repeat for each issue]
+[One `### LOGIC-XXX` block per finding, using the finding template below]
 
 ## Acceptance Criteria
 - [ ] All critical logic errors fixed
@@ -467,25 +339,132 @@ For each issue:
 ## References
 - Test suite output: [summary]
 - Files analyzed: [list with line ranges]
-- Subagents used: [list with correlation IDs]
+- Subagents used: [list with tasks delegated]
 - Execution flows traced: [list of functions/methods analyzed]
-</answer>
+
+## Audit Trail
+
+### Target Discovery
+
+**Target Identification Method**: [user-provided | codebase-locator | git diff]
+
+**Files Discovered**:
+- `path/to/file.ext` (XXX lines)
+
+**Scope**: [single function | module | feature]
+
+### Baseline Verification
+
+**Test Suite Status**:
+- Command: [language-specific test command]
+- Result: [X tests passed, Y failed]
+- Coverage: [if available]
+
+**Behavioral Baseline**:
+- [What does the code currently do? What SHOULD it do?]
+- [Any discrepancies between tests and expected behavior?]
+
+### Logic Analysis
+
+**Analysis Method**:
+- Read files: [list with line ranges]
+- Delegation: [codebase-analyzer calls with targets]
+- Categories examined: [control flow, data handling, etc.]
+
+**Files Read** (with line ranges):
+- `path/to/file.ext:1-150`
+
+**Analysis Findings by Category**:
+
+#### Control Flow Analysis
+[List findings with file:line references]
+
+#### Data Handling Analysis
+[List findings with file:line references]
+
+#### Concurrency Analysis
+[List findings or "N/A - single-threaded code"]
+
+#### Error Handling Analysis
+[List findings with file:line references]
+
+#### Algorithm Correctness Analysis
+[List findings with file:line references]
+
+#### Boundary and Edge Cases Analysis
+[List findings with file:line references]
+
+#### State Management Analysis
+[List findings with file:line references]
+
+**Issue Counts by Category**:
+- Control Flow: X issues
+- Data Handling: Y issues
+- Concurrency: Z issues
+- Error Handling: W issues
+- Algorithm: V issues
+- Edge Cases: U issues
+- State Management: T issues
+
+### Delegation Log
+
+**Subagent Invocations**:
+
+1. **codebase-analyzer** (comprehensive depth):
+   - Task: Trace execution path for [function/method]
+   - Response: [X execution steps, Y edge cases identified]
+   - Key findings: [summary with file:line references]
+
+2. **codebase-pattern-finder**:
+   - Task: Find error handling patterns in [scope]
+   - Response: [X variations found]
+   - Key findings: [inconsistencies noted]
+
+3. **web-search-researcher**:
+   - Task: Research known issues with [algorithm/pattern]
+   - Response: [confidence level + sources]
+   - Key findings: [vulnerabilities or edge cases]
+
+### Prioritization Reasoning
+
+**Critical Issues** (Data loss, security, crash):
+- [Issue description] -> LOGIC-XXX
+
+**High Priority Issues** (Incorrect results, silent failures):
+- [Issue description] -> LOGIC-XXX
+
+**Medium Priority Issues** (Performance, race conditions):
+- [Issue description] -> LOGIC-XXX
+
+**Low Priority Issues** (Defensive programming):
+- [Issue description] -> LOGIC-XXX
+
+**Synthesis Decisions**:
+- Grouped [related issues] into single LOGIC-XXX task
+- Deferred [issue] because [reason]
+- Prioritized [issue] over [other] due to [severity/impact]
 ```
 
-## Verification Commands for Planner
+For each finding, use this template in `## Improvement Plan (For Implementor)`:
 
-Since logic bugs are verified through tests, not linters, include these in implementation plans:
+The `command` in the **Verify** field must assert content. Judgment-heavy findings should use the literal `none — requires review` so the planner can lift the field verbatim into the implementation plan.
 
-```bash
-# Phase 1: Establish Baseline
-[language-specific-test-command]  # Should pass (or document failures)
-
-# Phase 2: After Each Fix
-[language-specific-test-command]  # Should still pass (regression check)
-
-# Phase 3: Final Verification
-[language-specific-test-command]  # All tests pass + new tests added
-[coverage-command]  # Coverage increased for fixed logic paths
+```markdown
+### LOGIC-001: [Issue Title]
+- **Priority**: Critical/High/Medium/Low
+- **Category**: Control Flow | Data Handling | Concurrency | Error Handling | Algorithm | Edge Cases | State Management
+- **File(s)**: `path/to/file.ext:line-line`
+- **Issue**: [What is wrong with the logic?]
+- **Evidence**:
+  ```[language]
+  [Code excerpt showing the bug]
+  ```
+- **Expected Behavior**: [What SHOULD happen?]
+- **Actual Behavior**: [What DOES happen?]
+- **Recommendation**: [Specific fix - be precise]
+- **Test Case**: [Specific input that triggers the bug OR new test to add]
+- **Done When**: [Observable condition that signals the issue is fixed]
+- **Verify**: [`command` → expected result, or `none — requires review`]
 ```
 
 ## Common Bug Patterns Reference
