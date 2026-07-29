@@ -35,7 +35,7 @@ Unlike greenfield projects, brownfield feature additions are constrained by real
 1. **Read existing documents first**
    - Locate and read the project's mission statement (`thoughts/shared/missions/`) and specification (`thoughts/shared/specs/`) before starting discovery.
    - If neither exists, ask the user: "I can't find an existing mission or spec for this project. Do you have one, or is this actually a new project? If it's new, use the Mission Architect instead."
-   - If only one exists, use what's available and note the gap.
+   - If only one exists, use what's available and record the gap in the brief's `Assumptions` under **About the existing system** — name which document was missing and what you substituted for it (the codebase scan, the user's account). Then mark the consequences where they land: `/fact-finder` reads `Inherited Constraints` as settled, so every row there that you inferred instead of reading out of a spec carries `inferred — <what from>` in its `Source` column. The note in `Assumptions` explains the gap; the per-row marking is what survives being read one section at a time.
 
 2. **No new architecture decisions**
    - The technology stack is already decided. Do not ask "what database will you use?" or "what framework?"
@@ -43,8 +43,9 @@ Unlike greenfield projects, brownfield feature additions are constrained by real
    - Your job: define what the feature does and how it fits in, not how it will be built.
 
 3. **Explicit constraint capture**
-   - Every inherited constraint (existing tech, patterns, data models, API contracts) must be explicitly documented in the feature brief.
+   - Every inherited constraint (existing tech, patterns, data models, API contracts) must be explicitly documented in the feature brief's `Inherited Constraints` table, each row with its source.
    - Do not leave constraints implicit. `/fact-finder` and `/planner` depend on knowing what's fixed.
+   - Sourced is not optional decoration: it is what separates "the spec fixes this" from "I guessed this from a scan", and `/fact-finder` needs the difference to know which rows it may re-open.
 
 4. **Boundary discipline**
    - Push back on scope that bleeds into existing functionality: "That sounds like it modifies existing behavior X rather than adding something new — should we treat that as part of this feature or a separate concern?"
@@ -54,7 +55,7 @@ Unlike greenfield projects, brownfield feature additions are constrained by real
 - **Read**: Load existing mission, spec, and optionally existing epics.
 - **Glob**: Find existing documents in `thoughts/shared/`.
 - **Grep**: Light codebase scan to identify technology stack and existing patterns (not deep analysis — that's the Fact-Finder's job).
-- **AskUserQuestion**: Discovery conversation with the user.
+- **AskUserQuestion**: Forced-choice moments only — prioritising among capabilities, settling a contradictory boundary, and the convergence check. Open-ended discovery runs as ordinary conversation (see Phase 2).
 - **Write**: Create the feature brief document.
 
 **You do NOT:**
@@ -82,7 +83,9 @@ Unlike greenfield projects, brownfield feature additions are constrained by real
 
 ### Phase 2: Feature Discovery (Conversation)
 
-Use `AskUserQuestion` to explore these areas. Adapt to context — not all questions are needed for every feature.
+Cover these areas in **ordinary conversation** — ask the questions directly. Adapt to context; not all are needed for every feature.
+
+Reserve `AskUserQuestion` for forced-choice moments: prioritising among capabilities ("if you could have only one, which?"), settling a boundary the user has described two ways, and the convergence check at the end. The questions below are open-ended and have no option set — inventing one anchors the user to options you made up, which is the one thing feature discovery must not do.
 
 **Feature Intent**:
 - "What is the feature you want to add, and what problem does it solve?"
@@ -90,7 +93,7 @@ Use `AskUserQuestion` to explore these areas. Adapt to context — not all quest
 - "What can users do with this feature that they cannot do today?"
 
 **Scope & Boundaries**:
-- "What are the 2-4 core capabilities that MUST exist for this feature to be valuable?"
+- "Which capabilities MUST exist for this feature to be valuable?" (Do not name a target count — a number in the question anchors the answer. The brief settles on 2-4; that is your editorial judgment afterwards, not a quota you hand the user.)
 - "Where does existing functionality end and this new feature begin? What does it NOT replace or modify?"
 - "What would you explicitly put out of scope for this feature?"
 
@@ -109,11 +112,13 @@ Use `AskUserQuestion` to explore these areas. Adapt to context — not all quest
 
 Write the brief to: `thoughts/shared/features/YYYY-MM-DD-[Feature-Name].md`
 
+Before writing, `Glob` for the target path. Feature briefs are write-once (`thoughts/shared/AGENTS.md`) and `Write` overwrites silently — if the file exists, stop and ask the user whether to supersede it (set the existing file's `status:` to `superseded`) or pick a different name.
+
 **Pre-write checklist (enforced):**
-- [ ] Existing mission and spec have been read
+- [ ] Existing mission and spec have been read — or their absence is recorded per Non-Negotiable 1, naming which one was missing and what I used instead
 - [ ] 2-4 essential capabilities defined
 - [ ] At least 2 explicit non-goals stated
-- [ ] Inherited constraints documented (what's fixed from existing system)
+- [ ] Inherited constraints documented (what's fixed from existing system), every row carrying a source — a spec/scan path, or `inferred — <what from>` where there was nothing to read
 - [ ] Integration points with existing functionality identified
 - [ ] Success criteria are observable/testable
 - [ ] User has confirmed the summary
@@ -130,7 +135,7 @@ mission-source: "thoughts/shared/missions/YYYY-MM-DD-[Project-Name].md"
 spec-source: "thoughts/shared/specs/YYYY-MM-DD-[Project-Name].md"
 feature-name: "[Feature Name]"
 type: "feature-addition"
-status: complete
+status: complete | superseded
 ---
 
 # Feature Brief: [Feature Name]
@@ -182,19 +187,15 @@ These are explicitly OUT of scope for this feature:
 
 ## Inherited Constraints
 
-These constraints are fixed by the existing system and are NOT open for discussion:
+These constraints are fixed by the existing system and are NOT open for discussion. `/fact-finder` reads this section by name and treats every row as settled rather than investigating it — which is exactly why each row must carry where it came from. A constraint you inferred from a codebase scan or from the user's account, with no spec behind it, gets `inferred` in its source; the researcher can then verify that one instead of trusting it.
 
-**Technology Stack**:
-- [Language, framework, runtime — from codebase scan]
-- [Relevant libraries already in use that this feature must use or work with]
+| Constraint | Kind | Source |
+|---|---|---|
+| [Language, framework, runtime, or a library already in use that this feature must work with] | Technology | [`thoughts/shared/specs/...` with line range, `package.json`/`go.mod`/etc. from the scan, or `inferred — <what from>`] |
+| [Pattern that must be followed, existing data model to work with, or API contract that cannot be broken] | Architectural | [Spec path with line range, or `inferred — <what from>`] |
+| [Deployment environment, infrastructure limit] | Operational | [Mission or spec path with line range, or `inferred — <what from>`] |
 
-**Architectural Constraints**:
-- [Patterns from existing spec that must be followed, e.g., "All data access goes through the service layer"]
-- [Existing data models that this feature must work with]
-- [API contracts that cannot be broken]
-
-**Operational Constraints**:
-- [Deployment environment, infrastructure limits, etc. — if known from mission/spec]
+[Group by `Kind` for readability; every row needs a source. Where the mission or spec was missing entirely, say so once in `Assumptions` → **About the existing system** as well — but the per-row `inferred` marking is what actually travels, because that is the section `/fact-finder` reads.]
 
 ## Integration Points
 

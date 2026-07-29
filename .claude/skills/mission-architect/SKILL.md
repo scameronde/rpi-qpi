@@ -115,6 +115,7 @@ Mission architects typically do NOT need citations (vision comes from user), but
    - **Constraints & Assumptions**:
      - "Are there any non-negotiable constraints? (e.g., must work offline, must scale to X users, must complete in Y seconds)"
      - "Are there any assumptions we're making about users, their environment, or their needs?"
+     - When this subsystem lives inside an existing codebase, also cover what it inherits from the host: "What does this have to fit into — which existing data does it work with, which parts of the system does it plug into, and what conventions there does it have to follow?" Ask in the user's own terms; you are recording what already exists, not choosing anything.
 
 3. **Brainstorming & Refinement**
    - Participate actively:
@@ -134,6 +135,8 @@ Mission architects typically do NOT need citations (vision comes from user), but
 
 Before writing, `Glob` for the target path. Mission statements are write-once (`thoughts/shared/AGENTS.md`) and `Write` overwrites silently — if the file exists, stop and ask the user whether to supersede it (set the existing file's `status:` to `superseded`) or pick a different name.
 
+**When there is a host system, resolve its spec path before you write the `Host system` line.** `Glob` `thoughts/shared/specs/` and confirm the host system's spec is actually there. Most host systems predate this pipeline and have no spec at all — write `no spec` rather than a plausible-looking path, because `/specifier` globs whatever you write and a path that resolves to nothing is worse than an honest absence. When there is no spec, your `Host system` line is the *only* record of what the subsystem inherits, so make it carry the detail: name the data it works with, the integration points, and the conventions it must follow. `/specifier` cannot read code and will source its `Inherited Constraints` from this line alone.
+
 Use the exact format below.
 
 ## Output Format (STRICT)
@@ -146,7 +149,7 @@ Required structure:
 ---
 date: YYYY-MM-DD
 project-name: "[Project Name]"
-type: "greenfield-project"
+type: "greenfield-project" | "subsystem-in-existing-system"   # the latter whenever the Host system constraint below is present
 status: complete | superseded
 ---
 
@@ -210,7 +213,7 @@ From a user/stakeholder perspective, success looks like:
 **Constraints (Non-Negotiable)**:
 - [Any hard limits: scale, performance, compatibility, compliance, etc.]
 - [Note: These are "MUST" constraints, not "should" preferences]
-- **Host system** (required when this subsystem lives inside an existing codebase; omit the line entirely when it does not): [Which system it lives in, the path to that system's spec in `thoughts/shared/specs/`, and what it inherits — existing data model, established patterns, integration points. `/specifier` reads this and then reads that spec before settling architecture, so an omission here is an architecture decided in ignorance of the system it has to fit.]
+- **Host system** (required when this subsystem lives inside an existing codebase; omit the line entirely when it does not): [Which system it lives in, the path to that system's spec in `thoughts/shared/specs/` — or `no spec` when there is none — and what it inherits: existing data model, established patterns, integration points. `/specifier` reads this before settling architecture, so an omission here is an architecture decided in ignorance of the system it has to fit.]
 
 ## Open Questions for Specifier
 
@@ -248,6 +251,7 @@ Questions that emerged during discovery which the Specifier must resolve or expl
 - [ ] I can list what is explicitly OUT of scope — typically 3-7, and at least one.
 - [ ] My success criteria are measurable from a user perspective, and every essential capability is covered by at least one.
 - [ ] I have NOT discussed technology, architecture, or implementation — the `Host system` constraint is the sole exception, and naming what the subsystem inherits there is required, not a violation.
+- [ ] `type:` and the `Host system` line agree: either `subsystem-in-existing-system` **and** the line is present, or `greenfield-project` **and** the line is absent. Never one without the other — `/specifier` cross-checks the two, and the pair is the only thing that lets it tell a genuinely standalone project from a mission that dropped the line.
 - [ ] The user has confirmed my understanding of their vision.
 
 If any checkbox is unchecked, continue the conversation.

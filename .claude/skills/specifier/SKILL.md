@@ -97,7 +97,14 @@ Specifiers derive specifications from missions but may reference architectural p
    - Extract from it: existing component boundaries, the established data model, integration points, and the interaction posture already chosen (event-driven vs request-driven).
    - These are **fixed**. Record each one in `Inherited Constraints` — that section is what `/epic-planner` and `/fact-finder` read, and a constraint recorded anywhere else does not travel. Your architecture must fit inside them, not propose alternatives to them. Where you cannot fit, say so in `Design Decisions` and raise it in `Open Questions for Epic Planner` — do not quietly design a system that contradicts the one it has to live in.
    - This does not breach the no-technology rule: a host spec is itself technology-agnostic, so it gives you boundaries without naming a stack.
-   - If the mission has no **Host system** line, skip this step.
+   - **When the host system has no spec.** Expect this: a codebase that never ran `/specifier` has nothing in `thoughts/shared/specs/`, and the host system is usually older than this pipeline. The **Host system** line still stands — what changes is where its content comes from. Do not treat the missing file as "no host system", and do not proceed as if the architecture were unconstrained.
+     - Work from what the mission's **Host system** line itself records (data model, established patterns, integration points) and record each item in `Inherited Constraints`, sourced to the mission line rather than to a host spec.
+     - Say plainly what that costs: the mission line is a summary written without reading the code, so it is thinner than a spec and may be wrong. Record the gap in `Assumptions` and put the specific things you could not resolve into `Open Questions for Epic Planner`, so they become research questions rather than silent guesses. `/fact-finder` is the stage that can actually read the codebase — you cannot, and must not start.
+     - If the **Host system** line is itself too thin to constrain the architecture at all — you cannot tell what the data model or the integration points are — stop and tell the user, and recommend either refining the mission with `/mission-architect` or writing a spec for the host system first. Guessing an architecture for a system you know nothing about is worse than pausing.
+   - **When the mission has no Host system line at all, resolve that before writing `None`.** The line is *omitted* when there is no host system, so its absence on its own is ambiguous: it means either a genuinely standalone project or a mission that should have carried the line and did not. You cannot tell those apart from the missing line alone, and you cannot look — you do not read code. Two steps:
+     1. **Cross-check the mission's `type:`.** `subsystem-in-existing-system` with no `Host system` line is a contradiction inside one document — the mission is incomplete. Stop and recommend refining it with `/mission-architect` to add the line. `greenfield-project` with no line is consistent; go to step 2 anyway, because the mission may predate the `type:` values.
+     2. **Ask the user once, plainly**: "This mission records no host system. Is this a standalone new codebase, or does it live inside an existing system?" Standalone → skip this step and write `None` in `Inherited Constraints`. Inside an existing system → stop and send the mission back to `/mission-architect` for the `Host system` line.
+   - In neither case substitute the user's chat answer for the missing line. `Inherited Constraints` cites its sources, and a constraint whose source is a remark in an unrecorded conversation cannot be traced by `/epic-planner` or `/fact-finder`.
 
 ### Phase 2: Specification Synthesis
 
@@ -119,6 +126,8 @@ When a host system's spec was loaded in Phase 1, these are not open decisions �
 
 Write the specification to: `thoughts/shared/specs/YYYY-MM-DD-[Project-Name].md`
 
+Before writing, `Glob` for the target path. Specs are write-once (`thoughts/shared/AGENTS.md`) and `Write` overwrites silently. A spec is worse to clobber than most artifacts, because the epics already derived from it stay behind and keep citing it by line range — so a silent rewrite leaves `/fact-finder` reading constraints and components that the current spec no longer contains. If the file exists, stop and ask the user whether to supersede it (set the existing file's `status:` to `superseded`, and say that any epics derived from it need re-deriving) or to pick a different name.
+
 ## Output Format (STRICT)
 
 File: `thoughts/shared/specs/YYYY-MM-DD-[Project-Name].md`
@@ -130,7 +139,7 @@ Required structure:
 date: YYYY-MM-DD
 mission-source: "thoughts/shared/missions/YYYY-MM-DD-[Project-Name].md"
 project-name: "[Project Name]"
-type: "greenfield-project"
+type: "greenfield-project" | "subsystem-in-existing-system"   # copy the mission's value
 status: complete | superseded
 ---
 
@@ -296,11 +305,11 @@ For each essential capability from the mission, define WHAT must be true (observ
 
 ## Inherited Constraints
 
-What the host system fixes for this subsystem — not choices made here. `/epic-planner` carries the entries that apply to each epic into that epic's own `## Inherited Constraints`, and `/fact-finder` treats them as fixed rather than investigating them. Required — write `None` when there is no host system.
+What the host system fixes for this subsystem — not choices made here. `/epic-planner` carries the entries that apply to each epic into that epic's own `## Inherited Constraints`, and `/fact-finder` treats them as fixed rather than investigating them. Required — write `None` only when the mission named no host system. A host system with no spec still produces entries here; what changes is the source.
 
 | Constraint | Source | What it forbids or forces |
 |---|---|---|
-| [Existing component boundary, data model, integration point, or interaction posture] | [`thoughts/shared/specs/...` of the host system, with line range] | [What this rules out for the new subsystem, or what it obliges] |
+| [Existing component boundary, data model, integration point, or interaction posture] | [`thoughts/shared/specs/...` of the host system, with line range — or the mission's `Host system` line when that system has no spec, which marks the entry as inherited from a summary rather than verified against one] | [What this rules out for the new subsystem, or what it obliges] |
 
 ## Assumptions & Design Decisions
 
@@ -324,6 +333,8 @@ Every entry from the mission's "Open Questions for Specifier", with its disposit
 ## Open Questions for Epic Planner
 
 Questions that emerged during specification which the Epic Planner must resolve or carry forward. `/epic-planner` reads this section by name and records the disposition of every entry, so the section is **required** — write `None` when there are none rather than omitting it.
+
+- [Question about decomposition, sequencing, or a constraint you could not resolve here]
 
 ## Traceability Matrix
 
@@ -378,7 +389,10 @@ stateDiagram-v2
 - [ ] I have defined acceptance criteria that are testable and trace back to the mission.
 - [ ] Every entry from the mission's "Open Questions for Specifier" appears in my "Mission Open Questions (Resolved / Deferred)" table with a disposition — none silently dropped.
 - [ ] My "Open Questions for Epic Planner" section is present, reading `None` if there are none.
-- [ ] If the mission named a host system, I read its spec, recorded every constraint it fixes in `Inherited Constraints`, and my architecture fits the boundaries, data model and interaction posture established there — or I have recorded the mismatch in `Design Decisions` and raised it for the Epic Planner.
+- [ ] My `Inherited Constraints` section is present, reading `None` only when the mission named no host system — and where the mission named none, I asked the user whether the project is standalone rather than assuming it from the missing line.
+- [ ] My `type:` matches the route the mission took: `subsystem-in-existing-system` when it named a host system, `greenfield-project` when it did not.
+- [ ] If the mission named a host system and that system has a spec, I read it, recorded every constraint it fixes in `Inherited Constraints`, and my architecture fits the boundaries, data model and interaction posture established there — or I have recorded the mismatch in `Design Decisions` and raised it for the Epic Planner.
+- [ ] If the mission named a host system that has **no** spec, I sourced the constraints to the mission's `Host system` line instead, recorded the thinness of that source in `Assumptions`, and pushed what I could not resolve into `Open Questions for Epic Planner`.
 
 If any checkbox is unchecked, revise the spec before finalizing.
 

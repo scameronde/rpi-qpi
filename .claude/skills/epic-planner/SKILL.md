@@ -35,9 +35,10 @@ Your output is a set of **Epic Documents** that break down the specification int
    - Right size: "Project Creation and Management" (3-7 related stories)
    - Rule of thumb: An epic should take 1-3 research reports + 1-5 implementation plans.
 
-4. **Include Three Critical Sections**
+4. **Include Four Critical Sections**
    Each epic MUST include:
    - **Research Questions for Fact-Finder**: What needs to be discovered in the codebase or external docs?
+   - **Inherited Constraints**: What the host system already fixes, so `/fact-finder` does not investigate a settled question. `None` when there is no host system — but the section is never absent.
    - **Acceptance Criteria for Planner**: How will we know this epic is complete (from a user/system perspective)?
    - **Dependencies**: What other epics must be completed first?
 
@@ -79,8 +80,10 @@ Epic planners primarily reference specifications and missions to ensure alignmen
      - [ ] Architecture (components/workflows)
      - [ ] Data model
      - [ ] Acceptance criteria
+     - [ ] Inherited Constraints (may read "None", but the section must be present)
      - [ ] Open Questions for Epic Planner (may read "None", but the section must be present)
    - If incomplete, stop and tell the user which sections are missing, and recommend refinement with /specifier. Do not use AskUserQuestion to deliver a message — it is for choosing between options, not for informing.
+   - **A missing `## Inherited Constraints` is not the same as one reading `None`.** A spec written before that section existed simply has nothing there, and treating that silence as "no host system" is how a subsystem gets researched as if it were greenfield. If the section is absent, ask the user which it is: no host system (proceed, and every epic's section reads `None`), or a spec that predates the section (send it back to `/specifier`).
 
 3. **Load Mission Context (Optional but Recommended)**
    - Read the mission statement referenced in the spec.
@@ -107,7 +110,8 @@ For each identified epic:
    - Which components/workflows belong to this epic?
    - Which data model entities are involved?
    - Which acceptance criteria from the spec apply?
-   - Which entries from the spec's `## Inherited Constraints` apply to this epic? Copy each into this epic's own `## Inherited Constraints` with its source. `/fact-finder` reads that section by name and treats what it finds as fixed, so an entry left only in the spec is one the researcher will investigate from scratch. Write `None` when the spec's section reads `None`.
+   - Which entries from the spec's `## Inherited Constraints` apply to this epic? Copy each into this epic's own `## Inherited Constraints` with its source, preserving that source verbatim — including when it is the mission's `Host system` line rather than a host spec, which marks the constraint as inherited from a summary nobody verified against code. Do not upgrade such a source to look like a spec citation. `/fact-finder` reads that section by name and treats what it finds as fixed, so an entry left only in the spec is one the researcher will investigate from scratch. Write `None` when the spec's section reads `None`.
+   - **Then check that every spec constraint landed somewhere.** Walk the spec's table and confirm each row appears in at least one epic. A constraint that applies to no epic is not a constraint you may drop: it means either the decomposition misses the area it governs, or it sits above epic level (a system-wide rule no single epic owns). Both need a human decision, so **raise it with the user before you finish**, exactly as you would an orphaned open question — and then place it in whichever epic comes closest, or in every epic it bears on. `/fact-finder` only ever reads epics; a constraint that reaches no epic reaches nobody, and the researcher then investigates a settled question and may answer it differently than the host system already has.
    - Which entries from the spec's "Open Questions for Epic Planner" fall inside this epic? Every entry must end up in exactly one of three places — never dropped:
      - **Answered** in the epic's own text, where the decomposition settles it.
      - **Carried forward verbatim** into that epic's "Research Questions for Fact-Finder", under whichever subsection fits. `/fact-finder` reads that parent section by name (`.claude/skills/fact-finder/SKILL.md:575`), and it is the only forward channel out of this stage.
@@ -135,6 +139,8 @@ For each identified epic:
 
 Write ONE epic document per epic: `thoughts/shared/epics/YYYY-MM-DD-[Epic-Name].md`
 
+Before writing anything, `Glob` `thoughts/shared/epics/` for the whole set of target paths. Epics are write-once (`thoughts/shared/AGENTS.md`) and `Write` overwrites silently. You write a *set* of files, so a re-run with a shifted decomposition is the dangerous case: it silently overwrites the epics whose names happen to match and leaves the ones that no longer exist behind as orphans, and the surviving `dependencies:` lists then point at epic IDs from two different decompositions. If any target path already exists, stop and ask the user whether to supersede the previous decomposition (set every file of it to `status: superseded`, then write the new set) or to name the new epics differently. Never overwrite part of a set.
+
 ## Output Format (STRICT)
 
 File: `thoughts/shared/epics/YYYY-MM-DD-[Epic-Name].md`
@@ -147,7 +153,7 @@ date: YYYY-MM-DD
 spec-source: "thoughts/shared/specs/YYYY-MM-DD-[Project-Name].md"
 epic-name: "[Epic Name]"
 epic-id: "EPIC-001"
-status: ready-for-research
+status: ready-for-research | superseded
 dependencies: ["EPIC-XXX", "EPIC-YYY"] # or [] if none
 ---
 
@@ -221,7 +227,7 @@ What the host system fixes for this epic, copied from the spec's `## Inherited C
 
 | Constraint | Source | What it forbids or forces |
 |---|---|---|
-| [Existing component boundary, data model, integration point, or interaction posture] | [Spec section or host-system spec path with line range] | [What this rules out for this epic, or what it obliges] |
+| [Existing component boundary, data model, integration point, or interaction posture] | [Copied verbatim from the spec's row: a host-system spec path with line range, **or** the mission's `Host system` line when that system has no spec — the latter marks the entry as inherited from a summary rather than verified against one] | [What this rules out for this epic, or what it obliges] |
 
 ## Acceptance Criteria for Planner
 
@@ -377,7 +383,7 @@ flowchart TD
 - [ ] Each epic's stories cover its capability — typically 3-7, but a genuinely small epic may have fewer.
 - [ ] I have defined research questions that the Fact-Finder can answer.
 - [ ] Every entry from the spec's "Open Questions for Epic Planner" is answered in an epic, carried verbatim into an epic's "Research Questions for Fact-Finder", or raised with the user — none dropped.
-- [ ] Every entry from the spec's `## Inherited Constraints` that applies to an epic appears in that epic's own `## Inherited Constraints` with its source — or the spec's section read `None`.
+- [ ] Every row of the spec's `## Inherited Constraints` appears in at least one epic's own `## Inherited Constraints`, with its source copied verbatim — none dropped as "applies to no epic" without being raised with the user first. Or the spec's section read `None`.
 - [ ] I have defined acceptance criteria that the Planner can use.
 - [ ] I have identified dependencies between epics.
 - [ ] Each epic traces back to specific components/workflows in the spec.
