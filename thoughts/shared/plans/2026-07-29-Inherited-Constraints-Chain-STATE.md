@@ -2,8 +2,8 @@
 
 **Plan**: thoughts/shared/plans/2026-07-29-Inherited-Constraints-Chain.md
 **Current Wave**: 1
-**Current Task**: PLAN-002
-**Completed Tasks**: PLAN-001
+**Current Task**: PLAN-003
+**Completed Tasks**: PLAN-001, PLAN-002
 
 ## Task Checklist
 
@@ -11,7 +11,7 @@ Grouped by wave. Tasks within a wave run concurrently, but are checked off as ea
 
 ### Wave 1
 - [x] PLAN-001: specifier gains an Inherited Constraints section, step 4 points at it
-- [ ] PLAN-002: epic template carries inherited constraints, Phase 3 extracts them
+- [x] PLAN-002: epic template carries inherited constraints, Phase 3 extracts them
 - [ ] PLAN-003: fact-finder's intake table gains the Epic Inherited Constraints row
 
 ## Quick Verification

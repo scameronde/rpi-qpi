@@ -107,6 +107,7 @@ For each identified epic:
    - Which components/workflows belong to this epic?
    - Which data model entities are involved?
    - Which acceptance criteria from the spec apply?
+   - Which entries from the spec's `## Inherited Constraints` apply to this epic? Copy each into this epic's own `## Inherited Constraints` with its source. `/fact-finder` reads that section by name and treats what it finds as fixed, so an entry left only in the spec is one the researcher will investigate from scratch. Write `None` when the spec's section reads `None`.
    - Which entries from the spec's "Open Questions for Epic Planner" fall inside this epic? Every entry must end up in exactly one of three places — never dropped:
      - **Answered** in the epic's own text, where the decomposition settles it.
      - **Carried forward verbatim** into that epic's "Research Questions for Fact-Finder", under whichever subsection fits. `/fact-finder` reads that parent section by name (`.claude/skills/fact-finder/SKILL.md:575`), and it is the only forward channel out of this stage.
@@ -213,6 +214,14 @@ These questions should be answered before planning implementation:
 - [ ] [Question about compatibility, e.g., "Does the existing session system support multi-device login?"]
 
 **Output Expected**: Fact report in `thoughts/shared/facts/YYYY-MM-DD-[Topic].md` — `/fact-finder` names its report after the research topic, not after the epic, so do not expect the epic name in the filename.
+
+## Inherited Constraints
+
+What the host system fixes for this epic, copied from the spec's `## Inherited Constraints` and narrowed to what applies here. `/fact-finder` treats these as fixed rather than investigating them, so this section is the counterpart of the research questions above: that one says what to find out, this one says what is already settled. Required — write `None` when there is no host system.
+
+| Constraint | Source | What it forbids or forces |
+|---|---|---|
+| [Existing component boundary, data model, integration point, or interaction posture] | [Spec section or host-system spec path with line range] | [What this rules out for this epic, or what it obliges] |
 
 ## Acceptance Criteria for Planner
 
@@ -368,6 +377,7 @@ flowchart TD
 - [ ] Each epic's stories cover its capability — typically 3-7, but a genuinely small epic may have fewer.
 - [ ] I have defined research questions that the Fact-Finder can answer.
 - [ ] Every entry from the spec's "Open Questions for Epic Planner" is answered in an epic, carried verbatim into an epic's "Research Questions for Fact-Finder", or raised with the user — none dropped.
+- [ ] Every entry from the spec's `## Inherited Constraints` that applies to an epic appears in that epic's own `## Inherited Constraints` with its source — or the spec's section read `None`.
 - [ ] I have defined acceptance criteria that the Planner can use.
 - [ ] I have identified dependencies between epics.
 - [ ] Each epic traces back to specific components/workflows in the spec.
