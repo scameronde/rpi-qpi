@@ -177,6 +177,7 @@ All three servers are **remote** — declared in the root `.mcp.json`, no local 
 .mcp.json                # Remote MCP server declarations
 scripts/build-plugin.sh  # .claude/ + .mcp.json → dist/orbit/
 
+CHANGELOG.md             # Release notes, one entry per git tag (see Release Notes below)
 ORBIT-V4-CONCEPT.md      # Draft rearchitecture — NOT current state, see below
 ORBIT-V4-OKF-CONVENTION.md
 
@@ -204,6 +205,12 @@ State lives in a sibling file, `<plan>-STATE.md`. The orchestrator — never a s
 **The two files' frontmatter has two different writers.** A plan carries six keys (`date`, `planner`, `ticket`, `status`, `fact-source`, `upstream-artifact`) and `/planner` owns all of them. A STATE file carries three (`date`, `plan`, `status`); `/planner` stamps `status: in-progress` at creation and never touches it again, and `/implement` is the **sole** writer that flips it to `complete`, in the same step where it sets `**Current Task**: Complete` — after the acceptance checks pass, not before. A run that skips the flip leaves a finished plan claiming to still be in progress.
 
 STATE's `plan:` frontmatter field and its `**Plan**:` body line hold the same path deliberately: `/implement`'s resume path parses the body by bold key, so the bold line stays and the frontmatter field only makes the same link machine-readable. Write the path in both.
+
+## Release Notes
+
+`CHANGELOG.md` at the repo root follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/): one `## [tag] - YYYY-MM-DD` section per git tag, newest first, with `Added`/`Changed`/`Fixed`/`Removed` subsections summarizing that release's commits rather than listing them verbatim. An `## [Unreleased]` section at the top holds anything merged since the last tag. Compare links live at the bottom of the file, one per tagged version, pointing at `github.com/scameronde/rpi-qpi/compare/`.
+
+Version tags up to `V3.3.0` predate today's naming — the project was `RPIQR`/`RPIQPI` before being renamed `ORBIT` at `V3.3.0` — and were not cut under strict SemVer discipline; `CHANGELOG.md`'s intro note explains the ordering. Cutting a new tag means adding its section to `CHANGELOG.md` and moving anything already logged under `Unreleased` into it.
 
 ## DOX Protocol
 
