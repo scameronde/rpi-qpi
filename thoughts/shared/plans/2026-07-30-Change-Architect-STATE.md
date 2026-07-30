@@ -1,14 +1,14 @@
 ---
 date: 2026-07-30
 plan: "thoughts/shared/plans/2026-07-30-Change-Architect.md"
-status: in-progress
+status: complete
 ---
 
 # State: Change-Architect
 
 **Plan**: thoughts/shared/plans/2026-07-30-Change-Architect.md
-**Current Wave**: 2
-**Current Task**: PLAN-013 — awaiting the final-wave acceptance checks
+**Current Wave**: 2 (final)
+**Current Task**: Complete
 **Completed Tasks**: PLAN-001 … PLAN-013
 
 ## Task Checklist
@@ -36,3 +36,5 @@ Grouped by wave. Tasks within a wave run concurrently, but are checked off as ea
 - Plan created: 2026-07-30
 - Total tasks: 13 across 2 waves
 - Approval Gate: triggers 1, 2 and 4 applied; all three questions answered 2026-07-30 and recorded in the plan. Cleared for execution.
+- Acceptance checks run 2026-07-30: all twelve `## Acceptance Criteria` hold. Not a QA plan (`fact-source:` is under `facts/`), so no `## Baseline Verification` block applies. `upstream-artifact:` names a path under `features/`, so the epic verification step is a skip per the rule PLAN-012 installed.
+- Five fix rounds were needed. Every defect was caught by reading the diff, none by a `Verify:` command — all thirteen passed on first run.
