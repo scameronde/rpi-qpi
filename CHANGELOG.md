@@ -13,7 +13,12 @@ Entries are backfilled from git history; each links to its tag on GitHub.
 
 ## [Unreleased]
 
-No commits yet since [V4.0.1](#v401---2026-07-30).
+### Added
+- `CHANGELOG.md`, backfilled from git tag history, plus a Release Notes section in `CLAUDE.md` documenting the convention.
+
+### Fixed
+- Stale `ORBIT-V4-*` references in `CLAUDE.md`, left over after `f2f3a0f` renamed those drafts to `ORBIT-V5-*`.
+- `thoughts/shared/{facts,plans,qa}/AGENTS.md` now caveat that most (or, for `plans/`, all) of their existing artifacts predate the frontmatter/section contract those files describe, so the legacy corpus isn't misread as non-conforming.
 
 ## [V4.0.1] - 2026-07-30
 
