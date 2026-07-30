@@ -95,19 +95,25 @@ git show cab454b^:dist/orbit/README.md
 
 ### Configuration
 
-`.mcp.json` declares three remote MCP servers and needs no local setup. `crawl4ai` and `searxng` point at hosted VIER instances and require no credentials. `context7` needs an API key, free from [Context7](https://context7.com/), supplied through the environment:
+`.mcp.json` declares three remote MCP servers and needs no local build — but it holds no endpoints of its own. Both VIER endpoints and the Context7 key are interpolated from the environment:
 
 ```json
-"context7": {
-  "type": "http",
-  "url": "https://mcp.context7.com/mcp",
-  "headers": {
-    "CONTEXT7_API_KEY": "${CONTEXT7_API_KEY}"
-  }
+"crawl4ai": {
+  "type": "streamable-http",
+  "url": "${CRAWL4AI_MCP_URL}"
 }
 ```
 
-Put the key in a gitignored `.env` as `CONTEXT7_API_KEY=...`. Without it, only library-documentation lookups degrade.
+Copy `.env.example` to the gitignored `.env` and fill it in:
+
+```bash
+cp .env.example .env
+```
+
+- `CRAWL4AI_MCP_URL`, `SEARXNG_MCP_URL` — hosted VIER instances, no credentials needed; the example file carries the current values.
+- `CONTEXT7_API_KEY` — free from [Context7](https://context7.com/).
+
+Without a `.env` no MCP server resolves, so web crawling, search and library-documentation lookups are all unavailable.
 
 ## Commands
 

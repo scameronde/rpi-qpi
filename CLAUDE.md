@@ -156,11 +156,11 @@ All three servers are **remote** — declared in the root `.mcp.json`, no local 
 
 | Server | Tool(s) | Endpoint | Notes |
 |---|---|---|---|
-| `crawl4ai` | `crawl4ai` | `mcp.vier.services/crawl4ai-mcp` | Web crawling: crawl, markdown, screenshot modes |
-| `searxng` | `searxng_search` | `mcp.vier.services/searxng-mcp` | Web search via hosted SearXNG |
+| `crawl4ai` | `crawl4ai` | `${CRAWL4AI_MCP_URL}` | Web crawling: crawl, markdown, screenshot modes |
+| `searxng` | `searxng_search` | `${SEARXNG_MCP_URL}` | Web search via hosted SearXNG |
 | `context7` | `resolve-library-id`, `query-docs` | `mcp.context7.com/mcp` | Library docs; needs a key |
 
-`.mcp.json` interpolates `${CONTEXT7_API_KEY}` from the gitignored `.env`. Without it only `context7` degrades; the VIER-hosted servers need no credentials.
+**Every endpoint but `context7`'s now comes from the environment.** `.mcp.json` interpolates three variables from the gitignored `.env` — `CRAWL4AI_MCP_URL`, `SEARXNG_MCP_URL` and `CONTEXT7_API_KEY` — so a clone without a `.env` starts with *no* working MCP server, not just degraded library lookups. The two VIER endpoints still need no credentials; they are externalised so the hosted instances can move without a commit. Current values live in `.env.example`.
 
 ## Directory Structure
 

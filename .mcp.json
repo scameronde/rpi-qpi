@@ -2,11 +2,11 @@
   "mcpServers": {
     "crawl4ai": {
       "type": "streamable-http",
-      "url": "https://mcp.vier.services/crawl4ai-mcp/mcp"
+      "url": "${CRAWL4AI_MCP_URL}"
     },
     "searxng": {
       "type": "streamable-http",
-      "url": "https://mcp.vier.services/searxng-mcp/mcp"
+      "url": "${SEARXNG_MCP_URL}"
     },
     "context7": {
       "type": "http",
