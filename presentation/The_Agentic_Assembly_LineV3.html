@@ -295,7 +295,7 @@
       <div>
         <div class="h3">Die Ausnahmeregel</div>
         <div class="p mt8" style="line-height:1.55;">
-          Die <span class="terra">/mission-architect</span> und <span class="terra">/feature-architect</span> Skills lesen kein Artefakt — sie <strong>starten die Kette</strong> aus einem Gespräch mit dem Nutzer.
+          Die <span class="terra">/mission-architect</span>, <span class="terra">/feature-architect</span> und <span class="terra">/change-architect</span> Skills lesen kein Artefakt — sie <strong>starten die Kette</strong> aus einem Gespräch mit dem Nutzer.
         </div>
         <div class="box mt12" style="font-size:0.8rem;">
           Alle anderen Skills folgen der Regel: <strong>Ein Eingabe-Artefakt rein, ein Ausgabe-Artefakt raus.</strong> Kein Skill überspringt einen Schritt. Das Ende der Kette ist kein Dokument — es ist <span class="terra"><strong>ausführbarer Code</strong></span>.
@@ -371,9 +371,20 @@
       <div class="entry-row">
         <div style="font-size:0.8rem; color:var(--blue-mid); font-weight:700; min-width:44px;">Start</div>
         <div class="arr">→</div>
-        <div class="entry-box">Kleine Änderung / Bug / QA<small>Lokalisierte Anpassung</small></div>
+        <div class="entry-box">Kleine Änderung / Bug<small>Lokalisierte Anpassung</small></div>
+        <div class="arr">→</div>
+        <div class="cmd-box">/change-architect</div>
+        <div class="arr">→</div>
+        <div class="result-box">Change Pipeline</div>
+      </div>
+      <div class="entry-row">
+        <div style="font-size:0.8rem; color:var(--blue-mid); font-weight:700; min-width:44px;">Start</div>
+        <div class="arr">→</div>
+        <div class="entry-box">QA / Audit<small>Qualitätsanalyse</small></div>
         <div class="arr">→</div>
         <div class="cmd-box">/fact-finder</div>
+        <div class="arr">→</div>
+        <div class="result-box">QA Pipeline</div>
       </div>
     </div>
     <div class="box-light mt20" style="font-size:0.8rem;">
