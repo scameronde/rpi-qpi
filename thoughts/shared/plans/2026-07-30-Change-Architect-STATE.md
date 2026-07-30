@@ -8,8 +8,8 @@ status: in-progress
 
 **Plan**: thoughts/shared/plans/2026-07-30-Change-Architect.md
 **Current Wave**: 1
-**Current Task**: PLAN-004
-**Completed Tasks**: PLAN-001, PLAN-002, PLAN-003
+**Current Task**: PLAN-005
+**Completed Tasks**: PLAN-001, PLAN-002, PLAN-003, PLAN-004
 
 ## Task Checklist
 
@@ -19,7 +19,7 @@ Grouped by wave. Tasks within a wave run concurrently, but are checked off as ea
 - [x] PLAN-001: Author the `/change-architect` skill on the entry-point family skeleton
 - [x] PLAN-002: Add the `/planner` Phase 1 admission gate and relativize always-write
 - [x] PLAN-003: Add `changes/` to `/fact-finder` and close the no-work-order branch
-- [ ] PLAN-004: Repoint both routing tables and the brownfield redirect script
+- [x] PLAN-004: Repoint both routing tables and the brownfield redirect script
 - [ ] PLAN-005: Update `/prototype`'s entry-point references and worktree blocklist
 - [ ] PLAN-006: Give `thoughts-locator` ten categories and matching output sections
 - [ ] PLAN-007: Add the fourth entry point to the SessionStart hook
