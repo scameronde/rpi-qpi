@@ -135,6 +135,7 @@ Put the key in a gitignored `.env` as `CONTEXT7_API_KEY=...`. Without it, only l
 | `dox-init` | Bootstrap a DOX `AGENTS.md` governance tree (idempotent) |
 | `dox-update` | Detect and regenerate stale `AGENTS.md` files |
 | `claude-code-extensions` | Reference for creating commands, skills, subagents, and MCP servers |
+| `/commit` | Add and commit all outstanding changes as logically grouped commits (user-invoked only) |
 ## Architecture
 
 ```
