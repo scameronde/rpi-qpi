@@ -19,17 +19,18 @@ Brownfield skips `/epic-planner`: decomposition into epics exists to split a who
 
 A feature that does need epic decomposition is a subsystem with its own mission — take the greenfield path instead. The test is both at once: its own value proposition, **and** several parallel streams. Either alone stays brownfield. On that route the mission records the host system as a constraint, which `/specifier` reads before settling architecture.
 
-**Small change or bug fix:**
+**Small change, bug fix, or maintenance:**
 ```
-/fact-finder → /planner → /implement
+/change-architect → /fact-finder → /planner → /implement
 ```
+The change brief is typed — `defect | enhancement | maintenance` — and a change needing more than one intended outcome belongs to `/feature-architect`.
 
 **Not sure it should be built at all:**
 ```
-/prototype → then one of the three paths above, on a "go" decision
+/prototype → then one of the four paths above, on a "go" decision
 ```
 
-Two orderings are load-bearing: `/fact-finder` must precede `/planner` (the planner needs a verified research report), and `/planner` must precede `/implement` (which needs a plan file).
+Three orderings are load-bearing: `/fact-finder` must precede `/planner` (the planner needs a verified research report), `/planner` must precede `/implement` (which needs a plan file), and every pipeline begins with a target artifact because `/planner` refuses to write a plan from a fact report whose `upstream-artifact:` is `none`.
 
 Each stage produces artifacts in `thoughts/shared/`, named `YYYY-MM-DD-Topic.md` — epics additionally carry their ID, `YYYY-MM-DD-EPIC-NNN-Topic.md`:
 
@@ -38,6 +39,7 @@ Each stage produces artifacts in `thoughts/shared/`, named `YYYY-MM-DD-Topic.md`
 | Prototype (optional) | `/prototype` | `thoughts/shared/prototypes/` |
 | Vision (greenfield) | `/mission-architect` | `thoughts/shared/missions/` |
 | Feature brief (brownfield) | `/feature-architect` | `thoughts/shared/features/` |
+| Change brief (small change) | `/change-architect` | `thoughts/shared/changes/` |
 | Specification | `/specifier` | `thoughts/shared/specs/` |
 | Epics | `/epic-planner` | `thoughts/shared/epics/` |
 | Facts | `/fact-finder` | `thoughts/shared/facts/` (QA mode: `thoughts/shared/qa/`) |
@@ -48,10 +50,11 @@ Every artifact opens with YAML frontmatter naming the artifact it came from — 
 
 ```
 mission ──▶ spec ──▶ epic ─┐
-feature brief ─────────────┴──▶ fact report ──▶ plan ──▶ STATE
+feature brief ─────────────┼──▶ fact report ──▶ plan ──▶ STATE
+change brief ──────────────┘
 ```
 
-Downstream stages read these fields rather than guessing: `/planner` copies the fact report's `upstream-artifact:` verbatim, and `/implement` uses that copy to find the epic whose verification plan it must run before closing out.
+Downstream stages read these fields rather than guessing: `/planner` copies the fact report's `upstream-artifact:` verbatim, and `/implement` uses that copy to find the epic whose verification plan it must run before closing out — but only when the path is under `epics/`; a path into `features/` or `changes/`, or the literal `none`, are skipped.
 
 A `status:` field describes the document — `complete`, `superseded`, or `ready-for-research` for an epic awaiting `/fact-finder`. Whether a plan has actually been *executed* is tracked separately, in its STATE file.
 
@@ -123,6 +126,7 @@ Without a `.env` no MCP server resolves, so web crawling, search and library-doc
 |---|---|
 | `/mission-architect` | Discover and articulate project vision (why + what, not how) — greenfield |
 | `/feature-architect` | Define a new feature within an existing system — brownfield |
+| `/change-architect` | Record the intent of a small change, bug fix, or maintenance work — brownfield, before research |
 | `/specifier` | Translate a mission statement into a technical specification |
 | `/epic-planner` | Decompose a spec into epics and user stories |
 | `/fact-finder` | Map the codebase or investigate a topic before planning |
