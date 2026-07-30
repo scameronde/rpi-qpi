@@ -8,15 +8,15 @@ status: in-progress
 
 **Plan**: thoughts/shared/plans/2026-07-30-Change-Architect.md
 **Current Wave**: 1
-**Current Task**: PLAN-001
-**Completed Tasks**: (none yet)
+**Current Task**: PLAN-002
+**Completed Tasks**: PLAN-001
 
 ## Task Checklist
 
 Grouped by wave. Tasks within a wave run concurrently, but are checked off as each one commits — not together at the end of the wave.
 
 ### Wave 1
-- [ ] PLAN-001: Author the `/change-architect` skill on the entry-point family skeleton
+- [x] PLAN-001: Author the `/change-architect` skill on the entry-point family skeleton
 - [ ] PLAN-002: Add the `/planner` Phase 1 admission gate and relativize always-write
 - [ ] PLAN-003: Add `changes/` to `/fact-finder` and close the no-work-order branch
 - [ ] PLAN-004: Repoint both routing tables and the brownfield redirect script
