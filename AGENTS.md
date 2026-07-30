@@ -62,10 +62,10 @@ An agentic engineering framework for Claude Code. Provides a full pipeline from 
 - Greenfield: `/mission-architect` → `/specifier` → `/epic-planner` → `/fact-finder` → `/planner` → `/implement`
 - Brownfield: `/feature-architect` → `/fact-finder` → `/planner` → `/implement` (a single feature is a single stream, so epic decomposition does not apply)
 - Brownfield subsystem: work with its own value proposition **and** several parallel streams takes the greenfield path instead, and its mission records the host system as a constraint. Either condition alone stays brownfield.
-- Small fix: `/fact-finder` → `/planner` → `/implement`
-- Optional entry point: `/prototype` → one of the three above, on a "go" decision
+- Small fix: `/change-architect` → `/fact-finder` → `/planner` → `/implement`
+- Optional entry point: `/prototype` → one of the four above, on a "go" decision
 
-**Key rule:** `/fact-finder` must precede `/planner`; `/planner` must precede `/implement`. See `CLAUDE.md` for full documentation.
+**Key rule:** Every route begins with a target artifact. `/fact-finder` must precede `/planner`; `/planner` must precede `/implement`. `/planner` refuses a `facts/`-sourced report carrying `upstream-artifact: none`, and QA-sourced plans are exempt. See `CLAUDE.md` for full documentation.
 
 ## Child DOX Index
 

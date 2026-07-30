@@ -8,8 +8,8 @@ status: in-progress
 
 **Plan**: thoughts/shared/plans/2026-07-30-Change-Architect.md
 **Current Wave**: 1
-**Current Task**: PLAN-010
-**Completed Tasks**: PLAN-001 … PLAN-009
+**Current Task**: PLAN-011
+**Completed Tasks**: PLAN-001 … PLAN-010
 
 ## Task Checklist
 
@@ -25,7 +25,7 @@ Grouped by wave. Tasks within a wave run concurrently, but are checked off as ea
 - [x] PLAN-007: Add the fourth entry point to the SessionStart hook
 - [x] PLAN-008: Update `CLAUDE.md` pipeline, tables, chain diagram and two citations
 - [x] PLAN-009: Update `README.md` pipeline, tables and chain diagram
-- [ ] PLAN-010: Register `changes/` in both governance files, without an `AGENTS.md`
+- [x] PLAN-010: Register `changes/` in both governance files, without an `AGENTS.md`
 - [ ] PLAN-011: Give the presentation a fourth entry row and split QA out
 
 ### Wave 2

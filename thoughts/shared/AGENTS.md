@@ -19,6 +19,7 @@ Persistent artifact store for all workflow pipeline outputs. Every stage of the 
 |---|---|---|
 | `missions/` | `/mission-architect` | `/specifier` |
 | `features/` | `/feature-architect` | `/fact-finder` |
+| `changes/` | `/change-architect` | `/fact-finder` |
 | `specs/` | `/specifier` | `/epic-planner` |
 | `epics/` | `/epic-planner` | `/fact-finder`, `/planner` |
 | `facts/` | `/fact-finder` | `/planner` |
@@ -26,9 +27,9 @@ Persistent artifact store for all workflow pipeline outputs. Every stage of the 
 | `prototypes/` | `/prototype` | `/feature-architect`, `/fact-finder` |
 | `plans/` | `/planner` | `/implement` |
 
-A feature brief goes straight to `/fact-finder`: brownfield skips `/epic-planner`, because epic decomposition exists to cut a whole specification into several parallel streams and one feature is one stream.
+A feature brief goes straight to `/fact-finder`: brownfield skips `/epic-planner`, because epic decomposition exists to cut a whole specification into several parallel streams and one feature is one stream. A change brief goes straight to `/fact-finder` for the same reason. A change brief carries no `## Inherited Constraints` section, so `/fact-finder` writes `None` in its own table.
 
-**Populated today:** `plans/`, `facts/`, `qa/`, `features/`, `epics/`. **Empty today:** `missions/`, `specs/`, `prototypes/`. File counts are not a contract — they change with every pipeline run, so `ls` is the authority, not this file.
+**Populated today:** `plans/`, `facts/`, `qa/`, `features/`, `epics/`. **Empty today:** `missions/`, `specs/`, `prototypes/`, `changes/`. File counts are not a contract — they change with every pipeline run, so `ls` is the authority, not this file.
 
 ## Work Guidance
 
@@ -49,4 +50,4 @@ A feature brief goes straight to `/fact-finder`: brownfield skips `/epic-planner
 - [qa/](qa/AGENTS.md) — QA review reports
 - [prototypes/](prototypes/AGENTS.md) — Prototype learnings notes (problem/built/outcome/decision)
 
-`missions/`, `specs/`, `epics/` and `features/` carry no `AGENTS.md` — this file is their contract.
+`missions/`, `specs/`, `epics/`, `features/` and `changes/` carry no `AGENTS.md` — this file is their contract.
