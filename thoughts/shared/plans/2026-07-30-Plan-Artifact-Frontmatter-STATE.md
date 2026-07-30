@@ -2,8 +2,8 @@
 
 **Plan**: thoughts/shared/plans/2026-07-30-Plan-Artifact-Frontmatter.md
 **Current Wave**: 2
-**Current Task**: PLAN-003
-**Completed Tasks**: PLAN-001, PLAN-002
+**Current Task**: PLAN-003 — committed, pending final-wave acceptance checks
+**Completed Tasks**: PLAN-001, PLAN-002, PLAN-003
 
 ## Task Checklist
 
@@ -14,7 +14,7 @@ Grouped by wave. Tasks within a wave run concurrently, but are checked off as ea
 - [x] PLAN-002: Mirror both headers into plans/AGENTS.md, align H1, add validation rules
 
 ### Wave 2
-- [ ] PLAN-003: Write STATE status, switch epic lookup to header in implement/SKILL.md
+- [x] PLAN-003: Write STATE status, switch epic lookup to header in implement/SKILL.md
 
 ## Notes
 - Plan created: 2026-07-30

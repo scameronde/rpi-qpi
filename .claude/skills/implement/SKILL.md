@@ -235,9 +235,9 @@ Once the last wave has committed, the run is not yet closed — perform these ac
 
 1. **Read the plan's `## Acceptance Criteria` section.** Confirm each item holds in the working tree. For each criterion, name the evidence (output of a command, a code location, or both). Report any criterion that does not hold rather than closing the run.
 2. **If the plan is a QA plan,** run the plan's `## Baseline Verification` command block and report the output.
-3. **If the plan's `## Inputs` cites an epic,** carry out the epic's `## Verification Plan (For Implementor)` section and report the result.
+3. **If the plan's `upstream-artifact:` frontmatter field names an epic,** read that epic and carry out its `## Verification Plan (For Implementor)` section, then report the result. The literal `upstream-artifact: none` means there is no work order — skip this check, exactly as `/planner` treats the same value (`planner/SKILL.md:481`). A value naming a feature brief in `thoughts/shared/features/` is also a skip: only epics carry that section.
 
-Set the STATE file's `**Current Task**` to `Complete` **only after** all applicable checks pass. A plan whose acceptance criteria do not all hold is a plan that did not finish — extend the work or escalate.
+Set the STATE file's `**Current Task**` to `Complete` **and** its frontmatter `status:` to `complete` — both **only after** all applicable checks pass. You are the sole writer of that `status:` field: the planner stamps `in-progress` when it creates the file and never touches it again, so a run that leaves it unflipped leaves a STATE file claiming to still be in progress. A plan whose acceptance criteria do not all hold is a plan that did not finish — extend the work or escalate.
 
 ## Model Selection
 
