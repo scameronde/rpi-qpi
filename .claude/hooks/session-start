@@ -7,24 +7,26 @@ context="You have workflow skills for software development available in this pro
 
 /mission-architect — New projects: discover vision, output mission statement to thoughts/shared/missions/. Use before /specifier. Also takes a new subsystem inside an existing codebase when it has its own value proposition AND needs several parallel streams — then its mission must record the host system as a constraint.
 /feature-architect — Brownfield features: define new feature in existing system, output feature brief to thoughts/shared/features/. Use before /fact-finder — brownfield skips /epic-planner, which exists to cut a whole spec into several streams. A feature needing that decomposition is a subsystem: send it to /mission-architect, never straight to /specifier.
+/change-architect — Small changes, bug fixes, and maintenance work: record the intended target state, output change brief to thoughts/shared/changes/. Use before /fact-finder. A change needing more than one intended outcome belongs to /feature-architect.
 /specifier — Transform mission statement into technical spec. Output to thoughts/shared/specs/. Use after /mission-architect.
 /epic-planner — Decompose spec into epics. Output to thoughts/shared/epics/. Use after /specifier.
-/fact-finder — Map the codebase for a spec or question. Spawns codebase agents for isolation. Output to thoughts/shared/facts/. Use before /planner.
+/fact-finder — Map the codebase for a spec or question. Spawns codebase agents for isolation. Output to thoughts/shared/facts/. Requires a target artifact upstream. Use before /planner — /planner refuses a plan from a facts report without one.
 /planner — Write a sequenced, evidence-based implementation plan. Output to thoughts/shared/plans/. Use after /fact-finder.
 /implement — Execute a plan wave-by-wave via concurrent subagents, with one combined spec-and-quality review gate per task. Use after /planner.
-/prototype — Optional. Spike a rough idea into disposable code in an isolated worktree and reach a go/no-go decision. Use before /mission-architect, /feature-architect or /fact-finder, when it is not yet clear whether the thing should be built at all.
+/prototype — Optional. Spike a rough idea into disposable code in an isolated worktree and reach a go/no-go decision. Use before /mission-architect, /feature-architect or /change-architect, when it is not yet clear whether the thing should be built at all.
 
 ## Workflow Ordering
 
 Greenfield:  /mission-architect → /specifier → /epic-planner → /fact-finder → /planner → /implement
 Brownfield:  /feature-architect → /fact-finder → /planner → /implement
 Subsystem:   own value proposition AND several parallel streams → take the greenfield path, mission records the host system as a constraint (either condition alone stays brownfield)
-Small fix:   /fact-finder → /planner → /implement
-Unsure:      /prototype → then one of the three above, on a 'go' decision
+Small fix:   /change-architect → /fact-finder → /planner → /implement
+Unsure:      /prototype → then one of the four above, on a 'go' decision
 
 ## Rules
 
 - Always run /fact-finder before /planner — planner needs a verified research report.
+- Every workflow route begins with a target artifact upstream of /fact-finder. /planner refuses a plan from a facts report with upstream-artifact none, unless QA-sourced.
 - Always run /planner before /implement — /implement needs a plan file.
 - Invoke skills proactively when the user's request matches the trigger condition.
 - When the user says 'research X', 'understand X', or 'investigate X' → invoke /fact-finder.
