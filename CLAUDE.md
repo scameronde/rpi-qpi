@@ -44,14 +44,15 @@ Brownfield skips `/epic-planner` on purpose: epic decomposition exists to cut a 
 
 A feature that turns out to need epic decomposition is not a feature — it is a subsystem carrying its own mission, and it goes through `/mission-architect` on the greenfield path instead. The test is **both** of these at once: it has its own value proposition (you can say why it should exist without reference to the host system's mission) **and** it needs several parallel streams. Either alone stays with `/feature-architect`. When that route is taken, the mission **must** record the host system in its `Constraints (Non-Negotiable)` section — that `Host system` line is what `/specifier` reads before settling architecture, and it is the only thing standing in for the inherited-constraint capture `/feature-architect` would otherwise have produced (`.claude/skills/mission-architect/SKILL.md`, "Projects, Not Features"; `.claude/skills/feature-architect/SKILL.md:12`).
 
-**Small change or bug fix:**
+**Small change, bug fix, or maintenance:**
 ```
-/fact-finder → /planner → /implement
+/change-architect → /fact-finder → /planner → /implement
 ```
+The change brief is typed — `defect | enhancement | maintenance` — and a change needing more than one intended outcome belongs to `/feature-architect`.
 
 **Explore first (optional, on a "go" decision):**
 ```
-/prototype → (mission-architect | feature-architect | fact-finder)
+/prototype → (mission-architect | feature-architect | change-architect)
 ```
 
 Each stage produces artifacts written to `thoughts/shared/`:
@@ -61,6 +62,7 @@ Each stage produces artifacts written to `thoughts/shared/`:
 | Prototype (optional) | `/prototype` | `thoughts/shared/prototypes/` |
 | Vision (greenfield) | `/mission-architect` | `thoughts/shared/missions/` |
 | Feature brief (brownfield) | `/feature-architect` | `thoughts/shared/features/` |
+| Change brief (small change) | `/change-architect` | `thoughts/shared/changes/` |
 | Spec | `/specifier` | `thoughts/shared/specs/` |
 | Epics | `/epic-planner` | `thoughts/shared/epics/` |
 | Facts | `/fact-finder` | `thoughts/shared/facts/` or `thoughts/shared/qa/` |
@@ -76,6 +78,7 @@ Every artifact opens with YAML frontmatter, and it is what makes the pipeline tr
 ```
 mission ──mission-source──▶ spec ──spec-source──▶ epic ─┐
 feature brief ──────────────────────────────────────────┤ upstream-artifact
+change brief ───────────────────────────────────────────┤
                                                         ▼
                                         fact report / QA report
                                                         │ fact-source
@@ -87,9 +90,11 @@ Each edge is labeled with the field the artifact it points *into* carries — so
 
 Three conventions hold across all of them:
 
-- **A back-pointer names the artifact upstream** — `mission-source:`, `spec-source:`, `fact-source:`, `plan:`, or the generic `upstream-artifact:` — always a repo-relative path or the literal `none`. `/planner` copies the fact report's `upstream-artifact:` **verbatim** rather than re-deriving it, and `/implement`'s closing acceptance step reads that copy to decide whether an epic's `## Verification Plan (For Implementor)` applies. `none`, or a path into `features/`, means skip it — only epics carry that section.
-- **`status:` describes the document, not the work** — `complete | superseded` for missions, specs, feature briefs and plans, `ready-for-research | superseded` for epics, bare `complete` for fact/QA reports and prototype notes. Whether a plan has been *executed* is tracked separately, in its STATE file's own `status: in-progress | complete`.
-- **The authoring skill signs its own field** — `fact-finder:`, `feature-architect:`, `planner:`. The only place a key set is actually asserted is the owning directory's `AGENTS.md` `## Verification` list (e.g. `thoughts/shared/plans/AGENTS.md:118-119`), so adding or renaming a key means editing the skill *and* that list.
+- **A back-pointer names the artifact upstream** — `mission-source:`, `spec-source:`, `fact-source:`, `plan:`, or the generic `upstream-artifact:` — always a repo-relative path or the literal `none`. `/planner` copies the fact report's `upstream-artifact:` **verbatim** rather than re-deriving it, and `/implement`'s closing acceptance step reads that copy to decide whether an epic's `## Verification Plan (For Implementor)` applies. The epic verification section applies exactly when the path is under `epics/`; a path into `features/` or `changes/`, and the literal `none`, are skips.
+- **`status:` describes the document, not the work** — `complete | superseded` for missions, specs, feature briefs, change briefs and plans, `ready-for-research | superseded` for epics, bare `complete` for fact/QA reports and prototype notes. Whether a plan has been *executed* is tracked separately, in its STATE file's own `status: in-progress | complete`.
+- **The authoring skill signs its own field** — `change-architect:`, `fact-finder:`, `feature-architect:`, `planner:`. The only place a key set is actually asserted is the owning directory's `AGENTS.md` `## Verification` list (e.g. `thoughts/shared/plans/AGENTS.md:120-121`), so adding or renaming a key means editing the skill *and* that list.
+
+A change brief carries no `## Inherited Constraints` section, so `/fact-finder` writes `None` in its own table — deliberate, so a later maintainer does not read the absence as drift.
 
 ## The pipeline definition is duplicated — change every copy
 
@@ -109,12 +114,13 @@ When `7790fda` removed `/epic-planner` from the brownfield path it updated the h
 |---|---|
 | `/mission-architect` | Discover project vision and goals via conversation (greenfield) |
 | `/feature-architect` | Define a new feature within an existing system (brownfield) |
+| `/change-architect` | Record the intent of a small change, bug fix, or maintenance work before research begins |
 | `/specifier` | Translate a mission into a technical specification |
 | `/epic-planner` | Decompose a spec into epics and user stories |
 | `/fact-finder` | Map the codebase relevant to a spec or question; also runs QA mode |
 | `/planner` | Produce a sequenced, evidence-based implementation plan |
 | `/implement` | Execute a plan wave-by-wave via subagents, one combined spec-and-quality review gate per task |
-| `/prototype` | Spike a rough idea into disposable, isolated code and reach a go/no-go/iterate decision (optional, before mission-architect/feature-architect/fact-finder — the prototype code itself is always discarded) |
+| `/prototype` | Spike a rough idea into disposable, isolated code and reach a go/no-go/iterate decision (optional, before mission-architect/feature-architect/change-architect — the prototype code itself is always discarded) |
 
 `/prototype` carries `model: opus` deliberately, and must never be given `context: fork`: it is interactive and owns a git worktree lifecycle, neither of which survives being run as a subagent. The rationale is recorded in its own frontmatter note.
 
