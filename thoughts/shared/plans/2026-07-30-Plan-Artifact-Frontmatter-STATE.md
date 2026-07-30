@@ -1,9 +1,9 @@
 # State: Plan Artifact Frontmatter
 
 **Plan**: thoughts/shared/plans/2026-07-30-Plan-Artifact-Frontmatter.md
-**Current Wave**: 1
-**Current Task**: PLAN-002
-**Completed Tasks**: PLAN-001
+**Current Wave**: 2
+**Current Task**: PLAN-003
+**Completed Tasks**: PLAN-001, PLAN-002
 
 ## Task Checklist
 
@@ -11,7 +11,7 @@ Grouped by wave. Tasks within a wave run concurrently, but are checked off as ea
 
 ### Wave 1
 - [x] PLAN-001: Invert the frontmatter section, add three header blocks to planner/SKILL.md
-- [ ] PLAN-002: Mirror both headers into plans/AGENTS.md, align H1, add validation rules
+- [x] PLAN-002: Mirror both headers into plans/AGENTS.md, align H1, add validation rules
 
 ### Wave 2
 - [ ] PLAN-003: Write STATE status, switch epic lookup to header in implement/SKILL.md

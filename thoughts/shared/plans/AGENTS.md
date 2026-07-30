@@ -19,7 +19,16 @@ Stores sequenced implementation plans produced by `/planner` and the STATE files
 **Plan document structure** (`.claude/skills/planner/SKILL.md` is the canonical template — read it there before writing a plan):
 
 ```markdown
-# Plan: <title>
+---
+date: YYYY-MM-DD
+planner: [identifier]
+ticket: "[Ticket]"
+status: complete | superseded
+fact-source: "thoughts/shared/facts/YYYY-MM-DD-[Topic].md"
+upstream-artifact: [path or none]
+---
+
+# [Ticket] Implementation Plan
 
 ## Inputs                        # fact report(s) used, epic / feature brief (or `none`), user request summary
 ## Verified Current State        # Fact / Evidence `path:line-line` / Excerpt
@@ -61,6 +70,12 @@ Two fields are load-bearing:
 **STATE file format** (`<plan-name>-STATE.md`, kept under ~40 lines):
 
 ```markdown
+---
+date: YYYY-MM-DD
+plan: "thoughts/shared/plans/YYYY-MM-DD-[Ticket].md"
+status: in-progress | complete
+---
+
 # State: [Ticket Name]
 
 **Plan**: thoughts/shared/plans/YYYY-MM-DD-[Ticket].md
@@ -84,7 +99,7 @@ Two fields are load-bearing:
 
 The checklist is grouped by wave — tasks in one wave have disjoint `File(s)` and run concurrently, but are checked off as each one commits, not together at the end of the wave. `**Current Wave**` is what `/implement` advances between waves; `**Current Task**` names the next unfinished task. Both read `Complete` once every task is checked off. STATE carries no copy of the plan's `Verify:` commands — the plan is the only place they live, so STATE cannot drift from it.
 
-**Update cadence:** `/implement` amends a STATE update into **every** commit it makes, covering exactly the task IDs in that commit — not batched to the wave boundary. This is what lets a run interrupted mid-wave resume without redoing finished work. STATE files written before this rule advance only at wave boundaries; `/implement`'s resume path detects and handles both kinds.
+**Update cadence:** `/implement` amends a STATE update into **every** commit it makes, covering exactly the task IDs in that commit — not batched to the wave boundary. This is what lets a run interrupted mid-wave resume without redoing finished work. At the point `/implement` writes `**Current Task**: Complete`, it also flips the STATE header's `status:` field from `in-progress` to `complete`. STATE files written before this rule advance only at wave boundaries; `/implement`'s resume path detects and handles both kinds.
 
 ## Work Guidance
 
@@ -100,3 +115,5 @@ The checklist is grouped by wave — tasks in one wave have disjoint `File(s)` a
 - Within any one wave, no path appears in more than one task's `File(s)` or `allowedAdjacentEdits`
 - Each plan has a sibling `-STATE.md`, and its `**Current Task**` names a task ID present in the plan, or `Complete`
 - Every task in the plan appears exactly once in the STATE checklist, under the wave its `Wave:` field names
+- A valid plan's frontmatter carries all six keys: `date`, `planner`, `ticket`, `status`, `fact-source`, `upstream-artifact`
+- A valid STATE file's frontmatter carries all three keys: `date`, `plan`, `status`
