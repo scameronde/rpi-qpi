@@ -44,6 +44,17 @@ Each stage produces artifacts in `thoughts/shared/`, named `YYYY-MM-DD-Topic.md`
 | Plan | `/planner` | `thoughts/shared/plans/` (plan + `-STATE.md`) |
 | Execution | `/implement` | Commits per task, advancing STATE |
 
+Every artifact opens with YAML frontmatter naming the artifact it came from — `mission-source:`, `spec-source:`, `fact-source:`, or the generic `upstream-artifact:` — so any plan can be traced back through its fact report and epic to the mission it serves:
+
+```
+mission ──▶ spec ──▶ epic ─┐
+feature brief ─────────────┴──▶ fact report ──▶ plan ──▶ STATE
+```
+
+Downstream stages read these fields rather than guessing: `/planner` copies the fact report's `upstream-artifact:` verbatim, and `/implement` uses that copy to find the epic whose verification plan it must run before closing out.
+
+A `status:` field describes the document — `complete`, `superseded`, or `ready-for-research` for an epic awaiting `/fact-finder`. Whether a plan has actually been *executed* is tracked separately, in its STATE file.
+
 ## Getting Started
 
 ### Prerequisites
@@ -124,7 +135,6 @@ Put the key in a gitignored `.env` as `CONTEXT7_API_KEY=...`. Without it, only l
 | `dox-init` | Bootstrap a DOX `AGENTS.md` governance tree (idempotent) |
 | `dox-update` | Detect and regenerate stale `AGENTS.md` files |
 | `claude-code-extensions` | Reference for creating commands, skills, subagents, and MCP servers |
-
 ## Architecture
 
 ```
@@ -154,7 +164,7 @@ ORBIT-V4-OKF-CONVENTION.md
 
 ## Plan File Format
 
-The canonical task template lives in `.claude/skills/planner/SKILL.md`. Each task carries:
+The canonical task template lives in `.claude/skills/planner/SKILL.md`. A plan opens with six frontmatter keys — `date`, `planner`, `ticket`, `status`, `fact-source`, `upstream-artifact` — and each task carries:
 
 ```markdown
 - **Action ID:** PLAN-001
@@ -173,6 +183,8 @@ The canonical task template lives in `.claude/skills/planner/SKILL.md`. Each tas
 That field list is a contract shared by four readers — `planner/SKILL.md`, `implement/SKILL.md`, and the two prompt templates in `.claude/skills/implement/` — so renaming a field means editing all four.
 
 `/implement` runs the plan wave by wave: tasks in the same `Wave:` have disjoint `File(s)` and execute concurrently, one subagent each, followed by a boundary check and a review gate. Progress is tracked in a sibling `<plan>-STATE.md` file, updated by the orchestrator with every commit, so an interrupted run resumes without redoing finished work.
+
+STATE carries its own `date`, `plan` and `status` frontmatter. `/planner` stamps `status: in-progress` when it creates the file; `/implement` is the only thing that flips it to `complete`, once the plan's acceptance criteria have been checked.
 
 ## Background
 

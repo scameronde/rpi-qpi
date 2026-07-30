@@ -69,6 +69,28 @@ Each stage produces artifacts written to `thoughts/shared/`:
 
 Artifacts are named `YYYY-MM-DD-Topic.md` — epic files additionally carry their ID, `YYYY-MM-DD-EPIC-NNN-Topic.md`, matching the file's `epic-id:` — and are write-once after creation. The one exception is a plan's STATE file, which the `/implement` orchestrator updates as it goes (`thoughts/shared/AGENTS.md`).
 
+## Artifact Frontmatter — the traceability chain
+
+Every artifact opens with YAML frontmatter, and it is what makes the pipeline traversable in both directions. Plan and STATE files were the last holdouts; `b1b3a22` gave them theirs, so the chain is now unbroken:
+
+```
+mission ──mission-source──▶ spec ──spec-source──▶ epic ─┐
+feature brief ──────────────────────────────────────────┤ upstream-artifact
+                                                        ▼
+                                        fact report / QA report
+                                                        │ fact-source
+                                                        ▼
+                                              plan ──plan:──▶ STATE
+```
+
+Each edge is labeled with the field the artifact it points *into* carries — so the arrows follow the pipeline while the fields all point back upstream.
+
+Three conventions hold across all of them:
+
+- **A back-pointer names the artifact upstream** — `mission-source:`, `spec-source:`, `fact-source:`, `plan:`, or the generic `upstream-artifact:` — always a repo-relative path or the literal `none`. `/planner` copies the fact report's `upstream-artifact:` **verbatim** rather than re-deriving it, and `/implement`'s closing acceptance step reads that copy to decide whether an epic's `## Verification Plan (For Implementor)` applies. `none`, or a path into `features/`, means skip it — only epics carry that section.
+- **`status:` describes the document, not the work** — `complete | superseded` for missions, specs, feature briefs and plans, `ready-for-research | superseded` for epics, bare `complete` for fact/QA reports and prototype notes. Whether a plan has been *executed* is tracked separately, in its STATE file's own `status: in-progress | complete`.
+- **The authoring skill signs its own field** — `fact-finder:`, `feature-architect:`, `planner:`. The only place a key set is actually asserted is the owning directory's `AGENTS.md` `## Verification` list (e.g. `thoughts/shared/plans/AGENTS.md:118-119`), so adding or renaming a key means editing the skill *and* that list.
+
 ## The pipeline definition is duplicated — change every copy
 
 The ordering above is stated in five places, and no tooling keeps them in sync:
@@ -107,7 +129,6 @@ When `7790fda` removed `/epic-planner` from the brownfield path it updated the h
 | `dox-init` | Bootstrap a DOX `AGENTS.md` tree for a project (idempotent — never overwrites) |
 | `dox-update` | Detect and regenerate stale `AGENTS.md` files |
 | `claude-code-extensions` | Reference for creating commands, skills, subagents, and MCP servers |
-
 ## Worker Agents (used internally by Skills)
 
 These live in `.claude/agents/` and are spawned by Skills via the `Agent` tool — never invoked directly.
@@ -175,6 +196,10 @@ Two fields carry most of the weight:
 `/implement` executes the plan **wave by wave**. Tasks sharing a `Wave:` have disjoint `File(s)` and run concurrently — one implementer subagent each. After each wave the orchestrator runs a **Boundary Check**: every path the wave actually changed must appear in the union of its tasks' declared paths, or it is treated as either an incomplete `File(s)` list or scope creep. Then mechanical changes are verified against `Done When`; everything else goes to a single reviewer covering spec compliance and code quality together.
 
 State lives in a sibling file, `<plan>-STATE.md`. The orchestrator — never a subagent — makes every commit and every STATE update, each commit carrying the update for exactly the task IDs it contains, so a run interrupted mid-wave resumes without redoing finished work.
+
+**The two files' frontmatter has two different writers.** A plan carries six keys (`date`, `planner`, `ticket`, `status`, `fact-source`, `upstream-artifact`) and `/planner` owns all of them. A STATE file carries three (`date`, `plan`, `status`); `/planner` stamps `status: in-progress` at creation and never touches it again, and `/implement` is the **sole** writer that flips it to `complete`, in the same step where it sets `**Current Task**: Complete` — after the acceptance checks pass, not before. A run that skips the flip leaves a finished plan claiming to still be in progress.
+
+STATE's `plan:` frontmatter field and its `**Plan**:` body line hold the same path deliberately: `/implement`'s resume path parses the body by bold key, so the bold line stays and the frontmatter field only makes the same link machine-readable. Write the path in both.
 
 ## DOX Protocol
 
