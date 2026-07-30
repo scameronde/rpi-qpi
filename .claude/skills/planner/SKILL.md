@@ -476,10 +476,11 @@ For most planning tasks, you can **skip `thoughts-locator`** and go directly to 
 ### Phase 1: Context & Ingestion (MANDATORY)
 1. Read the user request.
 2. Use `Glob` + `Read` to find and read the latest relevant Fact-Finder report(s).
-3. **Read the work order the fact report was written for.** Take its path from the fact report's `upstream-artifact:` frontmatter field and `Read` that file — an epic in `thoughts/shared/epics/` or a feature brief in `thoughts/shared/features/`.
+3. **Read the work order the fact report was written for.** Take its path from the fact report's `upstream-artifact:` frontmatter field and `Read` that file — an epic in `thoughts/shared/epics/`, a feature brief in `thoughts/shared/features/`, or a change brief in `thoughts/shared/changes/`.
    - **Do not glob `epics/` to find it.** A fact report is named after its research topic, not after the epic (`epic-planner:228`), so the association cannot be recovered from the filename — a guess silently attaches the wrong epic, and every criterion and constraint you then plan against belongs to a different piece of work.
-   - `upstream-artifact: none` means there is no work order. That is the answer, not a prompt to search: plan from the fact report and the user request alone.
-   - Only when the field is **absent** — the report predates it — may you `Glob` `thoughts/shared/epics/` and `thoughts/shared/features/`, and then you must name the candidate to the user and get confirmation before relying on it.
+   - **Admission gate — no plan without a recorded target state.** When **both** of these hold — the fact report's `upstream-artifact:` is the literal `none`, **and** the input is not a QA report by the `### QA Report Detection` test below — **stop before writing anything**: no plan file, no STATE file, no partial artifact. A fact report changes nothing, but a plan is what leads to a change, so there must be a recorded target state to plan against and to certify the change against afterwards. Instead, name the three skills that produce one and say which fits which scope: `/change-architect` for a single change or bug fix, `/feature-architect` for a new feature in an existing system, `/mission-architect` for a new project or a subsystem carrying its own mission. Then offer to run `/change-architect` now and resume this planning run once its change brief — and a fact report pointing at it — exist.
+   - `upstream-artifact: none` is the answer, not a prompt to search: never `Glob` for a work order on the strength of it. It is plannable only in the one case the gate above admits — a QA-sourced run, where the QA report is itself the recorded target state. In that case, and only that one, plan from the report and the user request alone.
+   - Only when the field is **absent** — the report predates it — may you `Glob` `thoughts/shared/epics/` and `thoughts/shared/features/`, and then you must name the candidate to the user and get confirmation before relying on it. **Absent is not `none`**: the two are different states with opposite `Glob` permissions, and the admission gate keys on the *value* `none`, never on the key's absence — so the gate does not fire on an old report that predates the field.
 4. From that artifact, read four sections:
    - `## Acceptance Criteria for Planner` — the criteria your plan's own `## Acceptance Criteria` must cover. Every entry there is an entry you are accountable for; if the plan cannot deliver one, say so rather than dropping it.
    - `## Implementation Considerations (For Planner)` — suggested phases, known constraints, and edge cases. **Advisory, not prescriptive**: use it as input to Phase 2b sizing and wave assignment, and depart from it where the verified code says otherwise.
@@ -497,6 +498,8 @@ After reading input file(s) in Phase 1, check if input is a QA report:
 **Detection Methods:**
 1. File path starts with `thoughts/shared/qa/`
 2. YAML frontmatter contains `message_type: QA_REPORT`
+
+**These two methods are also the Phase 1 admission gate's only exemption.** A QA-sourced run may plan from `upstream-artifact: none` because a QA report already *is* a Soll-Ist comparison: the loaded lens skill's ruleset is the Soll, the findings are the recorded gap against it, so the target state is on record and no change brief has to supply it. Test the exemption with the two methods above and nothing else — in particular **not** with `fact-source:`, which is written in four places in this file and read in none, so a rule keyed on it would silently never fire.
 
 **If QA report detected:**
 
@@ -596,7 +599,7 @@ An existence check is only sufficient when existence genuinely *is* the requirem
 Keep `Done When` as the human-readable condition and let `Verify:` carry the command. When a task genuinely has no mechanical check — a judgment-heavy refactor, a prose rewrite — write `Verify: none — requires review` and the orchestrator will route it to a reviewer. Say so explicitly rather than leaving the field off; a missing `Verify` is indistinguishable from an oversight.
 
 ### Phase 3: Decision Gates (NO DEADLOCK)
-- Always write the full plan artifact.
+- Always write the full plan artifact **once Phase 1 has admitted the run**. The Phase 1 admission gate is the single exception to this rule: when it fires, nothing is written at all — no plan, no STATE, no stub — and you never reach this phase. Every other outcome, including one you would rather raise as a question, still gets the full artifact.
 - Include an **`## Approval Gate`** section in it. Approval is **required** when the plan:
   - **changes a contract with more than one reader** — a task field read by both this file and `/implement`, a subagent response envelope, or any file format another skill parses;
   - **edits files that define the executing orchestrator's own behaviour** — `.claude/skills/implement/**`, or any skill or agent file `/implement` loads while it runs;
@@ -634,7 +637,7 @@ upstream-artifact: [path or none]
 - **`ticket`** — the `[Ticket]` value used in the filename and in the H1.
 - **`status`** — `complete` on creation; `superseded` once a later plan replaces this one. Same vocabulary as missions, specs and feature briefs. It describes the **document**, not the run: whether the plan's tasks have been executed is tracked in the STATE file, which carries its own `status`.
 - **`fact-source`** — path of the fact report this plan was built from; for a QA plan, the path of the QA report.
-- **`upstream-artifact`** — copied verbatim from the fact report's own `upstream-artifact:` field (the epic or feature brief it names), or the literal `none` when that field read `none`. Copy it; do not re-derive it.
+- **`upstream-artifact`** — copied verbatim from the fact report's own `upstream-artifact:` field (the epic, feature brief or change brief it names), or the literal `none` when that field read `none`. Copy it; do not re-derive it.
 
 The STATE file carries its own smaller block — see the State File section below.
 
@@ -664,7 +667,7 @@ upstream-artifact: [path or none]
 
 ## Inputs
 - Fact report(s) used: `thoughts/shared/facts/...`
-- Epic / feature brief: `thoughts/shared/epics/...` or `none` (from the fact report's `upstream-artifact:`)
+- Epic / feature brief / change brief: `thoughts/shared/epics/...` or `none` (from the fact report's `upstream-artifact:`)
 - User request summary: ...
 
 ## Verified Current State
