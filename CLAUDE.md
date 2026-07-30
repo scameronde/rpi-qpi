@@ -178,8 +178,8 @@ All three servers are **remote** — declared in the root `.mcp.json`, no local 
 scripts/build-plugin.sh  # .claude/ + .mcp.json → dist/orbit/
 
 CHANGELOG.md             # Release notes, one entry per git tag (see Release Notes below)
-ORBIT-V4-CONCEPT.md      # Draft rearchitecture — NOT current state, see below
-ORBIT-V4-OKF-CONVENTION.md
+ORBIT-V5-CONCEPT.md      # Draft rearchitecture — NOT current state, see below
+ORBIT-V5-OKF-CONVENTION.md
 
 thoughts/
   shared/                # Pipeline artifact store (see stage table above)
@@ -224,8 +224,8 @@ Version tags up to `V3.3.0` predate today's naming — the project was `RPIQR`/`
 
 **Scope in this repo:** `.claude/**` is deliberately outside DOX. `dox-init` and `dox-update` exclude it, which left the `AGENTS.md` files there hand-maintainable only and duly stale, so `031e491` removed all three and moved the load-bearing rules into the skills themselves. `.claude/` is self-describing: every `SKILL.md` and agent file carries its name, description and contract in frontmatter. Live `AGENTS.md` files are the root one plus `thoughts/shared/` and its `facts/`, `plans/`, `qa/`, `prototypes/` children.
 
-## ORBIT V4 — Draft, Not Current State
+## ORBIT V5 — Draft, Not Current State
 
-`ORBIT-V4-CONCEPT.md` and `ORBIT-V4-OKF-CONVENTION.md` (German, both marked *Entwurf*, dated 2026-07-01) propose the next architecture: `thoughts/shared/` becomes an Open-Knowledge-Format bundle under `knowledge/`, splitting normative (intent, rules, specs) from descriptive (code, external, quality facts); a first-class `rules/` layer replaces today's implicit conventions; facts carry content hashes so staleness becomes mechanical; a new compliance agent reports Ist-vs-Soll drift; and DOX dissolves into path-scoped rules.
+`ORBIT-V5-CONCEPT.md` and `ORBIT-V5-OKF-CONVENTION.md` (German, both marked *Entwurf*, dated 2026-07-01) propose the next architecture: `thoughts/shared/` becomes an Open-Knowledge-Format bundle under `knowledge/`, splitting normative (intent, rules, specs) from descriptive (code, external, quality facts); a first-class `rules/` layer replaces today's implicit conventions; facts carry content hashes so staleness becomes mechanical; a new compliance agent reports Ist-vs-Soll drift; and DOX dissolves into path-scoped rules. These files were renamed from `ORBIT-V4-*` (`f2f3a0f`) once the actually-released V4 went in a different direction — the proposal itself is unchanged, only relabeled to stop colliding with the shipped version number.
 
-None of it is implemented — everything else in this file describes V3, which is what runs. Read the V4 docs before planning structural work, and do not treat them as a description of the current tree.
+None of it is implemented — everything else in this file describes V3, which is what runs. Read the V5 docs before planning structural work, and do not treat them as a description of the current tree.
