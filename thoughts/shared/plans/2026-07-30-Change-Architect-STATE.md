@@ -8,8 +8,8 @@ status: in-progress
 
 **Plan**: thoughts/shared/plans/2026-07-30-Change-Architect.md
 **Current Wave**: 2
-**Current Task**: PLAN-013
-**Completed Tasks**: PLAN-001 … PLAN-012
+**Current Task**: PLAN-013 — awaiting the final-wave acceptance checks
+**Completed Tasks**: PLAN-001 … PLAN-013
 
 ## Task Checklist
 
@@ -30,7 +30,7 @@ Grouped by wave. Tasks within a wave run concurrently, but are checked off as ea
 
 ### Wave 2
 - [x] PLAN-012: Invert `/implement`'s acceptance check to a positive `epics/` test
-- [ ] PLAN-013: Record the change under `CHANGELOG.md`'s Unreleased section
+- [x] PLAN-013: Record the change under `CHANGELOG.md`'s Unreleased section
 
 ## Notes
 - Plan created: 2026-07-30

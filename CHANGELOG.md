@@ -15,10 +15,17 @@ Entries are backfilled from git history; each links to its tag on GitHub.
 
 ### Added
 - `CHANGELOG.md`, backfilled from git tag history, plus a Release Notes section in `CLAUDE.md` documenting the convention.
+- `/change-architect` as a fourth pipeline entry point, recording the intended target state of small changes, bug fixes, and maintenance work in change briefs (typed as `defect`, `enhancement`, or `maintenance`) written to `thoughts/shared/changes/`, before `/fact-finder` maps the code — closing the gap where a bug fix's intent lived only in a chat prompt that vanishes with the session.
+- `/planner`'s admission gate: it now refuses to plan from fact reports with `upstream-artifact: none`, unless they are QA reports (which already encode their own Soll-Ist comparison). This ensures every plan targets a recorded state instead of an unexamined prompt.
+
+### Changed
+- `/fact-finder` now loads the change brief work order from `thoughts/shared/changes/` alongside epics and feature briefs, and offers an explicitly exploratory report option when no target artifact is found, with a declaration line in the coverage map so exploratory runs distinguish themselves from directed ones.
+- `/implement`'s wave acceptance check now tests positively for `thoughts/shared/epics/` sourced plans rather than enumerating every non-epic type, simplifying the schema.
+- The V3 presentation deck's entry-point slide gained a fourth row for `/change-architect`, separating small changes and bug fixes from the QA pipeline.
 
 ### Fixed
-- Stale `ORBIT-V4-*` references in `CLAUDE.md`, left over after `f2f3a0f` renamed those drafts to `ORBIT-V5-*`.
-- `thoughts/shared/{facts,plans,qa}/AGENTS.md` now caveat that most (or, for `plans/`, all) of their existing artifacts predate the frontmatter/section contract those files describe, so the legacy corpus isn't misread as non-conforming.
+- The CLAUDE.md citation of the plan key-set assertion in `thoughts/shared/plans/AGENTS.md` was corrected from the wrong lines (118-119, STATE task checklist rules) to the right ones (120-121, the actual frontmatter key-set definitions).
+- `thoughts-locator` now returns all 10 artifact categories. Feature briefs had been in its archive map with no answer-template section to report them under — a pre-existing gap, now closed alongside the new change-brief section.
 
 ## [V4.0.1] - 2026-07-30
 
