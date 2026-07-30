@@ -102,7 +102,7 @@ Answer these three in order — each one constrains the next:
 - **By System Component**: Epic per major architectural component (e.g., "Authentication Service", "Data Persistence Layer", "Notification System")
 - **By Feature Cluster**: Epic per related set of capabilities (e.g., "User Profile Features", "Admin Controls")
 
-**Then assign the IDs, before you write anything.** Once the set of epics is settled, number them `EPIC-001` upward in the logical sequence you established in question 3 — prerequisites before the epics that need them. Each ID is unique within this decomposition and belongs to exactly one epic file. Fix the whole numbering now rather than as you write: `dependencies:` and the `## Dependencies` section reference these IDs, and IDs invented one file at a time end up referring to epics you later renamed or merged.
+**Then assign the IDs, before you write anything.** Once the set of epics is settled, number them `EPIC-001` upward in the logical sequence you established in question 3 — prerequisites before the epics that need them. Each ID is unique within this decomposition and belongs to exactly one epic file. Fix the whole numbering now rather than as you write: `dependencies:` and the `## Dependencies` section reference these IDs, the ID is part of each epic's filename (Phase 4), and IDs invented one file at a time end up referring to epics you later renamed or merged. A number corrected after the files are written is a rename of a write-once artifact.
 
 ### Phase 3: Epic Creation
 
@@ -141,13 +141,15 @@ For each identified epic:
 
 ### Phase 4: The Hand-off (Artifact Generation)
 
-Write ONE epic document per epic: `thoughts/shared/epics/YYYY-MM-DD-[Epic-Name].md`
+Write ONE epic document per epic: `thoughts/shared/epics/YYYY-MM-DD-EPIC-NNN-[Epic-Name].md`
 
-Before writing anything, `Glob` `thoughts/shared/epics/` for the whole set of target paths. Epics are write-once (`thoughts/shared/AGENTS.md`) and `Write` overwrites silently. You write a *set* of files, so a re-run with a shifted decomposition is the dangerous case: it silently overwrites the epics whose names happen to match and leaves the ones that no longer exist behind as orphans, and the surviving `dependencies:` lists then point at epic IDs from two different decompositions. If any target path already exists, stop and ask the user whether to supersede the previous decomposition (set every file of it to `status: superseded`, then write the new set) or to name the new epics differently. Never overwrite part of a set.
+`EPIC-NNN` is the ID you assigned in Phase 2, zero-padded to three digits (`EPIC-001`, not `EPIC-1`), and it must match that epic's own `epic-id:` frontmatter exactly. The filename is the only place the decomposition's sequence is visible without opening every file, so a mismatch makes `ls` lie about both the order and about which file a `dependencies:` entry refers to.
+
+Before writing anything, `Glob` `thoughts/shared/epics/` and compare against your whole set — target paths *and* the `EPIC-NNN` numbers, not paths alone. Epics are write-once (`thoughts/shared/AGENTS.md`) and `Write` overwrites silently. You write a *set* of files, so a re-run with a shifted decomposition is the dangerous case: where date and name still match, the previous epic is silently overwritten; where the decomposition renamed or merged something, the old file survives as an orphan while a new file reuses its number, and a `dependencies:` reference to that number then resolves to two epics from two different decompositions. If any target path already exists, or any existing epic already carries a number you are about to assign, stop and ask the user whether to supersede the previous decomposition (set every file of it to `status: superseded`, then write the new set) or to name and number the new epics differently. Never overwrite part of a set.
 
 ## Output Format (STRICT)
 
-File: `thoughts/shared/epics/YYYY-MM-DD-[Epic-Name].md`
+File: `thoughts/shared/epics/YYYY-MM-DD-EPIC-NNN-[Epic-Name].md` — `EPIC-NNN` identical to the `epic-id:` below
 
 Required structure:
 
@@ -390,6 +392,7 @@ flowchart TD
 - [ ] Every row of the spec's `## Inherited Constraints` appears in at least one epic's own `## Inherited Constraints`, with its source copied verbatim — none dropped as "applies to no epic" without being raised with the user first. Or the spec's section read `None`.
 - [ ] I have defined acceptance criteria that the Planner can use.
 - [ ] I have identified dependencies between epics.
+- [ ] Every epic's filename carries its own ID: the `EPIC-NNN` segment of the path matches that file's `epic-id:` frontmatter, for every file in the set.
 - [ ] Every `epic-id` is unique within this decomposition, and every `EPIC-XXX` referenced in any `dependencies:` list or `## Dependencies` section resolves to an epic in this set — none left over from an earlier decomposition or pointing at an epic I renamed or merged.
 - [ ] The prerequisite graph is acyclic, and prerequisite/dependent declarations agree in both directions.
 - [ ] Each epic traces back to specific components/workflows in the spec.

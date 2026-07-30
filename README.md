@@ -31,7 +31,7 @@ A feature that does need epic decomposition is a subsystem with its own mission 
 
 Two orderings are load-bearing: `/fact-finder` must precede `/planner` (the planner needs a verified research report), and `/planner` must precede `/implement` (which needs a plan file).
 
-Each stage produces artifacts in `thoughts/shared/`, named `YYYY-MM-DD-Topic.md`:
+Each stage produces artifacts in `thoughts/shared/`, named `YYYY-MM-DD-Topic.md` — epics additionally carry their ID, `YYYY-MM-DD-EPIC-NNN-Topic.md`:
 
 | Stage | Command | Output |
 |---|---|---|

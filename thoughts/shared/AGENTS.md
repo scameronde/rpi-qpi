@@ -12,7 +12,7 @@ Persistent artifact store for all workflow pipeline outputs. Every stage of the 
 
 ## Local Contracts
 
-**Naming convention:** `YYYY-MM-DD-Topic.md` for all artifact files.
+**Naming convention:** `YYYY-MM-DD-Topic.md` for all artifact files. Epics carry their ID in the filename — `YYYY-MM-DD-EPIC-NNN-Topic.md`, matching the file's `epic-id:` frontmatter — so a decomposition's sequence is visible from `ls`. Epic files written before that convention lack the segment.
 
 **Directory assignments:**
 | Directory | Written by | Read by |

@@ -343,7 +343,7 @@ Search strategy for authentication documentation:
 - `thoughts/shared/specs/2025-12-05-Auth-System.md`
 
 ### Epics
-- `thoughts/shared/epics/2025-12-10-User-Authentication.md`
+- `thoughts/shared/epics/2025-12-10-EPIC-002-User-Authentication.md`
 
 ### Implementation Plans
 - `thoughts/shared/plans/2025-12-15-AUTH-001.md`

@@ -477,7 +477,7 @@ For most planning tasks, you can **skip `thoughts-locator`** and go directly to 
 1. Read the user request.
 2. Use `Glob` + `Read` to find and read the latest relevant Fact-Finder report(s).
 3. **Read the work order the fact report was written for.** Take its path from the fact report's `upstream-artifact:` frontmatter field and `Read` that file — an epic in `thoughts/shared/epics/` or a feature brief in `thoughts/shared/features/`.
-   - **Do not glob `epics/` to find it.** A fact report is named after its research topic, not after the epic (`epic-planner:226`), so the association cannot be recovered from the filename — a guess silently attaches the wrong epic, and every criterion and constraint you then plan against belongs to a different piece of work.
+   - **Do not glob `epics/` to find it.** A fact report is named after its research topic, not after the epic (`epic-planner:228`), so the association cannot be recovered from the filename — a guess silently attaches the wrong epic, and every criterion and constraint you then plan against belongs to a different piece of work.
    - `upstream-artifact: none` means there is no work order. That is the answer, not a prompt to search: plan from the fact report and the user request alone.
    - Only when the field is **absent** — the report predates it — may you `Glob` `thoughts/shared/epics/` and `thoughts/shared/features/`, and then you must name the candidate to the user and get confirmation before relying on it.
 4. From that artifact, read four sections:

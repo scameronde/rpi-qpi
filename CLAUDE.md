@@ -67,7 +67,7 @@ Each stage produces artifacts written to `thoughts/shared/`:
 | Plan | `/planner` | `thoughts/shared/plans/` |
 | Execution | `/implement` | Git commits per task |
 
-Artifacts are named `YYYY-MM-DD-Topic.md` and are write-once after creation. The one exception is a plan's STATE file, which the `/implement` orchestrator updates as it goes (`thoughts/shared/AGENTS.md`).
+Artifacts are named `YYYY-MM-DD-Topic.md` — epic files additionally carry their ID, `YYYY-MM-DD-EPIC-NNN-Topic.md`, matching the file's `epic-id:` — and are write-once after creation. The one exception is a plan's STATE file, which the `/implement` orchestrator updates as it goes (`thoughts/shared/AGENTS.md`).
 
 ## The pipeline definition is duplicated — change every copy
 

@@ -48,7 +48,7 @@ The `search_scope` parameter controls which sections of the output you receive. 
 *   `thoughts/shared/missions/` -> Mission statements (`YYYY-MM-DD-[Project].md`)
 *   `thoughts/shared/specs/` -> Specifications (`YYYY-MM-DD-[Project].md`)
 *   `thoughts/shared/features/` -> Feature briefs (`YYYY-MM-DD-[Feature-Name].md`)
-*   `thoughts/shared/epics/` -> Epic decompositions (`YYYY-MM-DD-[Epic].md`)
+*   `thoughts/shared/epics/` -> Epic decompositions (`YYYY-MM-DD-EPIC-NNN-[Epic].md`)
 *   `thoughts/shared/plans/` -> Implementation plans (`YYYY-MM-DD-[Ticket].md`)
 *   `thoughts/shared/qa/` -> QA analysis reports (`YYYY-MM-DD-[Target].md`)
 *   `thoughts/shared/facts/` -> Fact reports (`YYYY-MM-DD-[Topic].md`)
@@ -60,7 +60,7 @@ The `search_scope` parameter controls which sections of the output you receive. 
 1.  **Search**: Use `Bash` to find files.
     *   *Missions*: `find thoughts/shared/missions/ -name "*Auth*"`
     *   *Specs*: `find thoughts/shared/specs/ -name "*Auth*"`
-    *   *Epics*: `find thoughts/shared/epics/ -name "*User-Auth*"`
+    *   *Epics*: `find thoughts/shared/epics/ -name "*User-Auth*"` — or by ID, `find thoughts/shared/epics/ -name "*EPIC-002*"`
     *   *Plans*: `find thoughts/shared/plans/ -name "*AUTH-001*"`
     *   *QA Reports*: `find thoughts/shared/qa/ -name "*auth*"`
     *   *Prototype Notes*: `find thoughts/shared/prototypes/ -name "*csv*"`
@@ -103,7 +103,7 @@ paths_sanitized: [count]
 - `thoughts/shared/specs/2025-12-05-Auth-System.md` - **Auth System Spec**
 
 ### Epics
-- `thoughts/shared/epics/2025-12-10-User-Authentication.md` - **User Authentication Epic**
+- `thoughts/shared/epics/2025-12-10-EPIC-002-User-Authentication.md` - **User Authentication Epic**
 
 ### Implementation Plans
 - `thoughts/shared/plans/2025-12-15-AUTH-001.md` - **Login Flow Implementation**
