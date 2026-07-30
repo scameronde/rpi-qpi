@@ -25,6 +25,8 @@ coverage:
 ---
 ```
 
+Most reports on disk predate this in two waves: those before 2026-07-16 use `researcher:` instead of `fact-finder:` (the skill's pre-rename name); reports before 2026-07-29 additionally lack `upstream-artifact:` and the `## Inherited Constraints (Treated as Fixed)` section below, since inherited constraints weren't yet threaded through the pipeline. Only reports from 2026-07-29 onward conform to the full contract below.
+
 **Required sections (in order):**
 1. `## Executive Summary` — 3–7 factual bullets
 2. `## Coverage Map` — what was actually inspected

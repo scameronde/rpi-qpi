@@ -25,6 +25,8 @@ upstream-artifact: none
 ---
 ```
 
+The four reports dated 2026-01-17/18 predate this contract entirely: they were produced by `opencode-qa-thorough`, an auditor from the project's pre-ORBIT OpenCode-agent era that no longer exists, carry no YAML frontmatter, and use a bare `YYYY-MM-DD-<Target>.md` name with no lens suffix. Treat them as historical artifacts, not violations of the naming or frontmatter rules above.
+
 **Report structure** (follows the loaded QA skill's template):
 - Automated tool output summary (linter warnings, type errors, test results)
 - Issue classification by severity (critical / high / medium / low)

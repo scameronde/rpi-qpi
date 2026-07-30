@@ -43,6 +43,8 @@ upstream-artifact: [path or none]
 ## Implementor Checklist         # grouped by wave
 ```
 
+This frontmatter was introduced 2026-07-30 and applies prospectively — no plan currently on disk carries it yet; the first conforming plan will be one authored after this contract. One older file, `2026-02-06-Generalize-QA-Language-References.md` (and its `-STATE.md` sibling), carries an unrelated ad-hoc `ticket`/`title`/`target_files` YAML block predating every template this file describes — treat it as a one-off, not a second format.
+
 **Task field list — a contract with four readers, not a local format.** Every task block carries:
 
 ```markdown
@@ -115,5 +117,5 @@ The checklist is grouped by wave — tasks in one wave have disjoint `File(s)` a
 - Within any one wave, no path appears in more than one task's `File(s)` or `allowedAdjacentEdits`
 - Each plan has a sibling `-STATE.md`, and its `**Current Task**` names a task ID present in the plan, or `Complete`
 - Every task in the plan appears exactly once in the STATE checklist, under the wave its `Wave:` field names
-- A valid plan's frontmatter carries all six keys: `date`, `planner`, `ticket`, `status`, `fact-source`, `upstream-artifact`
+- A valid plan's frontmatter carries all six keys: `date`, `planner`, `ticket`, `status`, `fact-source`, `upstream-artifact` — applies to plans authored 2026-07-30 or later; earlier plans carry no document frontmatter at all, which is expected, not a defect
 - A valid STATE file's frontmatter carries all three keys: `date`, `plan`, `status`
