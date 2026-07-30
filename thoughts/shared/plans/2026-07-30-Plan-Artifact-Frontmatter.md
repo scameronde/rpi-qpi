@@ -171,7 +171,9 @@ This plan hit **two** of the four triggers. Both were presented to the user on 2
   - `status` — `complete` on creation; `superseded` when a later plan replaces it. This matches the mission/spec/feature vocabulary. It describes the **document**, not the run; run progress stays in STATE.
   - `fact-source` — path of the fact report the plan was built from; for a QA plan, the QA report path.
   - `upstream-artifact` — copied verbatim from the fact report's own `upstream-artifact:`, or `none`.
-- STATE field semantics: `plan` duplicates the `**Plan**:` bold-key line by design — the bold key stays because the resume path reads it, and the header field exists so the file is self-describing to a frontmatter reader. `status` is `in-progress` at creation and flipped to `complete` by `/implement` at the same point it writes `**Current Task**: Complete`.
+- STATE field semantics: `plan` duplicates the `**Plan**:` bold-key line by design, and the header field exists so the file is self-describing to a frontmatter reader. `status` is `in-progress` at creation and flipped to `complete` by `/implement` at the same point it writes `**Current Task**: Complete`.
+
+  > **Corrected during execution (2026-07-30).** This bullet originally justified keeping the bold key by claiming `/implement`'s resume path reads `**Plan**:`. It does not — Pre-Flight step 4 reads `**Current Wave**`, `**Current Task**` and `**Completed Tasks**`, and a repo-wide grep finds no reader of `**Plan**:` at all. PLAN-001's instruction repeated the false rationale; the implementer refused to write it and substituted a true one, which the orchestrator verified and accepted. The rule itself was never in doubt — the bold key stays because it is the back-pointer in the body format `/implement` reads STATE through — only the stated reason was wrong. Recorded here so the error is not mirrored by anyone reading this plan as a template.
 
 ## Execution Waves
 
