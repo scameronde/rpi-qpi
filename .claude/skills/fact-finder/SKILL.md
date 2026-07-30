@@ -373,7 +373,7 @@ Choose the appropriate scope level based on how many document types you need:
 
 **Use `comprehensive` when exploring all historical context:**
 - Example: "Find all mission statements, specs, epics, plans, QA reports, and research related to authentication. Search scope: comprehensive."
-- Returns: All 9 categories (missions, specs, feature briefs, epics, plans, QA reports, fact reports, prototype learnings, project notes)
+- Returns: All 10 categories (missions, specs, feature briefs, change briefs, epics, plans, QA reports, fact reports, prototype learnings, project notes)
 - Use case: Initial research phase, full system understanding
 
 **Example delegation with paths_only scope:**
@@ -564,7 +564,7 @@ When passing findings to downstream agents, strip `<thinking>` section to reduce
 
 1. **If the user named a document, read that.** It wins over anything you would find by globbing. This is also how a `/prototype` learnings note reaches you — `/prototype` tells the user to point you at it.
 
-2. **Otherwise glob for the work order**: `thoughts/shared/epics/` on the greenfield path, `thoughts/shared/features/` on the brownfield path. Both contain sections written *for you*:
+2. **Otherwise glob for the work order**: `thoughts/shared/epics/` on the greenfield path, `thoughts/shared/features/` on the brownfield path, `thoughts/shared/changes/` on the small-change path. All three contain sections written *for you*:
 
    | Artifact | Section | What it gives you |
    |---|---|---|
@@ -574,14 +574,18 @@ When passing findings to downstream agents, strip `<thinking>` section to reduce
    | Feature brief | **Open Questions for Fact-Finder** | your starting research vectors |
    | Feature brief | **Integration Points** | where in the existing system to look |
    | Feature brief | **Inherited Constraints** | what to treat as fixed rather than investigate |
+   | Change brief | **Open Questions for Fact-Finder** | your starting research vectors |
+   | Change brief | **Target State** | what the change is meant to achieve — your research must be able to reach it from the current state |
 
    A row in the epic's or feature brief's `## Inherited Constraints` table whose `Source` reads `inferred — <what from>` is the one class of constraint you may re-open, because `/feature-architect` marks it precisely so the researcher verifies it instead of trusting it; when you verify one, record the outcome in the report's `## Inherited Constraints (Treated as Fixed)` table as `inferred — verified` or `inferred — not verified`, and leave every other row `fixed — not investigated`.
 
 3. **Then check `thoughts/shared/prototypes/`** for a learnings note relevant to the target. Treat its problem, outcome and decision as **additional context only** — never as a substitute for the epic or brief, and never as verified evidence. The note records what was learned from code that was then thrown away, so its assumptions may no longer hold.
 
+4. **If the user named no document *and* the glob found no work order, stop here — before delegating any research.** There is no target artifact, and a report written without one cannot become a plan: `/planner` refuses a `facts/` report whose `upstream-artifact:` is `none`. Say that, then offer the skill that would produce the missing work order — `/change-architect` for a small change or bug fix, `/feature-architect` for a new feature in an existing system, `/mission-architect` where the scope is a project or subsystem of its own. Then ask whether the user instead wants an explicitly **exploratory** report, understood as a document that maps the ground for a human reader and is not eligible as a plan input. Only once the user confirms that does research proceed, and the report must then declare itself exploratory (see the `upstream-artifact` field and the `## Coverage Map` line below).
+
 Then:
 - Read the user request.
-- Decompose into research vectors — seed them from the artifact's questions when you have one, rather than deriving everything from the prose request.
+- Decompose into research vectors — seed them from the artifact's questions when you have one, rather than deriving everything from the prose request. Name in the report which of the three outcomes produced these vectors: the document the user pointed you at, the work order you globbed, or — on a confirmed exploratory run — the prose request alone. A later reader must be able to tell an admitted exploratory run from a work-order run.
 - Delegate exploration to sub-agents.
 
 ### Phase 2: Verification & Synthesis (MANDATORY)
@@ -621,7 +625,13 @@ coverage:
 ---
 ```
 
-**The `upstream-artifact` field** holds the **path of the epic or feature brief read in Phase 1**, or the literal `none` when the user named the target directly and no work order was globbed. This field is what **`/planner` reads to locate the epic**, so a guess or an omission strands the downstream task. Always fill it in precisely.
+**The `upstream-artifact` field** has three distinct meanings, and which one you mean must be recoverable from the document alone:
+
+1. **A path** — the epic, feature brief or change brief read in Phase 1 (`thoughts/shared/epics/…`, `thoughts/shared/features/…`, `thoughts/shared/changes/…`). This is what **`/planner` reads to locate the upstream artifact**, so a guess or an omission strands the downstream task.
+2. **`none` because the user named the target directly** — Phase 1 step 1 applied and what the user pointed you at is not an epic, feature brief or change brief (a prototype learnings note, a module, a file), so no work order was globbed. Research was directed, just not by a work order.
+3. **`none` because the run is an admitted exploratory one** — Phase 1 step 4 found no work order and the user confirmed an exploratory report. This case additionally **requires** the declaration line in `## Coverage Map` (see the report template below); without it, cases 2 and 3 are indistinguishable to anyone reading the file.
+
+Do not collapse the three. `/planner` **refuses** a `facts/` report carrying `upstream-artifact: none`, so cases 2 and 3 are both dead ends for planning — but only case 3 also has to say so in its own text. Always fill the field in precisely.
 
 When writing research reports, use the document frontmatter shown above (see "## Output Format (STRICT)" section below for full file structure).
 
@@ -658,9 +668,10 @@ coverage:
 ## Coverage Map
 - List what you actually inspected (files, directories, tool names).
 - If the scope is partial, say so explicitly.
+- `Exploratory — no upstream target artifact; not eligible as a plan input.` — required as its own line exactly when `upstream-artifact:` is `none` on an exploratory run (case 3 above), and written in these words or an equivalent. It is what makes the document explain itself to someone who opens it alone. Omit the line in every other case.
 
 ## Inherited Constraints (Treated as Fixed)
-These rows are carried in from the epic's or feature brief's `## Inherited Constraints` section, which were treated as settled rather than investigated. The section is required — write `None` when the upstream artifact had none or when there was no upstream artifact.
+These rows are carried in from the epic's or feature brief's `## Inherited Constraints` section, which were treated as settled rather than investigated. The section is required — write `None` when the upstream artifact had none, when the upstream artifact carries no `## Inherited Constraints` section at all (which is the case for every change brief), or when there was no upstream artifact.
 
 | Constraint | Source | What it forbids or forces | Status |
 |---|---|---|---|
