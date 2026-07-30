@@ -616,9 +616,29 @@ Write TWO files:
 
 ### Document Frontmatter (In Plan Files)
 
-Plan files use a specific implementation plan format without traditional frontmatter, focusing on verified facts, evidence, and actionable tasks.
+The plan `.md` files you write carry YAML frontmatter:
 
-When writing plan files, use the implementation plan structure shown in the Output Format section below.
+```markdown
+---
+date: YYYY-MM-DD
+planner: [identifier]
+ticket: "[Ticket]"
+status: complete | superseded
+fact-source: "thoughts/shared/facts/YYYY-MM-DD-[Topic].md"
+upstream-artifact: [path or none]
+---
+```
+
+- **`date`** — the plan's creation date, `YYYY-MM-DD`, matching the filename.
+- **`planner`** — identifier of the model or skill run that wrote the plan, mirroring `fact-finder:` in fact reports.
+- **`ticket`** — the `[Ticket]` value used in the filename and in the H1.
+- **`status`** — `complete` on creation; `superseded` once a later plan replaces this one. Same vocabulary as missions, specs and feature briefs. It describes the **document**, not the run: whether the plan's tasks have been executed is tracked in the STATE file, which carries its own `status`.
+- **`fact-source`** — path of the fact report this plan was built from; for a QA plan, the path of the QA report.
+- **`upstream-artifact`** — copied verbatim from the fact report's own `upstream-artifact:` field (the epic or feature brief it names), or the literal `none` when that field read `none`. Copy it; do not re-derive it.
+
+The STATE file carries its own smaller block — see the State File section below.
+
+When writing plan files, use the document frontmatter shown above together with the implementation plan structure shown in the Output Format section below.
 
 ## Output Format (STRICT)
 
@@ -631,6 +651,15 @@ Write TWO artifacts:
 Required structure:
 
 ```
+---
+date: YYYY-MM-DD
+planner: [identifier]
+ticket: "[Ticket]"
+status: complete | superseded
+fact-source: "thoughts/shared/facts/YYYY-MM-DD-[Topic].md"
+upstream-artifact: [path or none]
+---
+
 # [Ticket] Implementation Plan
 
 ## Inputs
@@ -711,6 +740,15 @@ For each assumption:
 Required structure:
 
 ```markdown
+---
+date: YYYY-MM-DD
+planner: [identifier]
+ticket: "[Target]"
+status: complete | superseded
+fact-source: "thoughts/shared/qa/YYYY-MM-DD-[Target]-[Lens].md"
+upstream-artifact: [path or none]
+---
+
 # QA Implementation Plan: [Target]
 
 ## Inputs
@@ -855,6 +893,8 @@ A merged task cites every QA id it resolves, so nothing from the audit is lost w
 - Automated tools: [list]
 ```
 
+In a QA plan the frontmatter fields carry the same meaning as in a standard plan, with `fact-source` holding the QA report path instead of a fact report path, and `upstream-artifact` still copied verbatim from that QA report's own `upstream-artifact:` field.
+
 ### 2. State File: `thoughts/shared/plans/YYYY-MM-DD-[Ticket]-STATE.md`
 
 This is the progress tracker that the Implementor updates with **every commit** it makes, covering exactly that commit's task IDs. A wave's tasks run concurrently but are checked off as each one commits — so a run interrupted mid-wave resumes without redoing finished work.
@@ -862,6 +902,12 @@ This is the progress tracker that the Implementor updates with **every commit** 
 Initial structure (created by Planner):
 
 ```markdown
+---
+date: YYYY-MM-DD
+plan: "thoughts/shared/plans/YYYY-MM-DD-[Ticket].md"
+status: in-progress | complete
+---
+
 # State: [Ticket Name]
 
 **Plan**: thoughts/shared/plans/YYYY-MM-DD-[Ticket].md
@@ -888,6 +934,10 @@ Grouped by wave. Tasks within a wave run concurrently, but are checked off as ea
 - Plan created: YYYY-MM-DD
 - Total tasks: N across M waves
 ```
+
+**The `plan:` frontmatter field and the `**Plan**:` body line hold the same path on purpose.** The bold key stays. STATE's body is the surface `/implement`'s resume path reads — it picks `**Current Wave**`, `**Current Task**` and `**Completed Tasks**` out by bold key (`implement/SKILL.md`, Pre-Flight step 4) — and `**Plan**:` is the back-pointer in that same body format, which `thoughts/shared/plans/AGENTS.md` also documents. The frontmatter field makes the link machine-readable without disturbing it. Write the same path in both.
+
+`status:` starts at `in-progress` when you create the file, and is flipped to `complete` by `/implement` after its final-wave acceptance checks — never by the Planner. It tracks the **run**, whereas the plan file's own `status:` tracks the plan document.
 
 `**Current Task**` names the next unfinished task. `**Current Wave**` is what `/implement` advances between waves.
 
