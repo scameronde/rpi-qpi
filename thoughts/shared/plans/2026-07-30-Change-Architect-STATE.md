@@ -8,8 +8,8 @@ status: in-progress
 
 **Plan**: thoughts/shared/plans/2026-07-30-Change-Architect.md
 **Current Wave**: 2
-**Current Task**: PLAN-012
-**Completed Tasks**: PLAN-001 … PLAN-011
+**Current Task**: PLAN-013
+**Completed Tasks**: PLAN-001 … PLAN-012
 
 ## Task Checklist
 
@@ -29,7 +29,7 @@ Grouped by wave. Tasks within a wave run concurrently, but are checked off as ea
 - [x] PLAN-011: Give the presentation a fourth entry row and split QA out
 
 ### Wave 2
-- [ ] PLAN-012: Invert `/implement`'s acceptance check to a positive `epics/` test
+- [x] PLAN-012: Invert `/implement`'s acceptance check to a positive `epics/` test
 - [ ] PLAN-013: Record the change under `CHANGELOG.md`'s Unreleased section
 
 ## Notes
