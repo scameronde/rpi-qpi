@@ -28,7 +28,7 @@ The `search_scope` parameter controls which sections of the output you receive. 
 
 3. **`comprehensive`** (~280 tokens, complete results)
    - **Use Case:** Fact-Finder exploring all historical context
-   - **Sections Returned:** All 9 categories
+   - **Sections Returned:** All 10 categories
 
 **Default Behavior:** If `search_scope` is not specified, defaults to `comprehensive`.
 
@@ -48,6 +48,7 @@ The `search_scope` parameter controls which sections of the output you receive. 
 *   `thoughts/shared/missions/` -> Mission statements (`YYYY-MM-DD-[Project].md`)
 *   `thoughts/shared/specs/` -> Specifications (`YYYY-MM-DD-[Project].md`)
 *   `thoughts/shared/features/` -> Feature briefs (`YYYY-MM-DD-[Feature-Name].md`)
+*   `thoughts/shared/changes/` -> Change briefs (`YYYY-MM-DD-[Change-Name].md`)
 *   `thoughts/shared/epics/` -> Epic decompositions (`YYYY-MM-DD-EPIC-NNN-[Epic].md`)
 *   `thoughts/shared/plans/` -> Implementation plans (`YYYY-MM-DD-[Ticket].md`)
 *   `thoughts/shared/qa/` -> QA analysis reports (`YYYY-MM-DD-[Target].md`)
@@ -60,6 +61,8 @@ The `search_scope` parameter controls which sections of the output you receive. 
 1.  **Search**: Use `Bash` to find files.
     *   *Missions*: `find thoughts/shared/missions/ -name "*Auth*"`
     *   *Specs*: `find thoughts/shared/specs/ -name "*Auth*"`
+    *   *Feature Briefs*: `find thoughts/shared/features/ -name "*Export*"`
+    *   *Change Briefs*: `find thoughts/shared/changes/ -name "*Timeout*"`
     *   *Epics*: `find thoughts/shared/epics/ -name "*User-Auth*"` — or by ID, `find thoughts/shared/epics/ -name "*EPIC-002*"`
     *   *Plans*: `find thoughts/shared/plans/ -name "*AUTH-001*"`
     *   *QA Reports*: `find thoughts/shared/qa/ -name "*auth*"`
@@ -101,6 +104,12 @@ paths_sanitized: [count]
 
 ### Specifications
 - `thoughts/shared/specs/2025-12-05-Auth-System.md` - **Auth System Spec**
+
+### Feature Briefs
+- `thoughts/shared/features/2026-01-10-CSV-Export.md` - **CSV Export Feature Brief**
+
+### Change Briefs
+- `thoughts/shared/changes/2026-01-15-Timeout-Handling.md` - **Timeout Handling Change Brief**
 
 ### Epics
 - `thoughts/shared/epics/2025-12-10-EPIC-002-User-Authentication.md` - **User Authentication Epic**
@@ -153,7 +162,7 @@ Wrap your categorized results in answer tags. The sections included depend on `s
 
 **For scope = focused:** Return 2-3 most relevant categories.
 
-**For scope = comprehensive (default):** Return all 9 categories (omitting empty ones).
+**For scope = comprehensive (default):** Return all 10 categories (omitting empty ones).
 
 ## Tips
 
