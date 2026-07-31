@@ -17,11 +17,16 @@ Entries are backfilled from git history; each links to its tag on GitHub.
 - `CHANGELOG.md`, backfilled from git tag history, plus a Release Notes section in `CLAUDE.md` documenting the convention.
 - `/change-architect` as a fourth pipeline entry point, recording the intended target state of small changes, bug fixes, and maintenance work in change briefs (typed as `defect`, `enhancement`, or `maintenance`) written to `thoughts/shared/changes/`, before `/fact-finder` maps the code — closing the gap where a bug fix's intent lived only in a chat prompt that vanishes with the session.
 - `/planner`'s admission gate: it now refuses to plan from fact reports with `upstream-artifact: none`, unless they are QA reports (which already encode their own Soll-Ist comparison). This ensures every plan targets a recorded state instead of an unexamined prompt.
+- `/just-do-it` as the change path's second exit, taking a `route: direct` brief directly to one reviewer and commit (with a Change Record), bypassing `/fact-finder` and `/planner` — closing the gap where small changes previously cost roughly twenty cold contexts and so people abandoned the pipeline for chat.
+- `thoughts/shared/changes/AGENTS.md` as the directory's first local contract, asserting both the change brief's key set (including the new `route:` field) and the Change Record's — completing the governance chain for small work.
 
 ### Changed
 - `/fact-finder` now loads the change brief work order from `thoughts/shared/changes/` alongside epics and feature briefs, and offers an explicitly exploratory report option when no target artifact is found, with a declaration line in the coverage map so exploratory runs distinguish themselves from directed ones.
 - `/implement`'s wave acceptance check now tests positively for `thoughts/shared/epics/` sourced plans rather than enumerating every non-epic type, simplifying the schema.
 - The V3 presentation deck's entry-point slide gained a fourth row for `/change-architect`, separating small changes and bug fixes from the QA pipeline.
+- `/change-architect` now settles `route: direct | full` in its pre-write checklist, with the decision branching whether the brief routes to `/just-do-it` or the full `/fact-finder → /planner → /implement` pipeline.
+- `/fact-finder` and `thoughts-locator` now exclude `-RECORD.md` Change Records from their work-order and brief-discovery globs, keeping completed small changes from resurfacing in new work.
+- `CLAUDE.md`'s pipeline-duplication section no longer implies that five prose copies are the whole surface. It now names the three families of table the fifth item hid, and the four closed enumerations that skills consume mechanically — where a missing directory produces no error at all, just an artifact nobody ever finds.
 
 ### Fixed
 - The CLAUDE.md citation of the plan key-set assertion in `thoughts/shared/plans/AGENTS.md` was corrected from the wrong lines (118-119, STATE task checklist rules) to the right ones (120-121, the actual frontmatter key-set definitions).

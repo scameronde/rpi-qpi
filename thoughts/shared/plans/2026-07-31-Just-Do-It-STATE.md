@@ -8,8 +8,8 @@ status: in-progress
 
 **Plan**: thoughts/shared/plans/2026-07-31-Just-Do-It.md
 **Current Wave**: 3
-**Current Task**: PLAN-009
-**Completed Tasks**: PLAN-001, PLAN-002, PLAN-003, PLAN-004, PLAN-005, PLAN-006, PLAN-007, PLAN-008, PLAN-010
+**Current Task**: PLAN-011
+**Completed Tasks**: PLAN-001, PLAN-002, PLAN-003, PLAN-004, PLAN-005, PLAN-006, PLAN-007, PLAN-008, PLAN-010, PLAN-009
 
 ## Task Checklist
 
@@ -29,7 +29,7 @@ Grouped by wave. Tasks within a wave run concurrently, but are checked off as ea
 - [x] PLAN-010: Add `changes/` to `/planner`'s fallback work-order `Glob`
 
 ### Wave 3
-- [ ] PLAN-009: Record the route under `CHANGELOG.md` `## [Unreleased]`
+- [x] PLAN-009: Record the route under `CHANGELOG.md` `## [Unreleased]`
 - [ ] PLAN-011: Show the second exit in the two remaining scenario→route tables
 
 ## Notes
