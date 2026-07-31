@@ -165,8 +165,8 @@ scripts/
 thoughts/shared/       # Workflow artifacts (see the pipeline table above)
 presentation/          # Slide decks about the method
 
-ORBIT-V4-CONCEPT.md    # Draft next-generation architecture (not implemented)
-ORBIT-V4-OKF-CONVENTION.md
+ORBIT-V5-CONCEPT.md    # Draft next-generation architecture (not implemented)
+ORBIT-V5-OKF-CONVENTION.md
 ```
 
 **`agents/` vs `skills/`:**
@@ -199,7 +199,7 @@ STATE carries its own `date`, `plan` and `status` frontmatter. `/planner` stamps
 
 ## Background
 
-This toolkit was converted from an OpenCode workflow: skills and agents were rewritten as Claude Code skills and subagents, and the two locally built MCP tools were replaced by hosted endpoints. `ORBIT-V4-CONCEPT.md` sketches where it goes next — a living knowledge base as the source of truth, with an explicit rules layer and continuous drift checking against the code.
+This toolkit was converted from an OpenCode workflow: skills and agents were rewritten as Claude Code skills and subagents, and the two locally built MCP tools were replaced by hosted endpoints. `ORBIT-V5-CONCEPT.md` sketches where it goes next — a living knowledge base as the source of truth, with an explicit rules layer and continuous drift checking against the code.
 
 ## License
 

@@ -210,7 +210,7 @@ State lives in a sibling file, `<plan>-STATE.md`. The orchestrator — never a s
 
 **The two files' frontmatter has two different writers.** A plan carries six keys (`date`, `planner`, `ticket`, `status`, `fact-source`, `upstream-artifact`) and `/planner` owns all of them. A STATE file carries three (`date`, `plan`, `status`); `/planner` stamps `status: in-progress` at creation and never touches it again, and `/implement` is the **sole** writer that flips it to `complete`, in the same step where it sets `**Current Task**: Complete` — after the acceptance checks pass, not before. A run that skips the flip leaves a finished plan claiming to still be in progress.
 
-STATE's `plan:` frontmatter field and its `**Plan**:` body line hold the same path deliberately: `/implement`'s resume path parses the body by bold key, so the bold line stays and the frontmatter field only makes the same link machine-readable. Write the path in both.
+STATE's `plan:` frontmatter field and its `**Plan**:` body line hold the same path deliberately. STATE's body is the surface `/implement`'s resume path reads — it picks `**Current Wave**`, `**Current Task**` and `**Completed Tasks**` out by bold key (`implement/SKILL.md`, Pre-Flight step 4) — and `**Plan**:` is the back-pointer in that same body format. Nothing parses `**Plan**:` itself; it stays because it belongs to the format, and the frontmatter field only makes the same link machine-readable. Write the path in both.
 
 ## Release Notes
 
