@@ -577,6 +577,10 @@ When passing findings to downstream agents, strip `<thinking>` section to reduce
    | Change brief | **Open Questions for Fact-Finder** | your starting research vectors |
    | Change brief | **Target State** | what the change is meant to achieve — your research must be able to reach it from the current state |
 
+   A file in `thoughts/shared/changes/` whose name ends `-RECORD.md` is a Change Record, not a work order — `/just-do-it` writes it after executing a brief, and the glob above returns it alongside the briefs. Skip it: the brief it belongs to is the file with the same base name and no suffix.
+
+   A change brief carrying `route: direct` is written for the `/just-do-it` skill rather than for this one; if you encounter one, researching it anyway is legitimate — escalating to the full path is never an error — but the user should be told the brief was admitted to the direct route.
+
    A row in the epic's or feature brief's `## Inherited Constraints` table whose `Source` reads `inferred — <what from>` is the one class of constraint you may re-open, because `/feature-architect` marks it precisely so the researcher verifies it instead of trusting it; when you verify one, record the outcome in the report's `## Inherited Constraints (Treated as Fixed)` table as `inferred — verified` or `inferred — not verified`, and leave every other row `fixed — not investigated`.
 
 3. **Then check `thoughts/shared/prototypes/`** for a learnings note relevant to the target. Treat its problem, outcome and decision as **additional context only** — never as a substitute for the epic or brief, and never as verified evidence. The note records what was learned from code that was then thrown away, so its assumptions may no longer hold.
