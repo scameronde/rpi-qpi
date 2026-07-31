@@ -24,7 +24,7 @@ Persistent artifact store for all workflow pipeline outputs. Every stage of the 
 | `epics/` | `/epic-planner` | `/fact-finder`, `/planner` |
 | `facts/` | `/fact-finder` | `/planner` |
 | `qa/` | `/fact-finder` (QA mode) | human review, `/planner` (QA plans) |
-| `prototypes/` | `/prototype` | `/feature-architect`, `/fact-finder` |
+| `prototypes/` | `/prototype` | `/feature-architect`, `/change-architect`, `/fact-finder` |
 | `plans/` | `/planner` | `/implement` |
 
 A feature brief goes straight to `/fact-finder`: brownfield skips `/epic-planner`, because epic decomposition exists to cut a whole specification into several parallel streams and one feature is one stream. A change brief with `route: full` goes to `/fact-finder` for the same reason; a `route: direct` brief goes to `/just-do-it` without a fact report or a plan. A change brief carries no `## Inherited Constraints` section, so `/fact-finder` writes `None` in its own table.

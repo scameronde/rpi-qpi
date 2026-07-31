@@ -43,7 +43,7 @@ upstream-artifact: [path or none]
 ## Implementor Checklist         # grouped by wave
 ```
 
-This frontmatter was introduced 2026-07-30 and applies prospectively — no plan currently on disk carries it yet; the first conforming plan will be one authored after this contract. One older file, `2026-02-06-Generalize-QA-Language-References.md` (and its `-STATE.md` sibling), carries an unrelated ad-hoc `ticket`/`title`/`target_files` YAML block predating every template this file describes — treat it as a one-off, not a second format.
+This frontmatter was introduced 2026-07-30 and applies prospectively. Two plans conform so far — `2026-07-30-Change-Architect.md` and `2026-07-31-Just-Do-It.md`, each with its `-STATE.md` sibling. Every other plan here predates the contract and carries no document frontmatter at all, which is expected, not a defect. The single exception is `2026-02-06-Generalize-QA-Language-References.md` (and its `-STATE.md` sibling), which carries an unrelated ad-hoc `ticket`/`title`/`target_files` YAML block predating every template this file describes — treat it as a one-off, not a second format.
 
 **Task field list — a contract with four readers, not a local format.** Every task block carries:
 
