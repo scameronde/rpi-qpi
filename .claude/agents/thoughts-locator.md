@@ -48,7 +48,7 @@ The `search_scope` parameter controls which sections of the output you receive. 
 *   `thoughts/shared/missions/` -> Mission statements (`YYYY-MM-DD-[Project].md`)
 *   `thoughts/shared/specs/` -> Specifications (`YYYY-MM-DD-[Project].md`)
 *   `thoughts/shared/features/` -> Feature briefs (`YYYY-MM-DD-[Feature-Name].md`)
-*   `thoughts/shared/changes/` -> Change briefs (`YYYY-MM-DD-[Change-Name].md`)
+*   `thoughts/shared/changes/` -> Change briefs (`YYYY-MM-DD-[Change-Name].md`); `-RECORD.md` siblings are execution records, not briefs — exclude them
 *   `thoughts/shared/epics/` -> Epic decompositions (`YYYY-MM-DD-EPIC-NNN-[Epic].md`)
 *   `thoughts/shared/plans/` -> Implementation plans (`YYYY-MM-DD-[Ticket].md`)
 *   `thoughts/shared/qa/` -> QA analysis reports (`YYYY-MM-DD-[Target].md`)
@@ -56,13 +56,15 @@ The `search_scope` parameter controls which sections of the output you receive. 
 *   `thoughts/shared/prototypes/` -> Prototype learnings notes (`YYYY-MM-DD-[Name].md`)
 *   `thoughts/projects/` -> Working notes, grouped per project
 
+Like `plans/`, which holds both implementation plans and their STATE siblings, `changes/` contains both change briefs and their `-RECORD.md` siblings — in each case, a suffixed sibling is found from its primary by name derivation, not by its own category.
+
 ## Workflow
 
 1.  **Search**: Use `Bash` to find files.
     *   *Missions*: `find thoughts/shared/missions/ -name "*Auth*"`
     *   *Specs*: `find thoughts/shared/specs/ -name "*Auth*"`
     *   *Feature Briefs*: `find thoughts/shared/features/ -name "*Export*"`
-    *   *Change Briefs*: `find thoughts/shared/changes/ -name "*Timeout*"`
+    *   *Change Briefs*: `find thoughts/shared/changes/ -name "*Timeout*" -not -name "*-RECORD.md"`
     *   *Epics*: `find thoughts/shared/epics/ -name "*User-Auth*"` — or by ID, `find thoughts/shared/epics/ -name "*EPIC-002*"`
     *   *Plans*: `find thoughts/shared/plans/ -name "*AUTH-001*"`
     *   *QA Reports*: `find thoughts/shared/qa/ -name "*auth*"`
