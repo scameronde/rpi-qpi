@@ -47,8 +47,9 @@ A feature that turns out to need epic decomposition is not a feature — it is a
 **Small change, bug fix, or maintenance:**
 ```
 /change-architect → /fact-finder → /planner → /implement
+/change-architect → /just-do-it
 ```
-The change brief is typed — `defect | enhancement | maintenance` — and a change needing more than one intended outcome belongs to `/feature-architect`.
+The change brief is typed — `defect | enhancement | maintenance` — and a change needing more than one intended outcome belongs to `/feature-architect`. The brief's `route:` field, set by `/change-architect`, determines which exit: `full` for the complete pipeline, `direct` for `/just-do-it`. `direct` requires **both** mechanical conditions — the brief's `## Open Questions for Fact-Finder` is the literal `none — nothing must be established before the change`, **and** its `## Acceptance Criteria` holds exactly one entry. `full` is the default whenever either fails.
 
 **Explore first (optional, on a "go" decision):**
 ```
@@ -63,6 +64,7 @@ Each stage produces artifacts written to `thoughts/shared/`:
 | Vision (greenfield) | `/mission-architect` | `thoughts/shared/missions/` |
 | Feature brief (brownfield) | `/feature-architect` | `thoughts/shared/features/` |
 | Change brief (small change) | `/change-architect` | `thoughts/shared/changes/` |
+| Change record | `/just-do-it` | `thoughts/shared/changes/` (`-RECORD.md` sibling) |
 | Spec | `/specifier` | `thoughts/shared/specs/` |
 | Epics | `/epic-planner` | `thoughts/shared/epics/` |
 | Facts | `/fact-finder` | `thoughts/shared/facts/` or `thoughts/shared/qa/` |
@@ -91,14 +93,14 @@ Each edge is labeled with the field the artifact it points *into* carries — so
 Three conventions hold across all of them:
 
 - **A back-pointer names the artifact upstream** — `mission-source:`, `spec-source:`, `fact-source:`, `plan:`, or the generic `upstream-artifact:` — always a repo-relative path or the literal `none`. `/planner` copies the fact report's `upstream-artifact:` **verbatim** rather than re-deriving it, and `/implement`'s closing acceptance step reads that copy to decide whether an epic's `## Verification Plan (For Implementor)` applies. The epic verification section applies exactly when the path is under `epics/`; a path into `features/` or `changes/`, and the literal `none`, are skips.
-- **`status:` describes the document, not the work** — `complete | superseded` for missions, specs, feature briefs, change briefs and plans, `ready-for-research | superseded` for epics, bare `complete` for fact/QA reports and prototype notes. Whether a plan has been *executed* is tracked separately, in its STATE file's own `status: in-progress | complete`.
-- **The authoring skill signs its own field** — `change-architect:`, `fact-finder:`, `feature-architect:`, `planner:`. The only place a key set is actually asserted is the owning directory's `AGENTS.md` `## Verification` list (e.g. `thoughts/shared/plans/AGENTS.md:120-121`), so adding or renaming a key means editing the skill *and* that list.
+- **`status:` describes the document, not the work** — `complete | superseded` for missions, specs, feature briefs, change briefs and plans, `ready-for-research | superseded` for epics, bare `complete` for fact/QA reports and prototype notes. Whether a plan has been *executed* is tracked separately, in its STATE file's own `status: in-progress | complete`. A Change Record's `status: complete | abandoned` tracks the execution attempt rather than the document, mirroring the STATE file convention.
+- **The authoring skill signs its own field** — `change-architect:`, `fact-finder:`, `feature-architect:`, `just-do-it:`, `planner:`. The only place a key set is actually asserted is the owning directory's `AGENTS.md` `## Verification` list (e.g. `thoughts/shared/changes/AGENTS.md:66-67` and `thoughts/shared/plans/AGENTS.md:120-121`), so adding or renaming a key means editing the skill *and* that list.
 
 A change brief carries no `## Inherited Constraints` section, so `/fact-finder` writes `None` in its own table — deliberate, so a later maintainer does not read the absence as drift.
 
 ## The pipeline definition is duplicated — change every copy
 
-The ordering above is stated in five places, and no tooling keeps them in sync:
+The ordering above is stated in five canonical prose places, and no tooling keeps them in sync:
 
 1. this file
 2. `.claude/hooks/session-start` — the text injected into every session
@@ -106,7 +108,22 @@ The ordering above is stated in five places, and no tooling keeps them in sync:
 4. root `AGENTS.md`
 5. the affected `SKILL.md`, plus any sibling skill that names the stage before or after it
 
-When `7790fda` removed `/epic-planner` from the brownfield path it updated the hook and the skill, leaving this file and `README.md` claiming the old order. Treat a pipeline change as a five-file edit.
+When `7790fda` removed `/epic-planner` from the brownfield path it updated the hook and the skill, leaving this file and `README.md` claiming the old order. But five is the count of canonical *prose* copies, not the size of the edit: item 5 stands for three families of table, and four further sites consume the enumeration mechanically. Treat a pipeline change as a sweep over every site named below.
+
+Item 5 hides three families of table:
+
+- **scenario→route tables in three skills** — `change-architect/SKILL.md:16`, `feature-architect/SKILL.md:16`, `mission-architect/SKILL.md:55`
+- **stage→output tables in four places** — this file, `README.md`, `thoughts/shared/AGENTS.md`'s directory-assignment table, and the deck at `presentation/The_Agentic_Assembly_LineV3.html`
+- **skills-listing tables in three places** — this file's `## Workflow Skills`, `README.md`'s `### Workflow orchestration`, and `.claude/hooks/session-start`'s `## Available Workflow Skills` block
+
+Beyond prose, the pipeline's routing appears in four machine-consumed places, each a closed enumeration where an omission fails silently rather than reading as stale — nothing errors, the new artifact is simply never found:
+
+1. `fact-finder/SKILL.md:567` — a closed list of the three work-order directories, closing with the words "All three". A route whose artifact directory is missing from that list is never globbed, so its work order is never seen.
+2. `planner/SKILL.md:479` — takes the work-order path from the fact report's `upstream-artifact:` frontmatter field, naming the three directories that path may point into. Globbing to find the work order is explicitly forbidden here, so a directory absent from the list has no way of being reached.
+3. `planner/SKILL.md:483` — the fallback `Glob`, permitted **only** when `upstream-artifact:` is absent. It carries its own copy of the directory list under the *opposite* `Glob` permission to `:479`, so the two must be updated separately; a directory omitted here is invisible on the one path allowed to search.
+4. `implement/SKILL.md:238` — the epic-verification test that reads `upstream-artifact:` to decide whether to run an epic's `## Verification Plan`. Written as a positive `epics/` test plus a closed skip list, so a new directory falls through to the correct behaviour and only the skip list's prose goes stale.
+
+The full enumeration — 85 statements across 19 files — is recorded at `thoughts/shared/facts/2026-07-31-Just-Do-It-Route.md`, Critical Finding 4.
 
 ## Workflow Skills
 
@@ -115,6 +132,7 @@ When `7790fda` removed `/epic-planner` from the brownfield path it updated the h
 | `/mission-architect` | Discover project vision and goals via conversation (greenfield) |
 | `/feature-architect` | Define a new feature within an existing system (brownfield) |
 | `/change-architect` | Record the intent of a small change, bug fix, or maintenance work before research begins |
+| `/just-do-it` | Execute a `route: direct` change brief directly — no fact report, no plan; one reviewer, one commit, one record |
 | `/specifier` | Translate a mission into a technical specification |
 | `/epic-planner` | Decompose a spec into epics and user stories |
 | `/fact-finder` | Map the codebase relevant to a spec or question; also runs QA mode |
@@ -123,6 +141,8 @@ When `7790fda` removed `/epic-planner` from the brownfield path it updated the h
 | `/prototype` | Spike a rough idea into disposable, isolated code and reach a go/no-go/iterate decision (optional, before mission-architect/feature-architect/change-architect — the prototype code itself is always discarded) |
 
 `/prototype` carries `model: opus` deliberately, and must never be given `context: fork`: it is interactive and owns a git worktree lifecycle, neither of which survives being run as a subagent. The rationale is recorded in its own frontmatter note.
+
+`/just-do-it` carries `disable-model-invocation: true` for the same reason `/commit` does: it writes code and commits, so it stays user-invoked only.
 
 ## Quality and Maintenance Skills
 

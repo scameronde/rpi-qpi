@@ -8,8 +8,8 @@ status: in-progress
 
 **Plan**: thoughts/shared/plans/2026-07-31-Just-Do-It.md
 **Current Wave**: 2
-**Current Task**: PLAN-008
-**Completed Tasks**: PLAN-001, PLAN-002, PLAN-003, PLAN-004, PLAN-005, PLAN-006, PLAN-007
+**Current Task**: PLAN-010
+**Completed Tasks**: PLAN-001, PLAN-002, PLAN-003, PLAN-004, PLAN-005, PLAN-006, PLAN-007, PLAN-008
 
 ## Task Checklist
 
@@ -25,7 +25,7 @@ Grouped by wave. Tasks within a wave run concurrently, but are checked off as ea
 ### Wave 2
 - [x] PLAN-006: Exclude `-RECORD.md` from `thoughts-locator`'s change-brief recipe
 - [x] PLAN-007: Add `just-do-it` and `commit` to `/prototype`'s blocklist, `changes/` to its write restriction
-- [ ] PLAN-008: State the second exit in all four canonical pipeline copies
+- [x] PLAN-008: State the second exit in all four canonical pipeline copies
 - [ ] PLAN-010: Add `changes/` to `/planner`'s fallback work-order `Glob`
 
 ### Wave 3

@@ -22,8 +22,9 @@ A feature that does need epic decomposition is a subsystem with its own mission 
 **Small change, bug fix, or maintenance:**
 ```
 /change-architect → /fact-finder → /planner → /implement
+/change-architect → /just-do-it
 ```
-The change brief is typed — `defect | enhancement | maintenance` — and a change needing more than one intended outcome belongs to `/feature-architect`.
+The change brief is typed — `defect | enhancement | maintenance` — and a change needing more than one intended outcome belongs to `/feature-architect`. The brief's `route:` field, set by `/change-architect`, determines which exit: `full` for the complete pipeline, `direct` for `/just-do-it`. `direct` requires **both** mechanical conditions — the brief's `## Open Questions for Fact-Finder` is the literal `none — nothing must be established before the change`, **and** its `## Acceptance Criteria` holds exactly one entry. `full` is the default whenever either fails.
 
 **Not sure it should be built at all:**
 ```
@@ -40,6 +41,7 @@ Each stage produces artifacts in `thoughts/shared/`, named `YYYY-MM-DD-Topic.md`
 | Vision (greenfield) | `/mission-architect` | `thoughts/shared/missions/` |
 | Feature brief (brownfield) | `/feature-architect` | `thoughts/shared/features/` |
 | Change brief (small change) | `/change-architect` | `thoughts/shared/changes/` |
+| Change record | `/just-do-it` | `thoughts/shared/changes/` (`-RECORD.md` sibling) |
 | Specification | `/specifier` | `thoughts/shared/specs/` |
 | Epics | `/epic-planner` | `thoughts/shared/epics/` |
 | Facts | `/fact-finder` | `thoughts/shared/facts/` (QA mode: `thoughts/shared/qa/`) |
@@ -127,6 +129,7 @@ Without a `.env` no MCP server resolves, so web crawling, search and library-doc
 | `/mission-architect` | Discover and articulate project vision (why + what, not how) — greenfield |
 | `/feature-architect` | Define a new feature within an existing system — brownfield |
 | `/change-architect` | Record the intent of a small change, bug fix, or maintenance work — brownfield, before research |
+| `/just-do-it` | Execute a `route: direct` change brief directly — no fact report, no plan; one reviewer, one commit, one record |
 | `/specifier` | Translate a mission statement into a technical specification |
 | `/epic-planner` | Decompose a spec into epics and user stories |
 | `/fact-finder` | Map the codebase or investigate a topic before planning |
