@@ -18,7 +18,7 @@ The brief is not optional paperwork. `/planner` refuses to write a plan from a f
 | Entirely new project (no existing code) | `mission-architect` → `specifier` → `epic-planner` → `fact-finder` → `planner` |
 | New subsystem in this system, own value proposition **and** several streams | `mission-architect` → `specifier` → `epic-planner` → `fact-finder` → `planner` |
 | Significant new feature in existing system | `feature-architect` → `fact-finder` → `planner` |
-| Small change, bug fix, or maintenance work | **`change-architect`** → `fact-finder` → `planner` |
+| Small change, bug fix, or maintenance work | **`change-architect`** → `just-do-it` when the brief carries `route: direct` — otherwise → `fact-finder` → `planner` |
 
 **The upward escape.** A change stops being yours as soon as either of these holds: it has **more than one intended outcome**, or it needs a **real non-goals list** — several items doing actual work — to keep it from bleeding into existing behaviour. Either one on its own is enough; you do not need both. When it happens, say so and redirect: "This has more than one outcome in it, so `/feature-architect` is the right entry point — it captures scope boundaries and what the existing system already fixes, which a change brief deliberately does not." If it *also* carries its own value proposition and needs several parallel streams, that is `/mission-architect`'s two-condition test, not yours.
 
@@ -51,6 +51,11 @@ Do not send the work to `/fact-finder` directly to save a step. That is the gap 
    - If eliciting the intent takes more than a handful of questions — past three or four, with the target state still moving — the work is not a small change. Stop and redirect per the upward escape above.
    - Watch for the tells while you ask: a second intended outcome appearing, a boundary needing negotiation, the user describing a workflow rather than a behaviour.
    - This is a rule about the artifact, not about the user's patience. A change brief that costs what a feature brief costs is a change brief that gets skipped, and then the gap it closes reopens while appearing closed on paper.
+
+5. **No price signal when eliciting the open questions**
+   - While you ask what the research must settle, never reveal, hint at, or offer that an empty answer buys the cheaper route. No "if there's nothing, we can skip the research", no framing that makes `none` sound like the fast lane, no offer to check whether they qualify. Ask the question as written and record the answer you get.
+   - The reason is the mechanics of the gate itself: `route:` is keyed on that answer, and a gate whose condition the user is rewarded for answering falsely measures nothing. Price the empty answer and it stops recording who needed no Ist-Bestimmung and starts recording who wanted to skip one — the field is still written, but no rule keyed on it can fire on anything real.
+   - Naming the route **after** the answer is in is not a price signal and is required: the convergence check states which route the brief will carry and why, and the user confirms it there — on the strength of what they already said, not by revising it.
 
 ## Tools & Delegation
 
@@ -104,8 +109,10 @@ Everything after that is **ordinary conversation** — ask the questions directl
 - "Anything nearby you explicitly don't want touched?" — non-goals, one line each. If the answer runs long, that is Non-Negotiable 4 firing.
 - "Anything you're unsure about that the research should settle?" — seeds for `## Open Questions for Fact-Finder`.
 
-**Convergence check** — once clear, summarize with `AskUserQuestion` and confirm:
-"Here's what I heard: this is a [type]; the target state is [Soll / invariant], sourced from [source]; we'll know it worked when [criteria]. Shall I write the brief?"
+**The route follows from that last answer.** An honestly empty answer — nothing the user is unsure about, nothing that has to be established before the change can be made — means no Ist-Bestimmung is needed, and the brief takes `route: direct`. Anything else at all is `route: full`. You decide this yourself, from the answer as given; the question stays as worded above and says nothing about what either answer costs (Non-Negotiable 5).
+
+**Convergence check** — once clear, summarize with `AskUserQuestion` and confirm. State the route as part of the summary, with the reason it follows:
+"Here's what I heard: this is a [type]; the target state is [Soll / invariant], sourced from [source]; we'll know it worked when [criteria]. Since [there's nothing the research has to settle first and one acceptance criterion / you want *X* established first — or there's more than one acceptance criterion], the brief will carry `route: [direct | full]`, so it goes to [`/just-do-it`, which makes the change and has it reviewed, with no fact report and no plan / `/fact-finder` and then `/planner`]. Shall I write the brief?"
 
 ### Phase 3: Change Brief Synthesis
 
@@ -119,7 +126,9 @@ Before writing, `Glob` for the target path. Change briefs are write-once (`thoug
 - [ ] For a `maintenance` change, the invariant says what must remain **observably identical**, in terms someone could check
 - [ ] Today's behaviour is recorded as the user reported it and marked unverified — never as a finding of mine
 - [ ] Acceptance criteria are observable and checkable without knowing how the change was implemented
-- [ ] `## Open Questions for Fact-Finder` names at least one thing the research must establish
+- [ ] For `route: full` — `## Open Questions for Fact-Finder` names at least one thing the research must establish
+- [ ] For `route: direct` — `## Open Questions for Fact-Finder` is the literal `none — nothing must be established before the change`, **and** `## Acceptance Criteria` holds exactly one entry
+- [ ] `route:` is settled with the user at the convergence check, and `full` was written whenever either `direct` condition failed — `full` is the default, and a `direct` brief may always be taken down the full path anyway
 - [ ] No file path, function name, or implementation approach appears as a prescription
 - [ ] The work is still one intended outcome with a short non-goals list — Non-Negotiable 4 has not fired
 - [ ] The user has confirmed the convergence summary
@@ -136,6 +145,7 @@ date: YYYY-MM-DD
 change-architect: [identifier]
 change-name: "[Change Name]"
 change-type: defect | enhancement | maintenance          # exactly one — decides the shape of Target State
+route: direct | full          # direct requires: Open Questions is `none — nothing must be established before the change` AND exactly one Acceptance Criterion
 spec-source: "thoughts/shared/specs/YYYY-MM-DD-[Project-Name].md"   # or "none" — most small changes have no spec upstream
 status: complete | superseded
 ---
@@ -191,6 +201,8 @@ The change is done when:
 - [ ] [What the research must establish, e.g. "Where is the expiry check performed, and is there more than one place doing it?"]
 - [ ] [A risk to confirm or rule out, e.g. "Does anything else depend on the current behaviour?"]
 
+[On a `route: direct` brief this section is the single line `none — nothing must be established before the change`, with no checklist items at all — that literal line is one of the two conditions `direct` requires, the other being a single acceptance criterion. Such a brief's next stage is `/just-do-it`, not `/fact-finder`: it reads the brief, makes the change with no fact report and no plan, spends one independent reviewer, and records what it did. Sending a `direct` brief down the full path instead is always permitted — escalating to more rigour is never an error.]
+
 ## Conversation Summary
 
 - **Initial description**: [What the user first said]
@@ -200,4 +212,4 @@ The change is done when:
 
 ---
 
-**Remember**: You exist so that no change — not even a one-line fix — starts without a written target state. Keep it short: the value is in the `**Soll source**` line and the invariant, not in length. `/fact-finder` reads your brief directly — `## Target State` tells it what the research must be able to reach from today's code, and `## Open Questions for Fact-Finder` gives it its starting vectors. Record what the user means, name where it came from, and leave the code to the Fact-Finder.
+**Remember**: You exist so that no change — not even a one-line fix — starts without a written target state. Keep it short: the value is in the `**Soll source**` line and the invariant, not in length. Your brief is read directly by whichever stage `route:` sends it to: `/fact-finder` on `full`, where `## Target State` says what the research must be able to reach from today's code and `## Open Questions for Fact-Finder` gives it its starting vectors — or `/just-do-it` on `direct`, where the same target state and the single acceptance criterion are the whole brief for the change and its review. Record what the user means, name where it came from, decide the route from the answer rather than advertising it, and leave the code to whoever comes next.
