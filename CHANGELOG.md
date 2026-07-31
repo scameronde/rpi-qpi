@@ -13,8 +13,16 @@ Entries are backfilled from git history; each links to its tag on GitHub.
 
 ## [Unreleased]
 
+No commits yet since [V4.1.0](#v410---2026-07-31).
+
+## [V4.1.0] - 2026-07-31
+
+Adds the fourth and fifth pipeline entry points. `/change-architect` gives small changes, bug
+fixes, and maintenance work a recorded target state; `/just-do-it` then executes the smallest of
+them without a fact report or a plan. Together they close the gap where a one-line fix either
+cost the full pipeline or escaped it entirely into chat.
+
 ### Added
-- `CHANGELOG.md`, backfilled from git tag history, plus a Release Notes section in `CLAUDE.md` documenting the convention.
 - `/change-architect` as a fourth pipeline entry point, recording the intended target state of small changes, bug fixes, and maintenance work in change briefs (typed as `defect`, `enhancement`, or `maintenance`) written to `thoughts/shared/changes/`, before `/fact-finder` maps the code — closing the gap where a bug fix's intent lived only in a chat prompt that vanishes with the session.
 - `/planner`'s admission gate: it now refuses to plan from fact reports with `upstream-artifact: none`, unless they are QA reports (which already encode their own Soll-Ist comparison). This ensures every plan targets a recorded state instead of an unexamined prompt.
 - `/just-do-it` as the change path's second exit, taking a `route: direct` brief directly to one reviewer and commit (with a Change Record), bypassing `/fact-finder` and `/planner` — closing the gap where small changes previously cost roughly twenty cold contexts and so people abandoned the pipeline for chat.
@@ -27,10 +35,25 @@ Entries are backfilled from git history; each links to its tag on GitHub.
 - `/change-architect` now settles `route: direct | full` in its pre-write checklist, with the decision branching whether the brief routes to `/just-do-it` or the full `/fact-finder → /planner → /implement` pipeline.
 - `/fact-finder` and `thoughts-locator` now exclude `-RECORD.md` Change Records from their work-order and brief-discovery globs, keeping completed small changes from resurfacing in new work.
 - `CLAUDE.md`'s pipeline-duplication section no longer implies that five prose copies are the whole surface. It now names the three families of table the fifth item hid, and the four closed enumerations that skills consume mechanically — where a missing directory produces no error at all, just an artifact nobody ever finds.
+- `/prototype`'s post-"go" hand-off now names `/change-architect` alongside `/feature-architect`, and its blocked-skill list grew to cover `/just-do-it` and `/commit`. All three write git history, and Phase 5 deletes the prototype branch unconditionally, so anything they commit there is discarded with it.
+- `CLAUDE.md` now states that `/implement`'s resume path parses the STATE body by bold key, and that nothing parses `**Plan**:` itself — it stays because it belongs to the format.
 
 ### Fixed
 - The CLAUDE.md citation of the plan key-set assertion in `thoughts/shared/plans/AGENTS.md` was corrected from the wrong lines (118-119, STATE task checklist rules) to the right ones (120-121, the actual frontmatter key-set definitions).
 - `thoughts-locator` now returns all 10 artifact categories. Feature briefs had been in its archive map with no answer-template section to report them under — a pre-existing gap, now closed alongside the new change-brief section.
+- `CLAUDE.md`'s DOX scope listed the live `AGENTS.md` files without `changes/`, which had gained one in the same release; the four artifact directories that deliberately carry none are now named too.
+- `README.md`'s frontmatter list was missing `plan:` and `change-brief:`, its traceability diagram had no branch for the Change Record the `route: direct` exit produces, and its `status:` paragraph credited only STATE files with tracking execution.
+- `thoughts/shared/plans/AGENTS.md` still claimed no plan on disk carried the 2026-07-30 frontmatter, and `thoughts/shared/prototypes/AGENTS.md` predated `/prototype`'s `/change-architect` hand-off while miscounting its own frontmatter fields — both found by a `/dox-update` sweep.
+- The trailing `ORBIT-V4-*` references in `README.md`'s directory listing and Background section, completing the rename `f2f3a0f` began.
+
+## [V4.0.2] - 2026-07-30
+
+### Added
+- `CHANGELOG.md`, backfilled from git tag history, plus a Release Notes section in `CLAUDE.md` documenting the convention.
+
+### Fixed
+- Stale `ORBIT-V4-*` references in `CLAUDE.md`, left over after `f2f3a0f` renamed those drafts to `ORBIT-V5-*`.
+- `thoughts/shared/{facts,plans,qa}/AGENTS.md` now caveat that most (or, for `plans/`, all) of their existing artifacts predate the frontmatter/section contract those files describe, so the legacy corpus isn't misread as non-conforming.
 
 ## [V4.0.1] - 2026-07-30
 
@@ -223,7 +246,9 @@ Initial state of the agent framework, then named RPIQR/RPIQPI.
 ### Removed
 - The deprecated `python-qa-auditor` agent and all references to it.
 
-[Unreleased]: https://github.com/scameronde/rpi-qpi/compare/V4.0.1...HEAD
+[Unreleased]: https://github.com/scameronde/rpi-qpi/compare/V4.1.0...HEAD
+[V4.1.0]: https://github.com/scameronde/rpi-qpi/compare/V4.0.2...V4.1.0
+[V4.0.2]: https://github.com/scameronde/rpi-qpi/compare/V4.0.1...V4.0.2
 [V4.0.1]: https://github.com/scameronde/rpi-qpi/compare/V4.0.0...V4.0.1
 [V4.0.0]: https://github.com/scameronde/rpi-qpi/compare/V3.6.0...V4.0.0
 [V3.6.0]: https://github.com/scameronde/rpi-qpi/compare/V3.5.0...V3.6.0
