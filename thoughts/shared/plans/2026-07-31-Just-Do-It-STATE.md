@@ -30,7 +30,7 @@ Grouped by wave. Tasks within a wave run concurrently, but are checked off as ea
 
 ### Wave 3
 - [x] PLAN-009: Record the route under `CHANGELOG.md` `## [Unreleased]`
-- [ ] PLAN-011: Show the second exit in the two remaining scenario→route tables
+- [x] PLAN-011: Show the second exit in the two remaining scenario→route tables
 
 ## Notes
 - Plan created: 2026-07-31

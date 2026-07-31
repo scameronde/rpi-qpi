@@ -18,7 +18,7 @@ A single feature is one stream of work, so brownfield skips `/epic-planner` — 
 | Entirely new project (no existing code) | `mission-architect` → `specifier` → `epic-planner` → `fact-finder` → `planner` |
 | New subsystem in this system, own value proposition **and** several streams | `mission-architect` → `specifier` → `epic-planner` → `fact-finder` → `planner` — the mission records this system as a constraint |
 | Significant new feature in existing system | **`feature-architect`** → `fact-finder` → `planner` |
-| Small change, bug fix, or maintenance work | `change-architect` → `fact-finder` → `planner` |
+| Small change, bug fix, or maintenance work | `change-architect` → `just-do-it` when the brief carries `route: direct` — otherwise → `fact-finder` → `planner` |
 
 If the user describes something that sounds like a small change (a few files, one function, a minor addition), redirect them: "This sounds like a targeted change — I'd suggest `/change-architect`, which records the intent in a short brief before the Fact-Finder maps the code, rather than a full feature brief."
 
