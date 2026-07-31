@@ -48,17 +48,18 @@ Each stage produces artifacts in `thoughts/shared/`, named `YYYY-MM-DD-Topic.md`
 | Plan | `/planner` | `thoughts/shared/plans/` (plan + `-STATE.md`) |
 | Execution | `/implement` | Commits per task, advancing STATE |
 
-Every artifact opens with YAML frontmatter naming the artifact it came from — `mission-source:`, `spec-source:`, `fact-source:`, or the generic `upstream-artifact:` — so any plan can be traced back through its fact report and epic to the mission it serves:
+Every artifact opens with YAML frontmatter naming the artifact it came from — `mission-source:`, `spec-source:`, `fact-source:`, `plan:`, `change-brief:`, or the generic `upstream-artifact:` — so any plan can be traced back through its fact report and epic to the mission it serves:
 
 ```
 mission ──▶ spec ──▶ epic ─┐
 feature brief ─────────────┼──▶ fact report ──▶ plan ──▶ STATE
 change brief ──────────────┘
+             └──────────────▶ Change Record        (route: direct)
 ```
 
 Downstream stages read these fields rather than guessing: `/planner` copies the fact report's `upstream-artifact:` verbatim, and `/implement` uses that copy to find the epic whose verification plan it must run before closing out — but only when the path is under `epics/`; a path into `features/` or `changes/`, or the literal `none`, are skipped.
 
-A `status:` field describes the document — `complete`, `superseded`, or `ready-for-research` for an epic awaiting `/fact-finder`. Whether a plan has actually been *executed* is tracked separately, in its STATE file.
+A `status:` field describes the document — `complete`, `superseded`, or `ready-for-research` for an epic awaiting `/fact-finder`. Two artifacts are the exception, and both track an execution attempt instead: a plan's STATE file (`in-progress | complete`) and a Change Record (`complete | abandoned`). So whether a plan has actually been *executed* is never read off the plan itself.
 
 ## Getting Started
 
@@ -168,6 +169,7 @@ scripts/
 thoughts/shared/       # Workflow artifacts (see the pipeline table above)
 presentation/          # Slide decks about the method
 
+CHANGELOG.md           # Keep a Changelog format, one section per git tag
 ORBIT-V5-CONCEPT.md    # Draft next-generation architecture (not implemented)
 ORBIT-V5-OKF-CONVENTION.md
 ```

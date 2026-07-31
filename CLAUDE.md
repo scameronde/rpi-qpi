@@ -144,6 +144,8 @@ The full enumeration — 85 statements across 19 files — is recorded at `thoug
 
 `/just-do-it` carries `disable-model-invocation: true` for the same reason `/commit` does: it writes code and commits, so it stays user-invoked only.
 
+`/prototype` blocks every other workflow and quality skill from running inside its worktree, but three of them carry a consequence the rest do not — `/implement`, `/just-do-it` and `/commit` all write git history, and Phase 5 deletes the prototype branch unconditionally, so anything they commit is lost with it (`prototype/SKILL.md`, Non-Negotiable 3). Adding a skill that commits means adding it to that list too.
+
 ## Quality and Maintenance Skills
 
 | Skill | Purpose |
@@ -248,7 +250,7 @@ Version tags up to `V3.3.0` predate today's naming — the project was `RPIQR`/`
 
 **Conflict rule:** When `AGENTS.md` files conflict, the closer file governs local details. No `AGENTS.md` may override this `CLAUDE.md`.
 
-**Scope in this repo:** `.claude/**` is deliberately outside DOX. `dox-init` and `dox-update` exclude it, which left the `AGENTS.md` files there hand-maintainable only and duly stale, so `031e491` removed all three and moved the load-bearing rules into the skills themselves. `.claude/` is self-describing: every `SKILL.md` and agent file carries its name, description and contract in frontmatter. Live `AGENTS.md` files are the root one plus `thoughts/shared/` and its `facts/`, `plans/`, `qa/`, `prototypes/` children.
+**Scope in this repo:** `.claude/**` is deliberately outside DOX. `dox-init` and `dox-update` exclude it, which left the `AGENTS.md` files there hand-maintainable only and duly stale, so `031e491` removed all three and moved the load-bearing rules into the skills themselves. `.claude/` is self-describing: every `SKILL.md` and agent file carries its name, description and contract in frontmatter. Live `AGENTS.md` files are the root one plus `thoughts/shared/` and its `changes/`, `facts/`, `plans/`, `prototypes/`, `qa/` children. `missions/`, `specs/`, `epics/` and `features/` carry none — `thoughts/shared/AGENTS.md` is their contract.
 
 ## ORBIT V5 — Draft, Not Current State
 
