@@ -8,8 +8,8 @@ status: in-progress
 
 **Plan**: thoughts/shared/plans/2026-07-31-Just-Do-It.md
 **Current Wave**: 1
-**Current Task**: PLAN-003
-**Completed Tasks**: PLAN-001, PLAN-002
+**Current Task**: PLAN-004
+**Completed Tasks**: PLAN-001, PLAN-002, PLAN-003
 
 ## Task Checklist
 
@@ -18,7 +18,7 @@ Grouped by wave. Tasks within a wave run concurrently, but are checked off as ea
 ### Wave 1
 - [x] PLAN-001: Author the `/just-do-it` skill and its own reviewer prompt
 - [x] PLAN-002: Add the `route:` gate and its no-price-signal rule to `/change-architect`
-- [ ] PLAN-003: Create `thoughts/shared/changes/AGENTS.md` asserting both key sets
+- [x] PLAN-003: Create `thoughts/shared/changes/AGENTS.md` asserting both key sets
 - [ ] PLAN-004: Register `changes/AGENTS.md` and the second reader in the parent contract
 - [ ] PLAN-005: Exclude `-RECORD.md` from `/fact-finder`'s work-order glob
 
