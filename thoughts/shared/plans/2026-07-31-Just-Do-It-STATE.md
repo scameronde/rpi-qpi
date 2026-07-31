@@ -8,15 +8,15 @@ status: in-progress
 
 **Plan**: thoughts/shared/plans/2026-07-31-Just-Do-It.md
 **Current Wave**: 1
-**Current Task**: PLAN-001
-**Completed Tasks**: (none yet)
+**Current Task**: PLAN-002
+**Completed Tasks**: PLAN-001
 
 ## Task Checklist
 
 Grouped by wave. Tasks within a wave run concurrently, but are checked off as each one commits.
 
 ### Wave 1
-- [ ] PLAN-001: Author the `/just-do-it` skill and its own reviewer prompt
+- [x] PLAN-001: Author the `/just-do-it` skill and its own reviewer prompt
 - [ ] PLAN-002: Add the `route:` gate and its no-price-signal rule to `/change-architect`
 - [ ] PLAN-003: Create `thoughts/shared/changes/AGENTS.md` asserting both key sets
 - [ ] PLAN-004: Register `changes/AGENTS.md` and the second reader in the parent contract
