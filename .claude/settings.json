@@ -1,5 +1,4 @@
 {
-  "enableAllProjectMcpServers": true,
   "permissions": {
     "allow": [
       "Bash(uv run mypy *)",
@@ -7,6 +6,7 @@
       "Bash(uv run pytest *)"
     ]
   },
+  "enableAllProjectMcpServers": true,
   "hooks": {
     "SessionStart": [
       {
@@ -20,5 +20,10 @@
         ]
       }
     ]
+  },
+  "enabledPlugins": {
+    "kotlin-lsp@claude-plugins-official": true,
+    "pyright-lsp@claude-plugins-official": true,
+    "typescript-lsp@claude-plugins-official": true
   }
 }
