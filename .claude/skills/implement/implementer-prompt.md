@@ -20,6 +20,10 @@ These files were modified by earlier waves in this plan. Read them before starti
 
 1. **Check local governance**: For each path in the task's **File(s)** field, walk from the repository root to that file's directory and read any `AGENTS.md` files found along the route. The nearest `AGENTS.md` is your local contract; parents supply broader rules.
 2. Read each file in the task's **File(s)** field to understand current state.
+   - **Prefer LSP for navigation**: Use `goToDefinition` to jump directly to function/class definitions instead of manually resolving imports.
+   - **Use LSP for execution flow**: Use `callHierarchy` (with `incomingCalls` and `outgoingCalls`) to map function call chains.
+   - **Use LSP for type info**: Use `hover` to get type signatures without reading type definition files.
+   - **Fallback to Read**: If LSP fails (unresolved import, dynamic code), fall back to `Read` on the import path.
 3. Implement exactly what the task specifies.
 4. Run the task's **`Verify:`** command and confirm it produces the expected result. If the task has no `Verify:` field, derive a check from its `Done When` and report which you ran.
 

@@ -22,6 +22,8 @@ If the task's `Verify:` is `none — requires review`, there is no command to ru
 
 Concurrent implementers worked on other files in this wave. Review **only** the files listed above; other changes in the working tree are not yours to judge.
 
+**Prefer LSP for symbol searches** when checking usages, definitions, or cross-file consistency — use `workspaceSymbol` to find where a class or function is defined, and `findReferences` to check whether a symbol the diff touches is used elsewhere in ways that might break. Use `Grep`/`Bash` for string-literal or non-code-text searches, where LSP does not apply.
+
 ### Part 1 — Spec Compliance (blocking)
 
 - **Missing** — anything in the task instruction that was skipped?
