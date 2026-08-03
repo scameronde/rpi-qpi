@@ -13,7 +13,23 @@ Entries are backfilled from git history; each links to its tag on GitHub.
 
 ## [Unreleased]
 
-No commits yet since [V4.1.0](#v410---2026-07-31).
+No commits yet since [V4.1.1](#v411---2026-08-03).
+
+## [V4.1.1] - 2026-08-03
+
+Steers `/implement`'s subagents toward LSP navigation and makes the LSP tool actually available on this repo, fixes the MCP servers' silent `.env`-loading failure, and re-archives the presentation decks by version.
+
+### Added
+- LSP-preference guidance in `/implement`'s implementer and reviewer prompt templates, mirroring the LSP-navigation style already used in `codebase-analyzer` and `codebase-pattern-finder` — steering per-task subagents toward `goToDefinition`/`callHierarchy`/`hover` and `workspaceSymbol`/`findReferences` instead of defaulting to raw `Read`/`Grep`.
+- `start-claude.sh`, sourcing `.env` before launching Claude Code — `.mcp.json`'s `${VAR}` placeholders only resolve from the process environment, and Claude Code does not read `.env` itself, so the crawl4ai/searxng MCP servers silently failed to connect without it.
+
+### Changed
+- `.claude/settings.json` now enables the official `kotlin-lsp`, `pyright-lsp`, and `typescript-lsp` plugins, so the LSP tool is actually available in sessions on this repo, complementing the new prompt guidance.
+- The ORBIT presentation deck gained slide 16, "Der Änderungspfad — Klein bleibt klein," covering `/change-architect` and `/just-do-it` (the typed brief, the `route: direct | full` decision, and the direct path's three limits); every following slide renumbered, and the title/overview slides now read "Mission, Feature & Change."
+- Prior presentation decks archived into versioned `V2/`, `V3/`, `V4/` subdirectories; the current German-language deck (`ORBIT-Von-der-Absicht-zum-Code.pptx`) now sits at the top level.
+
+### Fixed
+- `CHANGELOG.md` gained the `V4.0.2` and `V4.1.0` sections it had shipped without, splitting what had piled up under `Unreleased` along the actual tag boundaries.
 
 ## [V4.1.0] - 2026-07-31
 
@@ -246,7 +262,8 @@ Initial state of the agent framework, then named RPIQR/RPIQPI.
 ### Removed
 - The deprecated `python-qa-auditor` agent and all references to it.
 
-[Unreleased]: https://github.com/scameronde/rpi-qpi/compare/V4.1.0...HEAD
+[Unreleased]: https://github.com/scameronde/rpi-qpi/compare/V4.1.1...HEAD
+[V4.1.1]: https://github.com/scameronde/rpi-qpi/compare/V4.1.0...V4.1.1
 [V4.1.0]: https://github.com/scameronde/rpi-qpi/compare/V4.0.2...V4.1.0
 [V4.0.2]: https://github.com/scameronde/rpi-qpi/compare/V4.0.1...V4.0.2
 [V4.0.1]: https://github.com/scameronde/rpi-qpi/compare/V4.0.0...V4.0.1
