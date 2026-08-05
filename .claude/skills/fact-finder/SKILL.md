@@ -373,7 +373,7 @@ Choose the appropriate scope level based on how many document types you need:
 
 **Use `comprehensive` when exploring all historical context:**
 - Example: "Find all mission statements, specs, epics, plans, QA reports, and research related to authentication. Search scope: comprehensive."
-- Returns: All 10 categories (missions, specs, feature briefs, change briefs, epics, plans, QA reports, fact reports, prototype learnings, project notes)
+- Returns: All 11 categories (missions, specs, feature briefs, change briefs, epics, plans, QA reports, fact reports, prototype learnings, mission check reports, project notes)
 - Use case: Initial research phase, full system understanding
 
 **Example delegation with paths_only scope:**
