@@ -13,7 +13,8 @@ Entries are backfilled from git history; each links to its tag on GitHub.
 
 ## [Unreleased]
 
-No commits yet since [V4.1.1](#v411---2026-08-03).
+### Added
+- `mission-check` skill — a whole-tree, repeatable audit of the codebase against its recorded mission/spec/epic intent, run only when a human asks for it. Discovers every mission tree and every orphan feature/change branch with no mission root, runs distinct Coverage and Fidelity passes against each, and skips full re-analysis for branches unchanged since the prior run (tracked via git commit boundaries, not a new persistence mechanism). Writes non-superseding, independently timestamped reports to the new `thoughts/shared/mission-checks/` directory.
 
 ## [V4.1.1] - 2026-08-03
 
