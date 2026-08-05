@@ -156,6 +156,7 @@ The full enumeration — 85 statements across 19 files — is recorded at `thoug
 | `logic-bugs-qa` | Logic and bug analysis across languages |
 | `dox-init` | Bootstrap a DOX `AGENTS.md` tree for a project (idempotent — never overwrites) |
 | `dox-update` | Detect and regenerate stale `AGENTS.md` files |
+| `mission-check` | Whole-tree audit of code against recorded mission/spec/epic intent, including orphan-branch checks for feature and change work with no mission root |
 | `claude-code-extensions` | Reference for creating commands, skills, subagents, and MCP servers |
 | `commit` | Add and commit all outstanding changes as logically grouped commits |
 

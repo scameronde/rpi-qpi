@@ -158,6 +158,7 @@ Without a `.env` no MCP server resolves, so web crawling, search and library-doc
 | `logic-bugs-qa` | Logic and bug analysis across languages |
 | `dox-init` | Bootstrap a DOX `AGENTS.md` governance tree (idempotent) |
 | `dox-update` | Detect and regenerate stale `AGENTS.md` files |
+| `mission-check` | Audit code against recorded mission/spec/epic intent, including orphan feature and change work with no mission root |
 | `claude-code-extensions` | Reference for creating commands, skills, subagents, and MCP servers |
 | `/commit` | Add and commit all outstanding changes as logically grouped commits (user-invoked only) |
 ## Architecture

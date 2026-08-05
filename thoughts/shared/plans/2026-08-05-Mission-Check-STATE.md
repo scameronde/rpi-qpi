@@ -8,8 +8,8 @@ status: in-progress
 
 **Plan**: thoughts/shared/plans/2026-08-05-Mission-Check.md
 **Current Wave**: 1
-**Current Task**: PLAN-004
-**Completed Tasks**: PLAN-001, PLAN-002, PLAN-003
+**Current Task**: PLAN-005
+**Completed Tasks**: PLAN-001, PLAN-002, PLAN-003, PLAN-004
 
 ## Task Checklist
 
@@ -19,7 +19,7 @@ Grouped by wave. Tasks within a wave run concurrently, but are checked off as ea
 - [x] PLAN-001: Write the new `mission-check` skill file
 - [x] PLAN-002: Register `mission-checks/` directory in DOX
 - [x] PLAN-003: Add 11th category to `thoughts-locator.md` and `fact-finder/SKILL.md`
-- [ ] PLAN-004: Add `mission-check` row to `CLAUDE.md` and `README.md`
+- [x] PLAN-004: Add `mission-check` row to `CLAUDE.md` and `README.md`
 - [ ] PLAN-005: Add `CHANGELOG.md` Unreleased entry
 
 ## Notes
