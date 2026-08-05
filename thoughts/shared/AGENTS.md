@@ -26,10 +26,11 @@ Persistent artifact store for all workflow pipeline outputs. Every stage of the 
 | `qa/` | `/fact-finder` (QA mode) | human review, `/planner` (QA plans) |
 | `prototypes/` | `/prototype` | `/feature-architect`, `/change-architect`, `/fact-finder` |
 | `plans/` | `/planner` | `/implement` |
+| `mission-checks/` | `/mission-check` | human review only — no downstream skill reads this directory |
 
 A feature brief goes straight to `/fact-finder`: brownfield skips `/epic-planner`, because epic decomposition exists to cut a whole specification into several parallel streams and one feature is one stream. A change brief with `route: full` goes to `/fact-finder` for the same reason; a `route: direct` brief goes to `/just-do-it` without a fact report or a plan. A change brief carries no `## Inherited Constraints` section, so `/fact-finder` writes `None` in its own table.
 
-**Populated today:** `plans/`, `facts/`, `qa/`, `features/`, `epics/`. **Empty today:** `missions/`, `specs/`, `prototypes/`, `changes/`. File counts are not a contract — they change with every pipeline run, so `ls` is the authority, not this file.
+**Populated today:** `plans/`, `facts/`, `qa/`, `features/`, `epics/`, `changes/`. **Empty today:** `missions/`, `specs/`, `prototypes/`, `mission-checks/`. File counts are not a contract — they change with every pipeline run, so `ls` is the authority, not this file.
 
 ## Work Guidance
 
@@ -47,6 +48,7 @@ A feature brief goes straight to `/fact-finder`: brownfield skips `/epic-planner
 
 - [changes/](changes/AGENTS.md) — Change briefs and their execution records
 - [plans/](plans/AGENTS.md) — Implementation plans (PLAN-XXX) and STATE tracking files
+- [mission-checks/](mission-checks/AGENTS.md) — Mission Check reports (point-in-time drift snapshots; deliberately not write-once)
 - [facts/](facts/AGENTS.md) — Codebase fact reports
 - [qa/](qa/AGENTS.md) — QA review reports
 - [prototypes/](prototypes/AGENTS.md) — Prototype learnings notes (problem/built/outcome/decision)
