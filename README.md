@@ -70,6 +70,16 @@ A `status:` field describes the document — `complete`, `superseded`, or `ready
 
 No Node.js or Python packages are needed — the MCP servers are hosted, not built locally.
 
+### Starting Claude Code
+
+**Always launch Claude Code via `./start-claude.sh`, not `claude` directly.** The script loads the gitignored `.env` into the environment before exec'ing `claude`, which is what lets `.mcp.json`'s `${CRAWL4AI_MCP_URL}`, `${SEARXNG_MCP_URL}` and `${CONTEXT7_API_KEY}` placeholders resolve — Claude Code itself never reads `.env`. Run `claude` directly and every MCP server silently fails to connect.
+
+```bash
+./start-claude.sh
+```
+
+Any arguments are forwarded to `claude` as-is.
+
 ### Using it in this repository
 
 Nothing to install. `.claude/` is picked up directly, and a SessionStart hook injects the pipeline rules at the start of every session. Verify the hook still emits valid JSON after editing it:
