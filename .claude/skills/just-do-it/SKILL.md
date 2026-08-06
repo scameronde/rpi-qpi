@@ -1,7 +1,6 @@
 ---
 name: just-do-it
 description: Execute a small change directly from its change brief — scoped reading, one implementation site, one mandatory review, one commit. Reads a brief in thoughts/shared/changes/ and writes a Change Record beside it. Use after /change-architect when the brief carries route: direct.
-disable-model-invocation: true   # writes git history — the user starts this, never Claude
 ---
 
 # Just Do It: Direct Execution of a Change Brief

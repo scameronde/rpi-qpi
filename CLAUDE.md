@@ -142,8 +142,6 @@ The full enumeration — 85 statements across 19 files — is recorded at `thoug
 
 `/prototype` carries `model: opus` deliberately, and must never be given `context: fork`: it is interactive and owns a git worktree lifecycle, neither of which survives being run as a subagent. The rationale is recorded in its own frontmatter note.
 
-`/just-do-it` carries `disable-model-invocation: true` for the same reason `/commit` does: it writes code and commits, so it stays user-invoked only.
-
 `/prototype` blocks every other workflow and quality skill from running inside its worktree, but three of them carry a consequence the rest do not — `/implement`, `/just-do-it` and `/commit` all write git history, and Phase 5 deletes the prototype branch unconditionally, so anything they commit is lost with it (`prototype/SKILL.md`, Non-Negotiable 3). Adding a skill that commits means adding it to that list too.
 
 ## Quality and Maintenance Skills
