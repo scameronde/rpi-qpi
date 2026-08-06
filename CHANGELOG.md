@@ -27,6 +27,7 @@ Adds `mission-check`, a whole-tree audit skill comparing code against recorded m
 - `thoughts/shared/mission-checks/` registered in DOX: a new `AGENTS.md` documenting the directory's non-write-once departure, plus a `thoughts/shared/AGENTS.md` directory-assignment row, Child DOX Index entry, and a corrected Populated/Empty line (also fixing a pre-existing `changes/` inaccuracy).
 - `thoughts-locator` and `fact-finder/SKILL.md` gain an 11th historical-document category, `mission-checks/`, across both files' counts, the Map of the Archive, workflow examples, and output-format example — the closed count of "10 categories" both previously asserted was stale.
 - `CLAUDE.md` and `README.md` gain a `mission-check` row in their Quality and Maintenance tables, between `dox-update` and `claude-code-extensions`; pipeline-ordering prose is untouched, since it is not a pipeline stage.
+- `/commit` and `/just-do-it` no longer carry `disable-model-invocation: true` — any agent can now invoke either through the Skill tool, unconditionally, the same as every other model-invocable skill. `CLAUDE.md` lost the sentences documenting the now-obsolete restriction for both, and `README.md` lost the `(user-invoked only)` annotation on `/commit`'s row. Each change was carried through its own `/change-architect` → `/just-do-it` run, with a change brief and Change Record under `thoughts/shared/changes/`.
 
 ## [V4.1.1] - 2026-08-03
 
