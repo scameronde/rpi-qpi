@@ -13,8 +13,20 @@ Entries are backfilled from git history; each links to its tag on GitHub.
 
 ## [Unreleased]
 
+No commits yet since [V4.2.0](#v420---2026-08-06).
+
+## [V4.2.0] - 2026-08-06
+
+Adds `mission-check`, a whole-tree audit skill comparing code against recorded mission/spec/epic intent, and documents `start-claude.sh` as the required launch method.
+
 ### Added
 - `mission-check` skill — a whole-tree, repeatable audit of the codebase against its recorded mission/spec/epic intent, run only when a human asks for it. Discovers every mission tree and every orphan feature/change branch with no mission root, runs distinct Coverage and Fidelity passes against each, and skips full re-analysis for branches unchanged since the prior run (tracked via git commit boundaries, not a new persistence mechanism). Writes non-superseding, independently timestamped reports to the new `thoughts/shared/mission-checks/` directory.
+- A "Starting Claude Code" subsection in `README.md`'s Getting Started, documenting `./start-claude.sh` as the required launch method instead of `claude` directly — the script loads the gitignored `.env` before exec'ing `claude`, which is what lets `.mcp.json`'s `${VAR}` placeholders resolve; Claude Code itself never reads `.env`.
+
+### Changed
+- `thoughts/shared/mission-checks/` registered in DOX: a new `AGENTS.md` documenting the directory's non-write-once departure, plus a `thoughts/shared/AGENTS.md` directory-assignment row, Child DOX Index entry, and a corrected Populated/Empty line (also fixing a pre-existing `changes/` inaccuracy).
+- `thoughts-locator` and `fact-finder/SKILL.md` gain an 11th historical-document category, `mission-checks/`, across both files' counts, the Map of the Archive, workflow examples, and output-format example — the closed count of "10 categories" both previously asserted was stale.
+- `CLAUDE.md` and `README.md` gain a `mission-check` row in their Quality and Maintenance tables, between `dox-update` and `claude-code-extensions`; pipeline-ordering prose is untouched, since it is not a pipeline stage.
 
 ## [V4.1.1] - 2026-08-03
 
@@ -263,7 +275,8 @@ Initial state of the agent framework, then named RPIQR/RPIQPI.
 ### Removed
 - The deprecated `python-qa-auditor` agent and all references to it.
 
-[Unreleased]: https://github.com/scameronde/rpi-qpi/compare/V4.1.1...HEAD
+[Unreleased]: https://github.com/scameronde/rpi-qpi/compare/V4.2.0...HEAD
+[V4.2.0]: https://github.com/scameronde/rpi-qpi/compare/V4.1.1...V4.2.0
 [V4.1.1]: https://github.com/scameronde/rpi-qpi/compare/V4.1.0...V4.1.1
 [V4.1.0]: https://github.com/scameronde/rpi-qpi/compare/V4.0.2...V4.1.0
 [V4.0.2]: https://github.com/scameronde/rpi-qpi/compare/V4.0.1...V4.0.2
