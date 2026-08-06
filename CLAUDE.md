@@ -158,8 +158,6 @@ The full enumeration — 85 statements across 19 files — is recorded at `thoug
 | `claude-code-extensions` | Reference for creating commands, skills, subagents, and MCP servers |
 | `commit` | Add and commit all outstanding changes as logically grouped commits |
 
-`/commit` carries `disable-model-invocation: true` — it writes git history, so it stays user-invoked only. That also keeps its description out of every session's context.
-
 ## Worker Agents (used internally by Skills)
 
 These live in `.claude/agents/` and are spawned by Skills via the `Agent` tool — never invoked directly.
