@@ -1,7 +1,9 @@
-# ORBIT V4 — Konzept
+# ORBIT V5 — Konzept
 
-> Status: Entwurf zur gemeinsamen Reflektion · Datum: 2026-07-01
-> Zweck: Ankerdokument für den Umbau von ORBIT V3 zu V4. Hält das Leitprinzip,
+> Status: Entwurf zur gemeinsamen Reflektion · Datum: 2026-07-01 ·
+> zuletzt ergänzt: 2026-08-06 (§10: Granularität, Konfliktauflösung, initiale
+> Erfassung geklärt; V3/V4-Beschriftung im ganzen Dokument auf V4/V5 korrigiert)
+> Zweck: Ankerdokument für den Umbau von ORBIT V4 zu V5. Hält das Leitprinzip,
 > die Wissensbasis-Architektur, den Rollen-Umbau und den Compliance-Mechanismus
 > fest. Die Detailplanung der einzelnen Rollen baut auf diesem Dokument auf.
 
@@ -9,7 +11,7 @@
 
 ## 1. Ausgangsproblem
 
-Der Ansatz von ORBIT V3 ist richtig, aber unvollständig umgesetzt.
+Der Ansatz von ORBIT V4 ist richtig, aber unvollständig umgesetzt.
 
 Code wird gerne als "Single Source of Truth" bezeichnet, ist es aber nicht. Code
 ist eine **verlustbehaftete Projektion** von Absicht, Konzept und Regeln
@@ -22,7 +24,7 @@ Ein Agentic-Engineering-Framework kann nur dann zuverlässig arbeiten, wenn es
 billigen, direkten Zugriff auf diese Informationen hat. Also müssen sie
 **separat, explizit und dauerhaft aktuell** dokumentiert werden.
 
-V3 erfasst Absicht und Idee in der Mission. Konzept und Regeln sind jedoch nur
+V4 erfasst Absicht und Idee in der Mission. Konzept und Regeln sind jedoch nur
 *implizit* — verteilt über Spec, Epics, erste Research-Dokumente und erste
 Pläne. **Aus implizit muss explizit werden.**
 
@@ -30,11 +32,11 @@ Pläne. **Aus implizit muss explizit werden.**
 
 ## 2. Der fundamentale Charakterwechsel
 
-**V3 ist eine Pipeline, die Artefakte als Nebenprodukt ausspuckt.** Mission und
+**V4 ist eine Pipeline, die Artefakte als Nebenprodukt ausspuckt.** Mission und
 Spec werden einmal geschrieben, dann wandert der Fokus zum Code. Die Artefakte
 altern und driften vom Code weg.
 
-**V4 ist eine wissensbasis-zentrierte Architektur.** Eine lebende, explizite
+**V5 ist eine wissensbasis-zentrierte Architektur.** Eine lebende, explizite
 Wissensbasis ist das Zentrum. Die Pipeline ist nur der Mechanismus, der diese
 Basis *pflegt und konsumiert*. Code und Wissensbasis sind zwei gleichberechtigte
 Repräsentationen desselben Systems, die permanent gegeneinander abgeglichen
@@ -58,7 +60,7 @@ Alle Wissensarten ordnen sich auf einer einzigen Achse:
 
 - **Intent** — Absicht & Idee (Vision/Mission): das *Warum* und *Was*. Langlebig.
 - **Rules** — Konzept & Regeln: Architektur, Design, Konventionen, Leitplanken,
-  ADRs. Das *Wie es sein soll*. **Die zentrale Neuerung von V4** — die bisher
+  ADRs. Das *Wie es sein soll*. **Die zentrale Neuerung von V5** — die bisher
   implizite Ebene wird erste Klasse.
 - **Specs** — funktionale Spezifikationen pro Fähigkeit.
 
@@ -96,7 +98,7 @@ Der `rules/`-Ordner ist der Dreh- und Angelpunkt: die explizit gemachte,
 bisher implizite Konzept- und Regelebene.
 
 `unknowns/` ist ein bewusster Demuts-Slot: ein persistentes Register offener
-Fragen und blinder Flecken — anders als V3, wo "Open Questions" pro Report
+Fragen und blinder Flecken — anders als V4, wo "Open Questions" pro Report
 entstehen und wieder verschwinden.
 
 ---
@@ -117,14 +119,14 @@ Gegenrichtung.
 
 ---
 
-## 6. Rollen-Umbau gegenüber V3
+## 6. Rollen-Umbau gegenüber V4
 
-| V3 | V4 | Änderung |
+| V4 | V5 | Änderung |
 |---|---|---|
 | Researcher | **Fact-Finder** | Umbenannt. Produziert ausschließlich die *deskriptive* Ebene. Output nach Art getaggt und in `facts/{code,external,quality}/` getrennt abgelegt. Explizit erkennbar, ob Architektur-, Design- oder Bibliotheks-Fakt. |
 | Planner | **Planner (Vollständigkeits-Gatekeeper)** | Referenziert konkret die Regeln und Fakten, auf denen der Plan beruht (per ID). Plan ist erst "versiegelt", wenn alle referenzierten Regeln/Fakten aktuell sind. Fehlt/veraltet ein Faktum → Plan ungültig, zurück zum Fact-Finder. |
 | — | **Compliance-Agent** (neu) | Gleicht Code-Ist gegen dokumentierte Regeln ab, erzeugt Drift-Reports in `compliance/`, eskaliert Mismatches an den Menschen. |
-| Mission-/Feature-Architect | **Intent-Rolle** | Pflegt `intent/`. Weitgehend wie V3, aber als dauerhaft gepflegte Basis, nicht als Einmal-Artefakt. |
+| Mission-/Feature-Architect | **Intent-Rolle** | Pflegt `intent/`. Weitgehend wie V4, aber als dauerhaft gepflegte Basis, nicht als Einmal-Artefakt. |
 | Specifier | **Rules- + Spec-Rolle** | Macht die bisher implizite Konzept-/Regelebene explizit in `rules/`; funktionale Spec bleibt in `specs/`. |
 | DOX / AGENTS.md | **aufgelöst → skopierte Regeln** | Siehe §7. |
 | Implementation Controller (`/implement`) | **unverändert im Prinzip** | Kann sich jetzt aber zu 100% auf den versiegelten Plan verlassen. |
@@ -176,7 +178,7 @@ Regel anpassen oder Regel an Realität anpassen. Die Entscheidung wird in
 
 ---
 
-## 9. Pipeline V4 (revidiert)
+## 9. Pipeline V5 (revidiert)
 
 Die Pipeline bleibt in ihrer Grundform, wird aber zur wissensbasis-pflegenden
 Schleife statt einer Einbahnstraße:
@@ -196,12 +198,53 @@ Intent  →  Rules + Specs  →  Epics  →  Fact-Finding  →  Plan (versiegelt
 
 ## 10. Offene Punkte (→ `unknowns/`)
 
-- **Granularität von Regeln:** Ein Regeldokument pro Prinzip, pro Komponente
-  oder pro Geltungsbereich? Wie werden Regel-IDs vergeben und stabil gehalten?
-- **Migration V3 → V4:** Wie werden die impliziten Regeln aus bestehenden Specs,
-  Epics und Plänen nach `rules/` extrahiert? Einmaliger Bootstrap-Lauf?
-- **Konflikt-Auflösung bei Regeln:** Was, wenn zwei skopierte Regeln sich für
-  denselben Pfad widersprechen? (DOX hatte "closer file governs" — was ersetzt das?)
+### Geklärt (Stand 2026-08-06)
+
+- **Granularität von Regeln:** Ein Regelknoten pro **prüfbarer Aussage**, nicht
+  pro Thema. Ein Themenblock wie "Monitoring" oder "Logging" zerfällt in
+  mehrere `Rule`-Knoten, je einen pro Enforcement-Pfad — z. B.
+  `RULE-ARCH-health-endpoint` (`enforcement: mechanical`) neben
+  `RULE-DESIGN-alerting-strategy` (`enforcement: semantic`). Begründung: §8
+  der OKF-Convention verlangt für jeden `Rule`-Knoten ein nicht-leeres
+  `enforcement`; eine Sammelregel über ein ganzes Thema kann das nicht
+  erfüllen, weil sie mechanisch und semantisch Prüfbares vermischt. Die
+  Entscheidung selbst (z. B. "wir führen Audit-Logging ein, weil …") bleibt
+  eine `ADR`; die daraus folgenden prüfbaren Aussagen sind die `Rule`-Knoten,
+  die per `refines` auf die ADR zurückzeigen. Regel-IDs werden bei Anlage
+  einmalig nach dem Schema aus §6 vergeben (`<TYP-PRÄFIX>-<BEREICH>-<NUMMER>`)
+  und nie aus dem Titel abgeleitet, damit eine Umbenennung sie nicht bricht.
+
+- **Konflikt-Auflösung bei Regeln:** Bereits gelöst, nur nicht an dieser
+  Stelle beantwortet — siehe `ORBIT-V5-OKF-CONVENTION.md §7.1`: explizite
+  `priority` gewinnt, sonst die Spezifität des `scope`, sonst meldet der
+  Validator einen offenen Konflikt. Ersetzt DOX' "closer file governs" durch
+  "spezifischeres `scope` governs". Dieser Punkt zählt nicht mehr als offen.
+
+- **Initiale Erfassung (vormals "Migration V4 → V5"):** Die alte Formulierung
+  ging von einer falschen Prämisse aus. Die aktuell laufende ORBIT-Version
+  ist **V4**, nicht V3 — ein V3-Bestand existiert seit langem nicht mehr und
+  soll auch nicht rekonstruiert werden, es gibt also keine V3-Projekte zu
+  migrieren. Die eigentliche Frage ist damit nicht "wie migrieren wir alte
+  Projekte", sondern: **wie nimmt ein laufendes V4-Projekt den neuen
+  `rules/`-Layer nachträglich auf?** Zwei Erfassungspfade, je nach Zustand:
+  - **Neues Projekt:** ein eigener Erfassungsschritt zwischen Intent- und
+    Rules-/Spec-Rolle, mit festem Fragenkatalog statt beiläufiger Erwähnung
+    in der Spec-Konversation — mindestens: Audit/Compliance, Observability,
+    Logging-Inhalt, Teststrategie, Code-Konventionen. Ergebnis sind initiale
+    `Rule`-Knoten mit `status: draft` und grobem `scope: ["**"]`, verfeinert
+    sobald Epics oder Fact-Finding echte Pfade liefern.
+  - **Laufendes Projekt (brownfield):** kein reines Interview, sondern Scan +
+    Interview kombiniert — der Scan liefert deskriptive Kandidaten (was der
+    Code faktisch schon tut), das Interview klärt pro Kandidat, ob daraus
+    eine normative Regel wird (`status: active`) oder er verworfen wird.
+    Deckungsgleich mit dem Ist/Soll-Rückgrat aus §3: der Scan-Befund bleibt
+    deskriptiv, bis ein Mensch ihn explizit ins Normative hebt.
+
+  Beide Pfade schreiben in denselben `rules/`-Ordner; nur die Erfassung
+  unterscheidet sich, nicht das Zielformat.
+
+### Weiterhin offen
+
 - **Hash-Granularität:** Zeilenspannen verschieben sich bei jeder Umformatierung.
   Braucht es semantische Anker statt Zeilennummern (Symbol-/AST-basiert)?
 - **Kosten von Stufe-2-Compliance:** Taktung, Scope-Begrenzung, wann lohnt der
@@ -216,6 +259,7 @@ Intent  →  Rules + Specs  →  Epics  →  Fact-Finding  →  Plan (versiegelt
 1. Dieses Konzept gemeinsam schärfen (offene Punkte aus §10).
 2. Je Schlüsselrolle ein Detailkonzept: **Fact-Finder**, **Planner-Gatekeeper**,
    **Compliance-Agent**, **Rules-Scoping / DOX-Ablösung**.
-3. Migrations-Konzept V3 → V4 (Bootstrap der `rules/`-Ebene).
+3. Erfassungskonzept für den `rules/`-Layer in laufenden V4-Projekten
+   ausarbeiten (kein Migrations-Konzept — es gibt keinen V3-Bestand).
 4. Erst danach: Umsetzung durch Claude Code entlang der ORBIT-Pipeline selbst.
 ```

@@ -1,11 +1,13 @@
 # ORBIT-OKF-Konvention — Spezifikation
 
-> Status: Entwurf · Version 0.1 · Datum: 2026-07-01
+> Status: Entwurf · Version 0.1 · Datum: 2026-07-01 ·
+> zuletzt ergänzt: 2026-08-06 (§13 gegen `ORBIT-V5-CONCEPT.md §10` abgeglichen;
+> Referenz-Konzept-Dateiname korrigiert)
 > Profiliert: Open Knowledge Format (OKF) v0.1
-> Zweck: Definiert, wie der normative Soll-Wissensgraph von ORBIT V4 als
+> Zweck: Definiert, wie der normative Soll-Wissensgraph von ORBIT V5 als
 > OKF-konformes Bundle dargestellt wird. Grundlage für Fact-Finder,
 > Planner-Gatekeeper und Compliance-Agent.
-> Referenz-Konzept: `ORBIT-V4-CONCEPT.md`
+> Referenz-Konzept: `ORBIT-V5-CONCEPT.md`
 
 ---
 
@@ -30,7 +32,7 @@ Absicht (Intent), Spezifikation (Spec), Regeln (Rule) und
 Architekturentscheidungen (ADR). Die deskriptive (Ist-)Ebene — Code-Fakten,
 externe Recherche, Qualitätsergebnisse — ist **nicht** Gegenstand dieser
 Konvention. Code-Fakten werden nicht gespeichert, sondern on-demand aus dem
-Code abgeleitet (siehe `ORBIT-V4-CONCEPT.md`, §5).
+Code abgeleitet (siehe `ORBIT-V5-CONCEPT.md`, §5).
 
 ### 1.2 Schlüsselwörter
 
@@ -322,14 +324,18 @@ Etabliert Regel [RULE-ARCH-014](/rules/architecture/api-no-direct-persistence.md
 
 ## 13. Offene Punkte (→ `unknowns/`)
 
-- **Regel-Granularität:** ein Knoten pro Prinzip vs. pro Komponente. Auswirkung
-  auf `id`-Vergabe und Scope-Konflikte.
+- **Regel-Granularität:** geklärt in `ORBIT-V5-CONCEPT.md §10` — ein Knoten
+  pro prüfbarer Aussage (ein `enforcement`), nicht pro Prinzip oder Komponente.
 - **Hash-/Anker-Strategie für `enforcement: mechanical`:** wie werden Arch-Tests
   an Regeln gebunden und ausgeführt (gehört teils zur Ist-/Compliance-Seite).
 - **`kind`-Vokabular:** reichen architecture/design/convention, oder braucht es
-  z. B. `security`, `performance`?
+  z. B. `security`, `performance`? (Die Beispiele in `ORBIT-V5-CONCEPT.md §10`
+  — Audit, Monitoring, Logging, Teststrategie, Code-Konventionen — kamen alle
+  ohne neue `kind`-Werte aus; bleibt trotzdem offen, ob das bei Sicherheits-
+  oder Performance-Regeln so bleibt.)
 - **Verhältnis ADR-`status` ↔ gemeinsamer `status`:** eigener ADR-Lebenszyklus
   (proposed/accepted) oder Vereinheitlichung?
-- **Migration V3 → V4:** Bootstrap-Extraktion impliziter Regeln aus
-  bestehenden Specs/Epics/Plänen in dieses Format.
+- **Initiale Erfassung (vormals "Migration V4 → V5"):** geklärt in
+  `ORBIT-V5-CONCEPT.md §10` — kein Migrations-Fall (kein V3-Bestand), sondern
+  zwei Erfassungspfade für neue bzw. laufende V4-Projekte.
 ```
