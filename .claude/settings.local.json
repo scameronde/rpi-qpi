@@ -25,7 +25,8 @@
       "Bash(bash .claude/hooks/session-start)",
       "Bash(/home/eichens/.claude/plugins/cache/claude-plugins-official/superpowers/5.1.0/skills/brainstorming/scripts/start-server.sh *)",
       "Read(//home/eichens/.claude/skills/**)",
-      "Read(//home/eichens/.local/share/omarchy/default/omarchy-skill/**)"
+      "Read(//home/eichens/.local/share/omarchy/default/omarchy-skill/**)",
+      "Skill(commit)"
     ]
   },
   "sandbox": {
