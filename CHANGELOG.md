@@ -29,6 +29,10 @@ Adds `mission-check`, a whole-tree audit skill comparing code against recorded m
 - `CLAUDE.md` and `README.md` gain a `mission-check` row in their Quality and Maintenance tables, between `dox-update` and `claude-code-extensions`; pipeline-ordering prose is untouched, since it is not a pipeline stage.
 - `/commit` and `/just-do-it` no longer carry `disable-model-invocation: true` — any agent can now invoke either through the Skill tool, unconditionally, the same as every other model-invocable skill. `CLAUDE.md` lost the sentences documenting the now-obsolete restriction for both, and `README.md` lost the `(user-invoked only)` annotation on `/commit`'s row. Each change was carried through its own `/change-architect` → `/just-do-it` run, with a change brief and Change Record under `thoughts/shared/changes/`.
 
+### Fixed
+- `ORBIT-V5-CONCEPT.md` and `ORBIT-V5-OKF-CONVENTION.md` still read as if the running version were V3 and the draft were "V4" — stale since the actual V4 release diverged and the drafts were relabeled V5. Corrected throughout to V4/V5, and three of the concept doc's open points resolved: rule granularity (one `Rule` node per checkable statement, not per topic), conflict resolution (already answered in the OKF convention's own §7.1, just not cross-referenced), and "migration V3 → V4" — retitled "initial capture," since no V3 corpus exists to migrate; the real question is how a running V4 project backfills the new `rules/` layer. The OKF convention's own §13 mirrors the same three resolutions.
+- `CLAUDE.md`'s "ORBIT V5 — Draft, Not Current State" section still claimed the running system was V3, left over from the same staleness; corrected to V4.
+
 ## [V4.1.1] - 2026-08-03
 
 Steers `/implement`'s subagents toward LSP navigation and makes the LSP tool actually available on this repo, fixes the MCP servers' silent `.env`-loading failure, and re-archives the presentation decks by version.
